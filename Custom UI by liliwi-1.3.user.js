@@ -386,22 +386,19 @@ ul#server-tabs {
     hotkeyInput.type = "text";
     hotkeyInput.placeholder = "Press a key";
     hotkeyInput.readOnly = true;
-    hotkeyInput.value = "Y"; // default
+    hotkeyInput.value = "Y"; 
 
     card.appendChild(hotkeyLabel);
     card.appendChild(hotkeyInput);
 
-    // --- Return button ---
     const returnBtn = document.createElement("button");
     returnBtn.id = "x-return-btn";
     returnBtn.textContent = "Return";
     card.appendChild(returnBtn);
 
-    // ⬇️ THIS WAS MISSING
     panel.appendChild(card);
     document.body.appendChild(panel);
 
-    // --- Tab toggle ---
     tab.addEventListener("click", () => {
         fadeOut(main);
         fadeIn(panel);
@@ -411,7 +408,6 @@ ul#server-tabs {
         fadeIn(main);
     });
 
-    // --- Close with ESC ---
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && panel.classList.contains("x-show")) {
             e.stopPropagation();
@@ -421,7 +417,6 @@ ul#server-tabs {
         }
     });
 
-    // --- Hotkey capture ---
     let chatHotkey = "y";
     hotkeyInput.addEventListener("focus", () => {
         hotkeyInput.value = "Press any key...";
@@ -436,7 +431,6 @@ ul#server-tabs {
         }
     });
 
-    // --- Chat toggle hotkey ---
     document.addEventListener("keydown", (e) => {
         if (e.key.toLowerCase() === chatHotkey && document.activeElement.tagName !== "INPUT") {
             const chatPanel = document.getElementById("chat-panel");
@@ -450,7 +444,6 @@ ul#server-tabs {
         }
     });
 
-    // --- Fade helpers ---
     function fadeIn(el) {
         el.classList.remove("x-hide");
         el.classList.add("x-show");
@@ -881,7 +874,6 @@ function getCurrentPlayerId() {
         }
     }, 3000);
 
-    // ---------- Helpers ----------
 
     function setNativeValue(el, value) {
         const valueSetter = Object.getOwnPropertyDescriptor(el.__proto__, "value")?.set;
@@ -1092,15 +1084,12 @@ contextList.classList.add("active");
 contextList.classList.remove("active");
 
 
-    // Only show once
 if (!localStorage.getItem("changelogShown")) {
 
-    // ---------- Create overlay ----------
     const overlay = document.createElement("div");
     overlay.id = "changelogOverlay";
     document.body.appendChild(overlay);
 
-    // ---------- Create modal ----------
     const modal = document.createElement("div");
     modal.id = "changelogModal";
 
@@ -1115,7 +1104,6 @@ if (!localStorage.getItem("changelogShown")) {
     modal.innerHTML = html;
     document.body.appendChild(modal);
 
-    // ---------- Inject CSS ----------
     const style = document.createElement("style");
     style.textContent = `
         #changelogOverlay {
