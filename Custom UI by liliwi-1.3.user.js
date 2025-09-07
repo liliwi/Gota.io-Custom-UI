@@ -1,13 +1,15 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.31
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
 // @match        https://gota.io/web/*
 // @match        https://play.gota.io/*
 // @grant        GM_addStyle
+// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
+// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
 // ==/UserScript==
 
 (function() {
@@ -28,8 +30,8 @@
              background: rgba(0, 0, 0, 0.3) !important;
         }
 
-div#party-panel.ui-pane.interface-color.hud-panel {
-padding-bottom: 10px; }
+        div#party-panel.ui-pane.interface-color.hud-panel {
+            padding-bottom: 10px; }
 
         .main-panel {
             height: auto !important;
@@ -98,7 +100,7 @@ padding-bottom: 10px; }
        width: 130px !important;
        margin-top: 10px !important;
 
-}
+    }
 
         div#popup-profile.popup-panel { background: transparent !important; }
         button#profile-close-btn.gota-btn { background: transparent !important; }
@@ -154,17 +156,17 @@ padding-bottom: 10px; }
         background: transparent !important;
         }
      div.server-container {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 8px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 8px !important;
 
-  height: auto !important;
-  min-height: 0 !important;
-  margin: 0 auto !important;
-  padding: 0 !important;
-}
+      height: auto !important;
+      min-height: 0 !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+    }
 
 
      ul.context-list {
@@ -178,19 +180,19 @@ padding-bottom: 10px; }
     /* hidden by default */
     pointer-events: none;
     transition: opacity 0.25s ease;
-}
+    }
 
-ul.context-list.active {
+    ul.context-list.active {
     /* visible when active */
     opacity: 1;
     pointer-events: auto;
-}
-.server-table tbody {
-overflow: unset !important;
-}
+    }
+    .server-table tbody {
+    overflow: unset !important;
+    }
 
-li#server-tab-eu.server-tab,
-li#server-tab-na.server-tab {
+    li#server-tab-eu.server-tab,
+    li#server-tab-na.server-tab {
     width: auto !important;
     min-width: 90px !important;
     padding: 6px 12px !important;
@@ -202,8 +204,8 @@ li#server-tab-na.server-tab {
     transition: background 0.2s ease !important;
 }
 
-li#server-tab-eu.server-tab:hover,
-li#server-tab-na.server-tab:hover {
+    li#server-tab-eu.server-tab:hover,
+    li#server-tab-na.server-tab:hover {
     background: rgba(255,255,255,0.1) !important;
 }
 
@@ -376,7 +378,6 @@ ul#server-tabs {
     const card = document.createElement("div");
     card.id = "x-custom-card";
 
-    // --- Hotkey input ---
     const hotkeyLabel = document.createElement("div");
     hotkeyLabel.textContent = "Chat Toggle Hotkey:";
     hotkeyLabel.style.marginBottom = "6px";
@@ -1098,6 +1099,7 @@ if (!localStorage.getItem("changelogShown")) {
         <ul>
             <li>Fixed auto-invite bug</li>
             <li>Added Chat disable hotkey</li>
+            <li>Added auto update</li>
         </ul>
         <button id="closeChangelog">Close</button>
     `;
