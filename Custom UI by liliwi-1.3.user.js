@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      1.32
+// @version      1.33
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
-// @match        https://gota.io/web/*
+// @match        https://gota.io/camlan/*
 // @match        https://play.gota.io/*
 // @grant        GM_addStyle
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
