@@ -6,6 +6,7 @@
 // @author       liliwi
 // @discord      liliwi
 // @match        https://gota.io/camlan/*
+// @match        https://gota.io/web/*
 // @match        https://play.gota.io/*
 // @grant        GM_addStyle
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
@@ -1097,9 +1098,7 @@ if (!localStorage.getItem("changelogShown")) {
     const html = `
         <h2>📝 Changelog</h2>
         <ul>
-            <li>Fixed auto-invite bug</li>
-            <li>Added Chat disable hotkey</li>
-            <li>Added auto update</li>
+            <li>Fixed issue where gota.io/web did not work aswell as /camlan</li>
         </ul>
         <button id="closeChangelog">Close</button>
     `;
