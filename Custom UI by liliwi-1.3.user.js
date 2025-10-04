@@ -1067,7 +1067,6 @@ if (!localStorage.getItem("changelogShown")) {
         <ul>
             <li>Added configurable hotkey for Tab Invite (default: J)</li>
             <li>Fixed CSS syntax errors</li>
-            <li>Removed extra hotkeys (only Tab Invite remains)</li>
         </ul>
         <button id="closeChangelog">Close</button>
     `;
