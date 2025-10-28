@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      1.35
+// @version      1.4
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -380,7 +380,6 @@
         card.appendChild(hotkeyLabel);
         card.appendChild(hotkeyInput);
 
-        // ===== TAB INVITE HOTKEY SECTION =====
         const inviteHotkeyLabel = document.createElement("div");
         inviteHotkeyLabel.textContent = "Tab Invite Hotkey:";
         inviteHotkeyLabel.style.marginTop = "20px";
@@ -557,114 +556,193 @@
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             }
 
-            function renderSaved(card) {
-                const old = card.querySelector("#saved-players-wrapper");
-                if (old) old.remove();
 
-                const wrapper = document.createElement("div");
-                wrapper.id = "saved-players-wrapper";
-                wrapper.style.marginTop = "20px";
-                wrapper.style.display = "flex";
-                wrapper.style.flexDirection = "column";
-                wrapper.style.gap = "6px";
-                card.appendChild(wrapper);
+function renderSaved(card) {
+    const old = card.querySelector("#saved-players-wrapper");
+    if (old) old.remove();
 
-                const header = document.createElement("div");
-                header.style.display = "grid";
-                header.style.gridTemplateColumns = "1fr 1fr auto";
-                header.style.fontWeight = "600";
-                header.style.marginBottom = "8px";
-                header.innerHTML = `
-                    <div style="text-align:center;">Saved Name</div>
-                    <div style="text-align:center;">Saved Skin</div>
-                    <div style="text-align:center;">Actions</div>`;
-                wrapper.appendChild(header);
+    const wrapper = document.createElement("div");
+    wrapper.id = "saved-players-wrapper";
+    wrapper.style.marginTop = "20px";
+    card.appendChild(wrapper);
 
-                let saved = loadSaved();
-                if (!saved.length) {
-                    const empty = document.createElement("div");
-                    empty.textContent = "No players saved yet.";
-                    empty.style.color = "#aaa";
-                    empty.style.textAlign = "center";
-                    wrapper.appendChild(empty);
-                    return;
-                }
+    const header = document.createElement("div");
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.alignItems = "center";
+    header.style.padding = "12px 15px";
+    header.style.background = "rgba(40, 40, 40, 0.6)";
+    header.style.borderRadius = "8px";
+    header.style.cursor = "pointer";
+    header.style.userSelect = "none";
+    header.style.transition = "background 0.2s";
+    header.innerHTML = `
+        <span style="font-weight: 600;">📋 Saved Players</span>
+        <span id="dropdown-arrow" style="transition: transform 0.3s ease;">▼</span>
+    `;
 
-                saved.forEach((p, i) => {
-                    const row = document.createElement("div");
-                    row.style.display = "grid";
-                    row.style.gridTemplateColumns = "1fr 1fr auto";
-                    row.style.alignItems = "center";
-                    row.style.padding = "6px 10px";
-                    row.style.borderRadius = "8px";
-                    row.style.background = "rgba(255,255,255,0.05)";
-                    row.style.gap = "10px";
+    header.addEventListener("mouseenter", () => {
+        header.style.background = "rgba(50, 50, 50, 0.7)";
+    });
+    header.addEventListener("mouseleave", () => {
+        header.style.background = "rgba(40, 40, 40, 0.6)";
+    });
 
-                    const nameCell = document.createElement("div");
-                    nameCell.textContent = p.name || "[unknown]";
+    wrapper.appendChild(header);
 
-                    const skinCell = document.createElement("div");
-                    skinCell.textContent = p.skin || "[none]";
+    const dropdown = document.createElement("div");
+    dropdown.id = "saved-players-dropdown";
+    dropdown.style.maxHeight = "0";
+    dropdown.style.overflow = "hidden";
+    dropdown.style.transition = "max-height 0.3s ease, margin-top 0.3s ease";
+    dropdown.style.marginTop = "0";
+    wrapper.appendChild(dropdown);
 
-                    const actions = document.createElement("div");
-                    actions.style.display = "flex";
-                    actions.style.gap = "6px";
-                    actions.style.flexWrap = "wrap";
+    const dropdownInner = document.createElement("div");
+    dropdownInner.id = "saved-players-dropdown-inner";
+    dropdownInner.style.maxHeight = "300px";
+    dropdownInner.style.overflowY = "auto";
+    dropdownInner.style.background = "rgba(20, 20, 20, 0.8)";
+    dropdownInner.style.borderRadius = "8px";
+    dropdownInner.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+    dropdownInner.style.scrollbarWidth = "none";
+    dropdownInner.style.msOverflowStyle = "none";
+    dropdown.appendChild(dropdownInner);
 
-                    const useNameBtn = document.createElement("button");
-                    useNameBtn.textContent = "Use Name";
-                    useNameBtn.className = "x-small-btn";
-                    useNameBtn.onclick = () => {
-                        const el = getNameInput();
-                        setInputValue(el, p.name || "");
-                    };
+    let isOpen = false;
+    header.addEventListener("click", () => {
+        isOpen = !isOpen;
+        if (isOpen) {
+            dropdown.style.maxHeight = "350px";
+            dropdown.style.marginTop = "8px";
+        } else {
+            dropdown.style.maxHeight = "0";
+            dropdown.style.marginTop = "0";
+        }
+        document.getElementById("dropdown-arrow").style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+    });
 
-                    const useSkinBtn = document.createElement("button");
-                    useSkinBtn.textContent = "Use Skin";
-                    useSkinBtn.className = "x-small-btn";
-                    useSkinBtn.onclick = () => {
-                        const el = getNameInput();
-                        if (!el) return;
-                        const currentName = el.value.replace(/\[.*\]$/, "");
-                        const skinVal = (p.skin && p.skin !== "none")
-                            ? `[${p.skin.replace(/^\[|\]$/g, "")}]`
-                            : "";
-                        setInputValue(el, currentName + skinVal);
-                    };
+    let saved = loadSaved();
+    if (!saved.length) {
+        const empty = document.createElement("div");
+        empty.textContent = "No players saved yet.";
+        empty.style.color = "#aaa";
+        empty.style.textAlign = "center";
+        empty.style.padding = "20px";
+        dropdownInner.appendChild(empty);
+        return;
+    }
 
-                    const useBothBtn = document.createElement("button");
-                    useBothBtn.textContent = "Use Both";
-                    useBothBtn.className = "x-small-btn";
-                    useBothBtn.onclick = () => {
-                        const el = getNameInput();
-                        if (!el) return;
-                        const skinVal = (p.skin && p.skin !== "none")
-                            ? `[${p.skin.replace(/^\[|\]$/g, "")}]`
-                            : "";
-                        setInputValue(el, (p.name || "") + skinVal);
-                    };
+    saved.forEach((p, i) => {
+        const item = document.createElement("div");
+        item.style.padding = "12px 15px";
+        item.style.borderBottom = i < saved.length - 1 ? "1px solid rgba(255, 255, 255, 0.05)" : "none";
+        item.style.transition = "background 0.2s";
 
-                    const delBtn = document.createElement("button");
-                    delBtn.textContent = "Delete";
-                    delBtn.className = "x-small-btn x-small-del";
-                    delBtn.onclick = () => {
-                        const arr = loadSaved();
-                        arr.splice(i, 1);
-                        saveSaved(arr);
-                        renderSaved(card);
-                    };
+        item.addEventListener("mouseenter", () => {
+            item.style.background = "rgba(255, 255, 255, 0.05)";
+        });
+        item.addEventListener("mouseleave", () => {
+            item.style.background = "transparent";
+        });
 
-                    actions.appendChild(useNameBtn);
-                    actions.appendChild(useSkinBtn);
-                    actions.appendChild(useBothBtn);
-                    actions.appendChild(delBtn);
+        const info = document.createElement("div");
+        info.style.marginBottom = "10px";
+        info.innerHTML = `
+            <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">${p.name || "[unknown]"}</div>
+            <div style="font-size: 11px; color: #fff;">Skin: ${p.skin || "[none]"}</div>
+        `;
+        item.appendChild(info);
 
-                    row.appendChild(nameCell);
-                    row.appendChild(skinCell);
-                    row.appendChild(actions);
-                    wrapper.appendChild(row);
-                });
+        const actions = document.createElement("div");
+        actions.style.display = "grid";
+        actions.style.gridTemplateColumns = "1fr 1fr 1fr 1fr";
+        actions.style.gap = "6px";
+
+        const createBtn = (text, onClick, isDanger = false) => {
+            const btn = document.createElement("button");
+            btn.textContent = text;
+            btn.style.padding = "6px 10px";
+            btn.style.fontSize = "11px";
+            btn.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+            btn.style.borderRadius = "5px";
+            btn.style.background = isDanger ? "rgba(220, 38, 38, 0.3)" : "rgba(60, 60, 60, 0.8)";
+            btn.style.color = "#fff";
+            btn.style.cursor = "pointer";
+            btn.style.transition = "all 0.2s";
+            btn.style.whiteSpace = "nowrap";
+            btn.style.fontWeight = "500";
+
+            btn.addEventListener("mouseenter", () => {
+                btn.style.background = isDanger ? "rgba(220, 38, 38, 0.5)" : "rgba(80, 80, 80, 1)";
+                btn.style.transform = "scale(1.05)";
+            });
+            btn.addEventListener("mouseleave", () => {
+                btn.style.background = isDanger ? "rgba(220, 38, 38, 0.3)" : "rgba(60, 60, 60, 0.8)";
+                btn.style.transform = "scale(1)";
+            });
+
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                onClick();
+            });
+
+            return btn;
+        };
+
+        actions.appendChild(createBtn("Name", () => {
+            const el = getNameInput();
+            setInputValue(el, p.name || "");
+        }));
+
+        actions.appendChild(createBtn("Skin", () => {
+            const el = getNameInput();
+            if (!el) return;
+            const currentName = el.value.replace(/\[.*\]$/, "");
+            const skinVal = (p.skin && p.skin !== "none")
+                ? `[${p.skin.replace(/^\[|\]$/g, "")}]`
+                : "";
+            setInputValue(el, currentName + skinVal);
+        }));
+
+        actions.appendChild(createBtn("Both", () => {
+            const el = getNameInput();
+            if (!el) return;
+            const skinVal = (p.skin && p.skin !== "none")
+                ? `[${p.skin.replace(/^\[|\]$/g, "")}]`
+                : "";
+            setInputValue(el, (p.name || "") + skinVal);
+        }));
+
+        actions.appendChild(createBtn("Del", () => {
+            if (confirm(`Delete "${p.name}"?`)) {
+                const arr = loadSaved();
+                arr.splice(i, 1);
+                saveSaved(arr);
+                renderSaved(card);
             }
+        }, true));
+
+        item.appendChild(actions);
+        dropdownInner.appendChild(item);
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+        #saved-players-dropdown-inner::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+        }
+        #saved-players-dropdown-inner {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+    `;
+    if (!document.getElementById('saved-players-scrollbar-style')) {
+        style.id = 'saved-players-scrollbar-style';
+        document.head.appendChild(style);
+    }
+}
 
             function attachCopyLi(contextUl, card) {
                 if (!contextUl || $('#x-copy-player-li', contextUl)) return;
@@ -1065,8 +1143,8 @@ if (!localStorage.getItem("changelogShown")) {
     modal.innerHTML = `
         <h2>📝 Changelog</h2>
         <ul>
-            <li>Added configurable hotkey for Tab Invite (default: J)</li>
-            <li>Fixed CSS syntax errors</li>
+            <li>Added animations for the context menu (where you spectate and such)</li>
+            <li>remade the skin / name saver</li>
         </ul>
         <button id="closeChangelog">Close</button>
     `;
@@ -1125,4 +1203,157 @@ if (!localStorage.getItem("changelogShown")) {
         localStorage.setItem("changelogShown", "true");
     });
 }
-    })();
+  (function animateContextMenu() {
+    'use strict';
+
+    const oldStyle = document.getElementById('context-menu-animation-style');
+    if (oldStyle) oldStyle.remove();
+
+    const style = document.createElement('style');
+    style.id = 'context-menu-animation-style';
+    style.textContent = `
+        #context-menu {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        left 0.3s ease, top 0.3s ease;
+            pointer-events: none;
+            transform-origin: center center;
+        }
+        #context-menu.show {
+            opacity: 1 !important;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        #context-menu.moving {
+            transition: left 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        top 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        opacity 0.1s ease, transform 0.1s ease;
+        }
+        ul.context-list {
+            transition: none !important;
+        }
+        /* Keep keyframes so programmatic animation can reference them */
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const POP_IN_EASING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+    let lastPosition = { left: null, top: null };
+    let isCurrentlyVisible = false;
+
+    function liIndexOf(el) {
+        const li = el.closest('li');
+        if (!li || !li.parentElement) return -1;
+        const lis = Array.from(li.parentElement.querySelectorAll('li'));
+        return lis.indexOf(li);
+    }
+
+    const buttonSelectors = {
+        copy: [
+            'button.copy', '.copy-btn', '[data-action="copy"]', '#copy', '[aria-label="copy"]'
+        ].join(','),
+        spectate: [
+            'button.spectate', '.spectate-btn', '[data-action="spectate"]', '#spectate', '[aria-label="spectate"]'
+        ].join(',')
+    };
+
+    function applyPopInToButtons(menu) {
+        const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
+        const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
+
+        const targets = [...copyButtons, ...spectateButtons];
+
+        targets.forEach(target => {
+            const idx = liIndexOf(target);
+            const safeIdx = idx >= 0 ? idx : 6;
+            const delay = (safeIdx + 1) * 0.03;
+
+            target.style.animation = 'none';
+            target.style.opacity = '0';
+            target.style.transform = 'scale(0.8)';
+            void target.offsetWidth;
+            target.style.animation = `popIn 0.2s ${POP_IN_EASING} ${delay}s forwards`;
+        });
+    }
+
+    function clearPopInFromButtons(menu) {
+        const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
+        const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
+        const targets = [...copyButtons, ...spectateButtons];
+
+        targets.forEach(t => {
+            t.style.animation = 'none';
+            t.style.opacity = '0';
+            t.style.transform = 'scale(0.8)';
+        });
+    }
+
+    const observer = new MutationObserver(() => {
+        const menu = document.getElementById('context-menu');
+        if (!menu) return;
+
+        const currentLeft = parseInt(menu.style.left) || 0;
+        const currentTop = parseInt(menu.style.top) || 0;
+        const isVisible = menu.style.display !== 'none' &&
+                          menu.style.visibility !== 'hidden' &&
+                          window.getComputedStyle(menu).display !== 'none';
+
+        if (isVisible && isCurrentlyVisible &&
+            lastPosition.left !== null && lastPosition.top !== null &&
+            (Math.abs(lastPosition.left - currentLeft) > 5 ||
+             Math.abs(lastPosition.top - currentTop) > 5)) {
+            menu.classList.add('moving');
+            setTimeout(() => menu.classList.remove('moving'), 250);
+        }
+
+        if (isVisible && !isCurrentlyVisible) {
+            menu.classList.remove('moving');
+            menu.classList.add('show');
+
+
+            setTimeout(() => applyPopInToButtons(menu), 10);
+        }
+
+        if (!isVisible && isCurrentlyVisible) {
+            menu.classList.remove('show');
+            menu.classList.remove('moving');
+            lastPosition = { left: null, top: null };
+
+            clearPopInFromButtons(menu);
+        }
+
+        lastPosition = { left: currentLeft, top: currentTop };
+        isCurrentlyVisible = isVisible;
+    });
+
+    function watchContextMenu() {
+        const menu = document.getElementById('context-menu');
+        if (menu) {
+            observer.observe(menu, { attributes: true, attributeFilter: ['style'] });
+
+            const docObserver = new MutationObserver(() => {
+                const newMenu = document.getElementById('context-menu');
+                if (newMenu && !newMenu.dataset.watching) {
+                    newMenu.dataset.watching = 'true';
+                    observer.observe(newMenu, { attributes: true, attributeFilter: ['style'] });
+                }
+            });
+            docObserver.observe(document.body, { childList: true, subtree: true });
+
+            console.log('✨ Context menu: copy & spectate start animations wired up.');
+        } else {
+            setTimeout(watchContextMenu, 500);
+        }
+    }
+
+    watchContextMenu();
+})();
+
+})();
+    
