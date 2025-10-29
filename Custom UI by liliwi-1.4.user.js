@@ -9,8 +9,8 @@
 // @match        https://gota.io/web/*
 // @match        https://play.gota.io/*
 // @grant        GM_addStyle
-// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
-// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
+// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/blob/main/Custom%20UI%20by%20liliwi-1.4.user.js
+// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/blob/main/Custom%20UI%20by%20liliwi-1.4.user.js
 // ==/UserScript==
 
 (function() {
