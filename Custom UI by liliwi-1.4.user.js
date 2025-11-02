@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      1.41
+// @version      1.4
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
