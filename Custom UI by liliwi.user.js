@@ -11,8 +11,6 @@
 // @grant        GM_addStyle
 // @updateURL   https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // @downloadURL https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
-
-
 // ==/UserScript==
 
 (function() {    'use strict';
@@ -1144,8 +1142,8 @@ if (!localStorage.getItem("changelogShown")) {
     modal.innerHTML = `
         <h2>📝 Changelog</h2>
         <ul>
-            <li>Added animations for the context menu (where you spectate and such)</li>
-            <li>remade the skin / name saver</li>
+            <li>remade the whole context menu animation since it was weird</li>
+            <li>remade the skin / name saver so it looks cleaner</li>
         </ul>
         <button id="closeChangelog">Close</button>
     `;
@@ -1234,7 +1232,6 @@ if (!localStorage.getItem("changelogShown")) {
         ul.context-list {
             transition: none !important;
         }
-        /* Keep keyframes so programmatic animation can reference them */
         @keyframes popIn {
             to {
                 opacity: 1;
@@ -1283,77 +1280,77 @@ if (!localStorage.getItem("changelogShown")) {
         });
     }
 
-    function clearPopInFromButtons(menu) {
-        const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
-        const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
-        const targets = [...copyButtons, ...spectateButtons];
-
-        targets.forEach(t => {
-            t.style.animation = 'none';
-            t.style.opacity = '0';
-            t.style.transform = 'scale(0.8)';
-        });
-    }
-
-    const observer = new MutationObserver(() => {
-        const menu = document.getElementById('context-menu');
-        if (!menu) return;
-
-        const currentLeft = parseInt(menu.style.left) || 0;
-        const currentTop = parseInt(menu.style.top) || 0;
-        const isVisible = menu.style.display !== 'none' &&
-                          menu.style.visibility !== 'hidden' &&
-                          window.getComputedStyle(menu).display !== 'none';
-
-        if (isVisible && isCurrentlyVisible &&
-            lastPosition.left !== null && lastPosition.top !== null &&
-            (Math.abs(lastPosition.left - currentLeft) > 5 ||
-             Math.abs(lastPosition.top - currentTop) > 5)) {
-            menu.classList.add('moving');
-            setTimeout(() => menu.classList.remove('moving'), 250);
-        }
-
-        if (isVisible && !isCurrentlyVisible) {
-            menu.classList.remove('moving');
-            menu.classList.add('show');
-
-
-            setTimeout(() => applyPopInToButtons(menu), 10);
-        }
-
-        if (!isVisible && isCurrentlyVisible) {
-            menu.classList.remove('show');
-            menu.classList.remove('moving');
-            lastPosition = { left: null, top: null };
-
-            clearPopInFromButtons(menu);
-        }
-
-        lastPosition = { left: currentLeft, top: currentTop };
-        isCurrentlyVisible = isVisible;
+ function clearPopInFromButtons(menu) {
+    const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
+    const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
+    const targets = [...copyButtons, ...spectateButtons];
+    targets.forEach(t => {
+        t.style.animation = 'none';
+        t.style.opacity = '';
+        t.style.transform = '';
+        void t.offsetWidth;
     });
+}
 
-    function watchContextMenu() {
-        const menu = document.getElementById('context-menu');
-        if (menu) {
-            observer.observe(menu, { attributes: true, attributeFilter: ['style'] });
+const observer = new MutationObserver(() => {
+    const menu = document.getElementById('context-menu');
+    if (!menu) return;
 
-            const docObserver = new MutationObserver(() => {
-                const newMenu = document.getElementById('context-menu');
-                if (newMenu && !newMenu.dataset.watching) {
-                    newMenu.dataset.watching = 'true';
-                    observer.observe(newMenu, { attributes: true, attributeFilter: ['style'] });
-                }
-            });
-            docObserver.observe(document.body, { childList: true, subtree: true });
+    const currentLeft = parseInt(menu.style.left) || 0;
+    const currentTop = parseInt(menu.style.top) || 0;
+    const isVisible = menu.style.display !== 'none' &&
+                      menu.style.visibility !== 'hidden' &&
+                      window.getComputedStyle(menu).display !== 'none';
 
-            console.log('✨ Context menu: copy & spectate start animations wired up.');
-        } else {
-            setTimeout(watchContextMenu, 500);
-        }
+    if (isVisible && isCurrentlyVisible &&
+        lastPosition.left !== null && lastPosition.top !== null &&
+        (Math.abs(lastPosition.left - currentLeft) > 5 ||
+         Math.abs(lastPosition.top - currentTop) > 5)) {
+        menu.classList.add('moving');
+        setTimeout(() => menu.classList.remove('moving'), 250);
     }
 
-    watchContextMenu();
+    if (isVisible && !isCurrentlyVisible) {
+        menu.classList.remove('moving');
+        menu.classList.add('show');
+        setTimeout(() => applyPopInToButtons(menu), 10);
+    }
+
+    if (!isVisible && isCurrentlyVisible) {
+        menu.classList.remove('show');
+        menu.classList.remove('moving');
+        lastPosition = { left: null, top: null };
+
+        menu.style.left = '';
+        menu.style.top = '';
+        clearPopInFromButtons(menu);
+    }
+
+    lastPosition = { left: currentLeft, top: currentTop };
+    isCurrentlyVisible = isVisible;
+});
+
+function watchContextMenu() {
+    const menu = document.getElementById('context-menu');
+    if (menu) {
+        observer.observe(menu, { attributes: true, attributeFilter: ['style'] });
+
+        const docObserver = new MutationObserver(() => {
+            const newMenu = document.getElementById('context-menu');
+            if (newMenu && !newMenu.dataset.watching) {
+                newMenu.dataset.watching = 'true';
+                observer.observe(newMenu, { attributes: true, attributeFilter: ['style'] });
+            }
+        });
+        docObserver.observe(document.body, { childList: true, subtree: true });
+
+        console.log('Context menu: copy & spectate start animations wired up.');
+    } else {
+        setTimeout(watchContextMenu, 500);
+    }
+}
+
+watchContextMenu();
 })();
 
 })();
