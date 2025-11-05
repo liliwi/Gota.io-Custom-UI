@@ -52,7 +52,6 @@
         div.policyLinks.interface-color,
         div#main-rb.main-panel,
         #statsBox,
-        thead,
         .main-bottom-left,
         .main-bottom-right,
         .main-bottom.interface-color,
