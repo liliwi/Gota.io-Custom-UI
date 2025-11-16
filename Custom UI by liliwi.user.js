@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Custom UI by liliwi new
+// @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
 // @version      2.0
 // @description  just a ui
@@ -11,8 +11,8 @@
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
-// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
+// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
+// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
 // ==/UserScript==
 
 (function() {
@@ -39,12 +39,23 @@ div#main-panel-wrapper {
     box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
      padding-bottom: 10px;
 }
+#name-box {
+background: rgba(30,30,30) !important;
+color: white !important;
+border-radius: 10px !important;
+}
 
-
+        .main-panel {
+            height: auto !important;
+            min-height: unset !important;
+            padding-bottom: 15px !important;
+        }
         div.options-container {
             background: transparent !important;
             height: 458px !important;
         }
+
+
 
 #chat-panel, #leaderboard-panel {
     background: rgba(20, 20, 20, 0.95) !important;
@@ -112,8 +123,6 @@ li#server-tab-na.server-tab:hover {
         
         div.policyLinks.interface-color,
         div#main-rb.main-panel,
-     
-    
         .main-bottom-right,
         .main-bottom.interface-color,
         li#menu-block.contest-action,
@@ -136,8 +145,8 @@ li#server-tab-na.server-tab:hover {
             margin-top: 10px !important;
         }
 
-        div#popup-profile.popup-panel { background: transparent !important; }
-        button#profile-close-btn.gota-btn { background: transparent !important; }
+        div#popup-profile.popup-panel { background: rgba(20,20,20) !important; }
+        button#profile-close-btn.gota-btn { background: rgba(20,20,20) !important; }
 
         #account-actions .gota-btn {
             width: 50px !important;
@@ -156,7 +165,7 @@ li#server-tab-na.server-tab:hover {
         }
 
         div.main-bottom-links {
-        padding-top: 130px !important }
+        padding-top: 178px !important }
 
 
         input[data-coloris] {
@@ -342,8 +351,10 @@ height: 500px !important;
             margin: 0 auto !important; cursor: pointer !important; transition: all 0.3s ease !important;
         }
         #unified-settings-btn:hover { background: rgba(40,40,40,0.7) !important; transform: scale(1.02) !important; }
-     
 
+     .main-panel-wrapper {
+    margin-top: 100px;
+}
 
         .settings-header {
             padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.1);
