@@ -2500,12 +2500,7 @@ init();
                 youtubeLink.href = 'https://www.youtube.com/@liliwigota1';
                 console.log('✅ YouTube link changed to your channel');
             }
-            const discordLink = bottomLinks.querySelector('a[href*="discord"]');
-            if (discordLink) {
-                discordLink.href = 'https://discord.gg/yourinvite';
-                console.log('✅ Discord link changed');
-
-            }
+        
         }
     }, 100);
 
