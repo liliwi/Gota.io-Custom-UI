@@ -11,8 +11,8 @@
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
-// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
+// @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
+// @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi-1.3.user.js
 // ==/UserScript==
 
 (function() {
@@ -96,6 +96,27 @@ background:rgba(20,20,20) }
 #main-right tr:hover {
     background: rgba(255,255,255,0.08) !important;
 }
+
+  button[aria-labelledby="clr-open-label"] {
+        display: none !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }
+
+    #unified-settings-panel input[data-coloris] {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+
+    .clr-field button {
+        display: none !important;
+    }
+     th.server-table-name,  th.server-table-players,  th.server-table-mode{
+    display: none !important;
+    }
+
 
 server-body-na {
 background:rgba(20,20,20) !important;
@@ -893,11 +914,11 @@ setInterval(ensureButton, 1000);
 
 const CONFIG = {
     tabs: [
-        { id: 'options', label: '⚙️ Options' },
-        { id: 'hotkeys', label: '⌨️ Hotkeys' },
-        { id: 'themes', label: '🎨 Themes' },
-        { id: 'cellpanel', label: '📊 Cell Panel' },
-        { id: 'customfeatures', label: '✨ Custom Features' }
+        { id: 'options', label: 'Options' },
+        { id: 'hotkeys', label: 'Hotkeys' },
+        { id: 'themes', label: 'Themes' },
+        { id: 'cellpanel', label: 'Cell Panel' },
+        { id: 'customfeatures', label: 'Custom Features' }
     ],
     hiddenButtons: ['#btn-options', '#btn-hotkeys', '#btn-themes', '#btn-cellpanel']
 };
@@ -968,7 +989,7 @@ function createButton() {
     if (!container || document.getElementById('unified-settings-btn')) return;
     const btn = document.createElement('button');
     btn.id = 'unified-settings-btn';
-    btn.innerHTML = '⚙️ Settings';
+    btn.innerHTML = 'Settings';
     btn.onclick = open;
     container.appendChild(btn);
 }
@@ -994,7 +1015,7 @@ function createPanel() {
 
     panel.innerHTML = `
         <div class="settings-header">
-            <h2>⚙️ Settings</h2>
+            <h2>Settings</h2>
             <button class="settings-close-btn" id="close-settings-btn">×</button>
         </div>
         <div class="settings-tabs">
@@ -1533,7 +1554,7 @@ function getCustomFeaturesHTML() {
             </div>
 
             <div class="setting-group">
-                <h3>👥 Saved Players</h3>
+                <h3 Saved Players</h3>
                 <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">Right-click on players in-game and select "Copy" to save them here.</p>
                 <div id="saved-players-list"></div>
             </div>
@@ -2533,6 +2554,7 @@ if (!localStorage.getItem("changelogShown")) {
                 <li>added fonts (might be some problems with the ui for now will change later)</li>
                 <li>remade ui again!! (improvements will come) </li>
                 <li>You will now need camlan to use this script!</li>
+                <li>made it prettier and fixed some stuff</li>
             </ul>
             <button id="closeChangelog">Close</button>
         `;
