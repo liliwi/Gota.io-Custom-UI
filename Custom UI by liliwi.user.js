@@ -18,76 +18,128 @@
 (function() {
     'use strict';
 
-    GM_addStyle(`
-    .main-panel,
+   GM_addStyle(`
+/* ===== MAIN PANELS & CONTAINERS ===== */
+.main-panel,
 #main-right,
 #mainPanel,
 #leaderboard,
 #chat,
 #map,
-div#main-panel-wrapper {
+div#main-panel-wrapper,
+div#party-panel.ui-pane.interface-color.hud-panel,
+#chat-panel,
+#leaderboard-panel,
+#minimap-panel,
+div#main-right.main-divider.main-panel,
+div#main-scrimmage.main-panel.interface-color {
     background: rgba(20, 20, 20, 0.95) !important;
     border: 2px solid rgba(255,255,255,0.1) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+}
 
+div#party-panel.ui-pane.interface-color.hud-panel {
+    padding-bottom: 10px;
 }
-       div#party-panel.ui-pane.interface-color.hud-panel {
-    background: rgba(20, 20, 20, 0.95) !important;
-    border: 2px solid rgba(255,255,255,0.1) !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
-     padding-bottom: 10px;
+
+.main-panel {
+    height: auto !important;
+    min-height: unset !important;
+    padding-bottom: 15px !important;
 }
+
+div#main-right.main-divider.main-panel,
+div#main-scrimmage.main-panel.interface-color {
+    height: 500px !important;
+}
+
+div#main-scrimmage.main-panel.interface-color {
+    height: 470px !important;
+}
+
+.main-panel-wrapper {
+    margin-top: 100px;
+}
+
+div.options-container {
+    background: transparent !important;
+    height: 458px !important;
+}
+
+div#main-options.main-right-panel,
+table.options-container,
+div.main-mid.menu-sub-bg,
+div.title-text.menu-title,
+div#server-content,
+tbody#servers-body-eu {
+    background: transparent !important;
+}
+
+div#server-content {
+    height: 429px !important;
+}
+
+/* ===== INPUTS & BUTTONS ===== */
 #name-box {
-background: rgba(30,30,30) !important;
-color: white !important;
-border-radius: 10px !important;
+    background: rgba(30,30,30) !important;
+    color: white !important;
+    border-radius: 10px !important;
 }
-
-        .main-panel {
-            height: auto !important;
-            min-height: unset !important;
-            padding-bottom: 15px !important;
-        }
-        div.options-container {
-            background: transparent !important;
-            height: 458px !important;
-        }
-
-
-
-#chat-panel, #leaderboard-panel {
-    background: rgba(20, 20, 20, 0.95) !important;
-    border: 2px solid rgba(255,255,255,0.1) !important;
-}
-
-#minimap-panel {
-    background: rgba(20, 20, 20, 0.95) !important;
-    border: 2px solid rgba(255,255,255,0.1) !important;
-}
-
 
 name-box.gota.input {
     background: rgba(30, 30, 30, 0.8) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
     color: #fff !important;
-
 }
-.gota-btn, button.gota-btn.bottom-btn, .gota-menu-btn {
+
+.gota-btn,
+button.gota-btn.bottom-btn,
+.gota-menu-btn {
     background: rgba(20, 20, 20, 0.6) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
     color: #fff !important;
-   border-radius: 10px !important;
+    border-radius: 10px !important;
 }
 
-div#social-friends.menu-sub-bg  {
-background:rgba(20,20,20) }
-
-.gota-btn:hover, button.gota-btn.bottom-btn:hover, .gota-menu-btn:hover {
+.gota-btn:hover,
+button.gota-btn.bottom-btn:hover,
+.gota-menu-btn:hover {
     background: rgba(50, 50, 50, 0.7) !important;
 }
 
+#account-actions .gota-btn {
+    width: 50px !important;
+    height: 30px;
+    border-radius: 10px !important;
+    background: rgba(20,20,20,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    transition: background 0.2s ease !important;
+}
+
+button#btn-updateSP.gota-btn {
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    background: rgba(20,20,20,0.6) !important;
+}
+
+.play-spec-wrapper #btn-play,
+.play-spec-wrapper #btn-spec {
+    height: 50px !important;
+    width: 130px !important;
+    margin-top: 10px !important;
+}
+
+.main-input-btns {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* ===== SERVER & TABLE STYLES ===== */
 #main-right th {
     background: rgba(20, 20, 20) !important;
     color: #fff !important;
@@ -97,36 +149,59 @@ background:rgba(20,20,20) }
     background: rgba(255,255,255,0.08) !important;
 }
 
-  button[aria-labelledby="clr-open-label"] {
-        display: none !important;
-        pointer-events: none !important;
-        visibility: hidden !important;
-        position: absolute !important;
-        left: -9999px !important;
-    }
-
-    #unified-settings-panel input[data-coloris] {
-        pointer-events: auto !important;
-        cursor: pointer !important;
-    }
-
-    .clr-field button {
-        display: none !important;
-    }
-     th.server-table-name,  th.server-table-players,  th.server-table-mode{
-    display: none !important;
-    }
-
-
-server-body-na {
-background:rgba(20,20,20) !important;
+#main-right td {
+    padding: 5px !important;
 }
 
+th.server-table-name,
+th.server-table-players,
+th.server-table-mode {
+    display: none !important;
+}
+
+.server-table tbody {
+    overflow: unset !important;
+    background: rgba(20,20,20) !important;
+}
+
+div.server-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+}
+
+server-body-na,
+div#social-friends.menu-sub-bg {
+    background: rgba(20,20,20) !important;
+}
+
+/* ===== SERVER TABS ===== */
 li#server-tab-eu.server-tab,
 li#server-tab-na.server-tab {
     background: rgba(40, 40, 40, 0.6) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
     color: #aaa !important;
+    width: auto !important;
+    min-width: 90px !important;
+    padding: 6px 12px !important;
+    margin: 0 4px !important;
+    display: inline-block !important;
+    text-align: center !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
+}
+
+li#server-tab-eu.server-tab:hover,
+li#server-tab-na.server-tab:hover {
+    background: rgba(50, 50, 50, 0.7) !important;
+    color: #fff !important;
 }
 
 li.server-active {
@@ -135,367 +210,102 @@ li.server-active {
     color: #fff !important;
 }
 
+ul#server-tabs {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 4px !important;
+    margin: 0 auto !important;
+    width: fit-content !important;
+}
 
-li#server-tab-eu.server-tab:hover,
-li#server-tab-na.server-tab:hover {
-    background: rgba(50, 50, 50, 0.7) !important;
+/* ===== CONTEXT MENU ===== */
+ul.context-list {
+    background: rgba(22,22,22,0.8) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: none !important;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+ul.context-list.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.context-list li {
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    transition: background 0.2s ease !important;
+}
+
+.context-list li:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ===== UTILITY BUTTONS ===== */
+.x-small-btn {
+    width: auto !important;
+    min-width: 65px !important;
+    height: 22px !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    padding: 0 6px !important;
+    background: rgba(20,20,20,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     color: #fff !important;
-    }
-        
-        div.policyLinks.interface-color,
-        div#main-rb.main-panel,
-        .main-bottom-right,
-        .main-bottom.interface-color,
-        li#menu-block.contest-action,
-        li#menu-block,
-        li#server-tab-ap.server-tab {
-            display: none !important;
-        }
-
-        .main-input-btns {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 8px !important;
-        }
-   
-        .play-spec-wrapper #btn-play,
-        .play-spec-wrapper #btn-spec {
-            height: 50px !important;
-            width: 130px !important;
-            margin-top: 10px !important;
-        }
-
-        div#popup-profile.popup-panel { background: rgba(20,20,20) !important; }
-        button#profile-close-btn.gota-btn { background: rgba(20,20,20) !important; }
-
-        #account-actions .gota-btn {
-            width: 50px !important;
-            height: 30px;
-            border-radius: 10px !important;
-            background: rgba(20,20,20,0.6) !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            color: #fff !important;
-            font-size: 14px !important;
-            transition: background 0.2s ease !important;
-        }
-
-        button#btn-updateSP.gota-btn {
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            background: rgba(20,20,20,0.6) !important;
-        }
-
-        div.main-bottom-links {
-        padding-top: 178px !important }
-
-
-        input[data-coloris] {
-        background: transparent !important;
-        }
-
-
-
-        #main-right td {
-            padding: 5px !important;
-        }
-
-        div.server-container {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 8px !important;
-            height: auto !important;
-            min-height: 0 !important;
-            margin: 0 auto !important;
-            padding: 0 !important;
-        }
-
-        ul.context-list {
-            background: rgba(22,22,22,0.8) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border-radius: 14px !important;
-            border: 1px solid rgba(255,255,255,0.05) !important;
-            box-shadow: none !important;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-        }
-
-        ul.context-list.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .server-table tbody {
-            overflow: unset !important;
-            background:rgba(20,20,20) !important;
-        }
-
-        li#server-tab-eu.server-tab,
-        li#server-tab-na.server-tab {
-            width: auto !important;
-            min-width: 90px !important;
-            padding: 6px 12px !important;
-            margin: 0 4px !important;
-            display: inline-block !important;
-            text-align: center !important;
-            border-radius: 8px !important;
-            cursor: pointer !important;
-            transition: background 0.2s ease !important;
-        }
-
-        li#server-tab-eu.server-tab:hover,
-        li#server-tab-na.server-tab:hover {
-            background: rgba(255,255,255,0.1) !important;
-        }
-
-        ul#server-tabs {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 8px !important;
-            padding: 4px !important;
-            margin: 0 auto !important;
-            width: fit-content !important;
-        }
-
-        .x-show {
-            margin-top: 100px !important;
-        }
-
-     div#main-right.main-divider.main-panel,
-div#main-scrimmage.main-panel.interface-color {
-height: 500px !important;
-    background: rgba(20, 20, 20, 0.95) !important;
-    border: 2px solid rgba(255,255,255,0.1) !important;
-}
-
-
-        div#main-scrimmage.main-panel.interface-color {
-            height: 470px !important;
-        }
-
-        div.main-mid.menu-sub-bg {
-            background: transparent !important;
-        }
-
-        div.title-text.menu-title {
-            background: transparent !important;
-        }
-
-        div#server-content {
-            height: 429px !important;
-            background: transparent !important;
-        }
-
-
-        tbody#servers-body-eu {
-            background: transparent !important;
-        }
-
-        .context-list li {
-            padding: 6px 10px !important;
-            border-radius: 6px !important;
-            transition: background 0.2s ease !important;
-        }
-
-        .context-list li:hover {
-            background: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        .x-small-btn {
-            width: auto !important;
-            min-width: 65px !important;
-            height: 22px !important;
-            border-radius: 6px !important;
-            font-size: 12px !important;
-            padding: 0 6px !important;
-            background: rgba(20,20,20,0.6) !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            color: #fff !important;
-            cursor: pointer !important;
-            transition: background 0.2s ease !important;
-            flex: none !important;
-        }
-
-        .x-small-btn:hover {
-            background: rgba(40,40,40,0.7) !important;
-        }
-
-        .x-small-del {
-            background: rgba(120,0,0,0.6) !important;
-        }
-
-        .x-small-del:hover {
-            background: rgba(160,0,0,0.7) !important;
-        }
-
-        div#main-options.main-right-panel {
-            background: transparent !important;
-        }
-
-        table.options-container {
-            background: transparent !important;
-        }
-
-        #leaderboard {
-            font-size: 13px !important;
-            color: #fff !important;
-        }
-
-        table.chat-table {
-            font-size: 13px !important;
-            color: #fff !important;
-            background: transparent !important;
-        }
-
-        #map { background: rgba(25,25,25,0.3) !important; }
-
-        #minimap-canvas {
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
-            background: url("") no-repeat center center;
-            background-size: cover;
-        }
-
-        * {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-        }
-        #unified-settings-btn {
-            width: 270px !important; height: 35px !important;
-            border-radius: 10px !important;
-            background: rgba(20,20,20,0.6) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            color: #fff !important; font-size: 14px !important; font-weight: 500 !important;
-            display: flex !important; justify-content: center !important; align-items: center !important;
-            margin: 0 auto !important; cursor: pointer !important; transition: all 0.3s ease !important;
-        }
-        #unified-settings-btn:hover { background: rgba(40,40,40,0.7) !important; transform: scale(1.02) !important; }
-
-     .main-panel-wrapper {
-    margin-top: 100px;
-}
-
-        .settings-header {
-            padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between; align-items: center; background: rgba(30,30,30,0.5);
-        }
-        .settings-header h2 { margin:0; font-size:24px; color:#fff; font-weight:600; }
-        .settings-close-btn {
-            background: rgba(220,38,38,0.3); border: 1px solid rgba(220,38,38,0.5);
-            color:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer;
-            display:flex; justify-content:center; align-items:center; font-size:20px; transition: all 0.2s ease;
-        }
-        .settings-close-btn:hover { background: rgba(220,38,38,0.5); transform: scale(1.1); }
-        .settings-tabs {
-            display:flex;
-            gap:8px;
-            padding:15px 25px;
-            background: rgba(15,15,15,0.5);
-            border-bottom:1px solid rgba(255,255,255,0.1);
-            overflow-x:auto;
-            justify-content: center !important;
-            align-items: center;
-        }
-        .settings-tab {
-            padding:10px 20px; background: rgba(40,40,40,0.6); border: 1px solid rgba(255,255,255,0.08);
-            border-radius:8px; color:#aaa; cursor:pointer; transition: all 0.2s ease;
-            white-space: nowrap; font-size:14px; font-weight:500;
-        }
-        .settings-tab:hover { background: rgba(50,50,50,0.7); color:#fff; }
-        .settings-tab.active { background: rgba(80,80,255,0.3); border-color: rgba(80,80,255,0.5); color:#fff; }
-        .settings-content { padding:25px; max-height: calc(85vh - 160px); overflow-y:auto; }
-        .settings-content::-webkit-scrollbar { width: 8px; }
-        .settings-content::-webkit-scrollbar-track { background: rgba(40,40,40,0.3); border-radius: 4px; }
-        .settings-content::-webkit-scrollbar-thumb { background: rgba(80,80,80,0.6); border-radius: 4px; }
-        .tab-content { display:none; }
-        .tab-content.active { display:block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from {opacity:0;transform:translateY(10px);} to {opacity:1;transform:translateY(0);} }
-
-        .setting-group {
-            background: rgba(30,30,30,0.5); border:1px solid rgba(255,255,255,0.1);
-            border-radius:12px; padding:20px; margin-bottom:20px;
-        }
-        .setting-group h3 { margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; }
-        .setting-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .setting-row:last-child { border-bottom: none; }
-        .setting-label { color: #ccc; font-size: 14px; }
-        .setting-control input[type="checkbox"] {
-            width: 20px; height: 20px; cursor: pointer;
-            accent-color: rgb(80,80,255);
-        }
-        .setting-control select, .setting-control input[type="text"] {
-            background: rgba(40,40,40,0.8); border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 14px;
-        }
-        .setting-control input[type="range"] {
-            width: 150px; accent-color: rgb(80,80,255);
-        }
-        .range-value {
-            display: inline-block;
-
-
-            min-width: 50px;
-            margin-left: 10px;
-            color: #fff;
-            font-weight: 600;
-            font-size: 14px;
-            background: rgba(40,40,40,0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: text;
-        }
-        .range-value:hover {
-            border-color: rgba(255,255,255,0.3);
-        }
-
-.setting-control input[data-coloris] {
-    width: 80px !important;
-    height: 40px !important;
-    border-radius: 8px !important;
-    border: 2px solid rgba(255,255,255,0.2) !important;
     cursor: pointer !important;
-    padding: 5px !important;
-    font-size: 11px !important;
-    text-align: center !important;
+    transition: background 0.2s ease !important;
+    flex: none !important;
+}
+
+.x-small-btn:hover {
+    background: rgba(40,40,40,0.7) !important;
+}
+
+.x-small-del {
+    background: rgba(120,0,0,0.6) !important;
+}
+
+.x-small-del:hover {
+    background: rgba(160,0,0,0.7) !important;
+}
+
+/* ===== CHAT & LEADERBOARD ===== */
+#leaderboard {
+    font-size: 13px !important;
     color: #fff !important;
-    text-shadow: 0 0 3px #000, 0 0 3px #000 !important;
-    font-weight: 600 !important;
-}
-.setting-control input[data-coloris]:focus {
-    box-shadow: 0 0 0 2px rgba(80,80,255,0.5) !important;
 }
 
-        .setting-control input[data-coloris]:focus {
-            box-shadow: 0 0 0 2px rgba(80,80,255,0.5);
-        }
-        .setting-control input[data-coloris]::-webkit-color-swatch {
-            border: none;
-            border-radius: 8px;
-        }
-        .setting-control input[data-coloris]::-moz-focus-inner {
-            border: none;
-            padding: 0;
-        }
-        .keybind-btn {
-            background: rgba(60,60,60,0.8); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; padding: 8px 16px; border-radius: 6px; cursor: pointer;
-            min-width: 80px; text-align: center; transition: all 0.2s;
-        }
-        .keybind-btn:hover { background: rgba(80,80,80,0.9); }
-        .keybind-btn.listening { background: rgba(80,80,255,0.5); border-color: rgba(80,80,255,0.8); }
-
-        #main-servers { display: block !important; visibility: visible !important; }
-
-body > #clr-picker {
-    z-index: 10001 !important;
+table.chat-table {
+    font-size: 13px !important;
+    color: #fff !important;
+    background: transparent !important;
 }
 
+/* ===== MAP & MINIMAP ===== */
+#map {
+    background: rgba(25,25,25,0.3) !important;
+}
+
+#minimap-canvas {
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    background: url("") no-repeat center center;
+    background-size: cover;
+}
+
+/* ===== HIDDEN ELEMENTS ===== */
+div.policyLinks.interface-color,
+div#main-rb.main-panel,
+.main-bottom-right,
+.main-bottom.interface-color,
+li#menu-block.contest-action,
+li#menu-block,
+li#server-tab-ap.server-tab,
 #btn-servers.gota-btn.bottom-btn,
 #btn-options.gota-btn.bottom-btn,
 #btn-hotkeys.gota-btn.bottom-btn,
@@ -504,16 +314,50 @@ body > #clr-picker {
     display: none !important;
 }
 
-#unified-settings-overlay.show ~ #clr-picker .clr-gradient,
-#unified-settings-overlay.show ~ #clr-picker .clr-hue,
-#unified-settings-overlay.show ~ #clr-picker .clr-alpha,
-#unified-settings-overlay.show ~ #clr-picker .clr-color,
-#unified-settings-overlay.show ~ #clr-picker .clr-marker,
-#unified-settings-overlay.show ~ #clr-picker .clr-format,
-#unified-settings-overlay.show ~ #clr-picker .clr-swatches {
-    display: block !important;
+/* ===== POPUP & PROFILE ===== */
+div#popup-profile.popup-panel,
+button#profile-close-btn.gota-btn {
+    background: rgba(20,20,20) !important;
 }
 
+div.main-bottom-links {
+    padding-top: 178px !important;
+}
+
+.x-show {
+    margin-top: 100px !important;
+}
+
+/* ===== GLOBAL FONT ===== */
+* {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+/* ===== UNIFIED SETTINGS BUTTON ===== */
+#unified-settings-btn {
+    width: 270px !important;
+    height: 35px !important;
+    border-radius: 10px !important;
+    background: rgba(20,20,20,0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+#unified-settings-btn:hover {
+    background: rgba(40,40,40,0.7) !important;
+    transform: scale(1.02) !important;
+}
+
+/* ===== SETTINGS PANEL STRUCTURE ===== */
 #unified-settings-overlay {
     position: fixed !important;
     top: 0 !important;
@@ -530,12 +374,14 @@ body > #clr-picker {
     pointer-events: none !important;
     transition: all 0.4s ease !important;
 }
+
 #unified-settings-overlay.show {
     opacity: 1 !important;
     background: rgba(0,0,0,0.7) !important;
     backdrop-filter: blur(5px) !important;
     pointer-events: auto !important;
 }
+
 #unified-settings-panel {
     background: rgba(20,20,20,0.95) !important;
     border: 2px solid rgba(255,255,255,0.1) !important;
@@ -548,14 +394,298 @@ body > #clr-picker {
     transform: scale(0.8) translateY(30px) !important;
     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+    pointer-events: auto !important;
 }
+
 #unified-settings-overlay.show #unified-settings-panel {
     opacity: 1 !important;
     transform: scale(1) translateY(0) !important;
 }
 
+#unified-settings-overlay:not(.show) #unified-settings-panel {
+    pointer-events: none !important;
+}
 
-    `);
+.settings-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(30,30,30,0.5);
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.settings-close-btn {
+    background: rgba(220,38,38,0.3);
+    border: 1px solid rgba(220,38,38,0.5);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    transition: all 0.2s ease;
+}
+
+.settings-close-btn:hover {
+    background: rgba(220,38,38,0.5);
+    transform: scale(1.1);
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 15px 25px;
+    background: rgba(15,15,15,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    overflow-x: auto;
+    justify-content: center !important;
+    align-items: center;
+}
+
+.settings-tab {
+    padding: 10px 20px;
+    background: rgba(40,40,40,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.settings-tab:hover {
+    background: rgba(50,50,50,0.7);
+    color: #fff;
+}
+
+.settings-tab.active {
+    background: rgba(80,80,255,0.3);
+    border-color: rgba(80,80,255,0.5);
+    color: #fff;
+}
+
+.settings-content {
+    padding: 25px;
+    max-height: calc(85vh - 160px);
+    overflow-y: auto;
+}
+
+.settings-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: rgba(40,40,40,0.3);
+    border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: rgba(80,80,80,0.6);
+    border-radius: 4px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== SETTINGS GROUPS & CONTROLS ===== */
+.setting-group {
+    background: rgba(30,30,30,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.setting-group h3 {
+    margin: 0 0 15px 0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+}
+
+.setting-label {
+    color: #ccc;
+    font-size: 14px;
+}
+
+.setting-control input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: rgb(80,80,255);
+}
+
+.setting-control select,
+.setting-control input[type="text"] {
+    background: rgba(40,40,40,0.8);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.setting-control input[type="range"] {
+    width: 150px;
+    accent-color: rgb(80,80,255);
+}
+
+.range-value {
+    display: inline-block;
+    min-width: 50px;
+    margin-left: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    background: rgba(40,40,40,0.8);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: text;
+}
+
+.range-value:hover {
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* ===== COLOR PICKER STYLES ===== */
+input[data-coloris] {
+    background: transparent !important;
+}
+
+.setting-control input[data-coloris] {
+    width: 80px !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    border: 2px solid rgba(255,255,255,0.2) !important;
+    cursor: pointer !important;
+    padding: 5px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    color: #fff !important;
+    text-shadow: 0 0 3px #000, 0 0 3px #000 !important;
+    font-weight: 600 !important;
+}
+
+.setting-control input[data-coloris]:focus {
+    box-shadow: 0 0 0 2px rgba(80,80,255,0.5) !important;
+}
+
+.setting-control input[data-coloris]::-webkit-color-swatch {
+    border: none;
+    border-radius: 8px;
+}
+
+.setting-control input[data-coloris]::-moz-focus-inner {
+    border: none;
+    padding: 0;
+}
+
+#unified-settings-panel input[data-coloris] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+#unified-settings-overlay:not(.show) #unified-settings-panel [data-coloris] {
+    pointer-events: none !important;
+}
+
+button[aria-labelledby="clr-open-label"] {
+    display: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+.clr-field button {
+    display: none !important;
+}
+
+body > #clr-picker {
+    z-index: 10001 !important;
+}
+
+#unified-settings-overlay.show ~ #clr-picker .clr-gradient,
+#unified-settings-overlay.show ~ #clr-picker .clr-hue,
+#unified-settings-overlay.show ~ #clr-picker .clr-alpha,
+#unified-settings-overlay.show ~ #clr-picker .clr-color,
+#unified-settings-overlay.show ~ #clr-picker .clr-marker,
+#unified-settings-overlay.show ~ #clr-picker .clr-format,
+#unified-settings-overlay.show ~ #clr-picker .clr-swatches {
+    display: block !important;
+}
+
+/* ===== KEYBIND BUTTON STYLES ===== */
+.keybind-btn {
+    background: rgba(60,60,60,0.8);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    min-width: 80px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.keybind-btn:hover {
+    background: rgba(80,80,80,0.9);
+}
+
+.keybind-btn.listening {
+    background: rgba(80,80,255,0.5);
+    border-color: rgba(80,80,255,0.8);
+}
+
+/* ===== MISC ===== */
+#main-servers {
+    display: block !important;
+    visibility: visible !important;
+}
+`);
 })();
 const extraBtns = ["#btn-servers", "#btn-options", "#btn-hotkeys", "#btn-themes", "#btn-cellpanel"];
 function moveButtons() {
@@ -930,28 +1060,24 @@ function saveColorSettings() {
     document.querySelectorAll('#unified-settings-panel input[type="color"], #unified-settings-panel input[data-coloris]').forEach(inp => {
         if (inp.id) {
             colors[inp.id] = inp.value;
-            console.log(`💾 Saving color for ${inp.id}: ${inp.value}`);
         }
     });
     try {
         GM_setValue('savedColors', JSON.stringify(colors));
-        console.log('✅ Colors saved to GM storage');
     } catch(e) {
         localStorage.setItem('savedColors', JSON.stringify(colors));
-        console.log('✅ Colors saved to localStorage');
     }
 }
+
 
 function loadSavedColors() {
     let saved = null;
     try { saved = GM_getValue('savedColors', null); } catch(e) { saved = localStorage.getItem('savedColors'); }
     if (!saved) {
-        console.log('⚠️ No saved colors found');
         return;
     }
     try {
         const colors = JSON.parse(saved);
-        console.log('📂 Loading saved colors:', colors);
         setTimeout(() => {
             Object.keys(colors).forEach(id => {
                 const input = document.querySelector(`#unified-settings-panel #${CSS.escape(id)}`);
@@ -966,12 +1092,10 @@ function loadSavedColors() {
                         gameInput.dispatchEvent(new Event('input', { bubbles: true }));
                         gameInput.dispatchEvent(new Event('change', { bubbles: true }));
                     }
-                    console.log(`✅ Loaded color for ${id}: ${colors[id]}`);
                 }
             });
         }, 600);
     } catch (e) {
-        console.error('❌ Error loading colors:', e);
     }
 }
 
@@ -1051,11 +1175,36 @@ function createPanel() {
             const node = panel.querySelector(id);
             if (node) node.classList.add('active');
 
+            const settingsContent = panel.querySelector('.settings-content');
+            if (settingsContent) {
+                settingsContent.scrollTop = 0;
+            }
+
             if (tab.dataset.tab === 'customfeatures') {
                 renderSavedPlayers();
             }
         };
     });
+document.querySelectorAll('.keybinds-btn').forEach(gameBtn => {
+    gameBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+    }, true);
+
+    gameBtn.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+    }, true);
+
+    gameBtn.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+    }, true);
+});
+
 
     setupRangeListeners();
     setupKeybindListeners();
@@ -1302,12 +1451,12 @@ function getHotkeysHTML() {
                 <h3>Movement & Splits</h3>
                 <div class="setting-row"><span class="setting-label">Split</span><div class="setting-control"><button class="keybind-btn" data-key="kSplit">SPACE</button></div></div>
                 <div class="setting-row"><span class="setting-label">Linesplit</span><div class="setting-control"><button class="keybind-btn" data-key="kLinesplit">C</button></div></div>
-                <div class="setting-row"><span class="setting-label">Double Split (4x)</span><div class="setting-control"><button class="keybind-btn" data-key="kDoubleSplit">G</button></div></div>
+                <div class="setting-row"><span class="setting-label">Double Split (4x)</span><div class="setting-control"><button class="keybind-btn" data-key="kDoubleSplit">-</button></div></div>
                 <div class="setting-row"><span class="setting-label">Triple Split (8x)</span><div class="setting-control"><button class="keybind-btn" data-key="kTripleSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Quad Split (16x)</span><div class="setting-control"><button class="keybind-btn" data-key="kQuadSplit">T</button></div></div>
-                <div class="setting-row"><span class="setting-label">Penta Split (32x)</span><div class="setting-control"><button class="keybind-btn" data-key="kPentaSplit">F</button></div></div>
-                <div class="setting-row"><span class="setting-label">Hexa Split (64x)</span><div class="setting-control"><button class="keybind-btn" data-key="kHexaSplit">R</button></div></div>
-                <div class="setting-row"><span class="setting-label">Septi Split (128x)</span><div class="setting-control"><button class="keybind-btn" data-key="kSeptiSplit">D</button></div></div>
+                <div class="setting-row"><span class="setting-label">Quad Split (16x)</span><div class="setting-control"><button class="keybind-btn" data-key="kQuadSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Penta Split (32x)</span><div class="setting-control"><button class="keybind-btn" data-key="kPentaSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Hexa Split (64x)</span><div class="setting-control"><button class="keybind-btn" data-key="kHexaSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Septi Split (128x)</span><div class="setting-control"><button class="keybind-btn" data-key="kSeptiSplit">-</button></div></div>
                 <div class="setting-row"><span class="setting-label">Octo Split (256x)</span><div class="setting-control"><button class="keybind-btn" data-key="kOctoSplit">-</button></div></div>
             </div>
 
@@ -1364,11 +1513,25 @@ function getThemesHTML() {
             <div class="setting-group">
                 <h3>Mouse Tracer</h3>
                 <div class="setting-row"><span class="setting-label">Tracer Color</span><div class="setting-control"><input type="text" id="uiTracerColor" data-coloris></div></div>
+                <div class="setting-row">
+                    <span class="setting-label">Tracer Width</span>
+                    <div class="setting-control">
+                        <input type="range" id="rTracerWidth" min="0.5" max="10" value="2" step="0.5">
+                        <input type="number" class="range-value" data-range="rTracerWidth" min="0.5" max="10" value="2" step="0.5">
+                    </div>
+                </div>
             </div>
 
             <div class="setting-group">
                 <h3>Pastel Mode</h3>
                 <div class="setting-row"><span class="setting-label">Enable Pastel Mode</span><div class="setting-control"><input type="checkbox" id="cPastelMode"></div></div>
+                <div class="setting-row">
+                    <span class="setting-label">Pastel Intensity</span>
+                    <div class="setting-control">
+                        <input type="range" id="rPastelIntensity" min="0" max="100" value="50" step="1">
+                        <input type="number" class="range-value" data-range="rPastelIntensity" min="0" max="100" value="50">
+                    </div>
+                </div>
             </div>
 
             <div class="setting-group">
@@ -1830,29 +1993,21 @@ function applyFont(font) {
 }
 
 function setupColorPickers() {
-    console.log('🎨 Setting up color pickers...');
-
     setTimeout(() => {
         const gameColorInputs = [...document.querySelectorAll('input[data-coloris]')].filter(inp =>
-                                                                                             !inp.closest('#unified-settings-panel')
-                                                                                            );
-
-        console.log(`Game color inputs found: ${gameColorInputs.length}`);
+            !inp.closest('#unified-settings-panel')
+        );
 
         if (gameColorInputs.length === 0) {
-            console.warn('⚠️ NO GAME COLOR INPUTS FOUND! Retrying in 2 seconds...');
             setTimeout(setupColorPickers, 2000);
             return;
         }
 
         document.querySelectorAll('#unified-settings-panel [data-coloris]').forEach(ourInput => {
-            console.log(`⚙️ Setting up: ${ourInput.id}`);
             const gameInput = findGameElement(ourInput.id);
 
             if (gameInput) {
-                console.log(`  ✅ Found matching game input for ${ourInput.id}`);
-
-                let isUpdating = false; 
+                let isUpdating = false;
 
                 const applyPersistentStyle = (color) => {
                     if (isUpdating) return;
@@ -1881,7 +2036,6 @@ function setupColorPickers() {
                 };
 
                 const updateOurColor = (newColor) => {
-                    console.log(`🎨 Updating ${ourInput.id} display to: ${newColor}`);
                     ourInput.value = newColor;
                     applyPersistentStyle(newColor);
                     saveColorSettings();
@@ -1897,7 +2051,6 @@ function setupColorPickers() {
                     gameInput.addEventListener(eventType, () => {
                         const newValue = gameInput.value;
                         if (newValue && /^#[0-9A-Fa-f]{6}$/i.test(newValue) && newValue !== lastValue) {
-                            console.log(`📡 Game ${eventType}: ${gameInput.id} = ${newValue}`);
                             lastValue = newValue;
                             updateOurColor(newValue);
                         }
@@ -1907,7 +2060,6 @@ function setupColorPickers() {
                 ourInput.addEventListener('input', () => {
                     const newValue = ourInput.value;
                     if (newValue && /^#[0-9A-Fa-f]{6}$/i.test(newValue)) {
-                        console.log(`🎨 Our input changed: ${ourInput.id} = ${newValue}`);
                         gameInput.value = newValue;
                         gameInput.dispatchEvent(new Event('input', { bubbles: true }));
                         gameInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1939,8 +2091,6 @@ function setupColorPickers() {
                     }
                 });
 
-            } else {
-                console.warn(`  ❌ No matching game input for ${ourInput.id}`);
             }
         });
 
@@ -1948,89 +2098,96 @@ function setupColorPickers() {
     }, 500);
 }
 function setupKeybindListeners() {
-    const attach = (btn) => {
-        if (!btn || btn.dataset._listeningAttached) return;
-        btn.dataset._listeningAttached = '1';
 
-        btn.onclick = function(e) {
-            e && e.stopPropagation && e.stopPropagation();
-            const explicitKeyId = btn.dataset.key || btn.id || btn.dataset.custom || btn.dataset.mb;
-            const keyId = explicitKeyId || null;
-            btn.classList.add('listening');
-            const prevText = btn.textContent;
-            btn.textContent = 'Press key...';
-            state.listeningForKey = true;
 
-            const cleanup = () => {
-                try {
-                    btn.classList.remove('listening');
-                    state.listeningForKey = false;
-                    document.removeEventListener('keydown', kdHandler, true);
-                    document.removeEventListener('mousedown', mdHandler, true);
-                } catch(e){}
-            };
+ const attach = (btn) => {
+    if (!btn || btn.dataset._listeningAttached) {
+        console.log('⚠️ Button already has listener or is null:', btn?.id);
+        return;
+    }
+    console.log('✅ Attaching listener to:', btn.id || btn.dataset.key);
+    btn.dataset._listeningAttached = '1';
 
-            const applyKeyToBtn = (keyStr) => {
-                btn.textContent = keyStr;
+    btn.onclick = function(e) {
+        e && e.stopPropagation && e.stopPropagation();
+        const explicitKeyId = btn.dataset.key || btn.id || btn.dataset.custom || btn.dataset.mb;
+        const keyId = explicitKeyId || null;
+        btn.classList.add('listening');
+        const prevText = btn.textContent;
+        btn.textContent = 'Press key...';
+        state.listeningForKey = true;
 
-                if (btn.id === 'chat-toggle-key') {
-                    localStorage.setItem('chatToggleHotkey', keyStr.toLowerCase());
-                    setupChatToggle(keyStr.toLowerCase());
-                } else if (btn.id === 'tab-invite-key') {
-                    localStorage.setItem("tabInviteHotkey", keyStr.toLowerCase());
-                    window.__TAB_INVITE_HOTKEY = keyStr.toLowerCase();
+        const cleanup = () => {
+            btn.classList.remove('listening');
+            state.listeningForKey = false;
+            document.removeEventListener('keydown', kdHandler, true);
+            document.removeEventListener('mousedown', mdHandler, true);
+        };
+
+        const applyKeyToBtn = (keyStr) => {
+            btn.textContent = keyStr;
+            btn.blur();
+            cleanup();
+
+            if (btn.id === 'chat-toggle-key') {
+                localStorage.setItem('chatToggleHotkey', keyStr.toLowerCase());
+                setupChatToggle(keyStr.toLowerCase());
+            } else if (btn.id === 'tab-invite-key') {
+                localStorage.setItem("tabInviteHotkey", keyStr.toLowerCase());
+                window.__TAB_INVITE_HOTKEY = keyStr.toLowerCase();
+            }
+
+            if (keyStr === "MOUSE1") {
+                return;
+            }
+
+            if (keyId) {
+                const gameBtn = findGameElement(keyId);
+                if (gameBtn) {
+                    gameBtn.textContent = keyStr;
+                    gameBtn.dispatchEvent(new Event('change', { bubbles: true }));
+                    gameBtn.dispatchEvent(new Event('input', { bubbles: true }));
+                    gameBtn.dispatchEvent(new Event('click', { bubbles: true }));
                 }
+            }
+        };
+const kdHandler = (ev) => {
+    ev.preventDefault && ev.preventDefault();
+    ev.stopPropagation && ev.stopPropagation();
+    ev.stopImmediatePropagation && ev.stopImmediatePropagation();
 
-                if (keyId) {
-                    const gameBtn = findGameElement(keyId);
-                    if (gameBtn) {
-                        try {
-                            if ('textContent' in gameBtn) gameBtn.textContent = keyStr;
-                            gameBtn.dispatchEvent(new Event('change', { bubbles: true }));
-                            gameBtn.dispatchEvent(new Event('input', { bubbles: true }));
-                            gameBtn.dispatchEvent(new Event('click', { bubbles: true }));
-                        } catch(e){}
-                    }
-                }
-            };
+    if (ev.key === 'Escape') {
+        applyKeyToBtn('-');
+        return;
+    }
 
-            const kdHandler = (ev) => {
-                ev.preventDefault && ev.preventDefault();
-                ev.stopPropagation && ev.stopPropagation();
+    let key = ev.key ? ev.key.toUpperCase() : '';
+    if (key === ' ') key = 'SPACE';
 
-                if (ev.key === 'Escape') {
-                    btn.textContent = prevText;
-                    cleanup();
-                    return;
-                }
+    applyKeyToBtn(key);
+};
 
-                let key = ev.key ? ev.key.toUpperCase() : '';
-                if (key === ' ') key = 'SPACE';
+const mdHandler = (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation && ev.stopImmediatePropagation();
 
-                applyKeyToBtn(key);
-                cleanup();
-            };
+    let key = '';
+    switch(ev.button) {
+        case 0: key = 'MOUSE1'; break;
+        case 1: key = 'MOUSE2'; break;
+        case 2: key = 'MOUSE3'; break;
+        case 3: key = 'MOUSE4'; break;
+        case 4: key = 'MOUSE5'; break;
+        default: key = `MOUSE${ev.button + 1}`;
+    }
 
-            const mdHandler = (ev) => {
-                ev.preventDefault && ev.preventDefault();
-                ev.stopPropagation && ev.stopPropagation();
+    applyKeyToBtn(key);
+    document.removeEventListener('keydown', kdHandler, true);
+};
 
-                let key = '';
-                switch(ev.button) {
-                    case 0: key = 'MOUSE1'; break;
-                    case 1: key = 'MOUSE2'; break;
-                    case 2: key = 'MOUSE3'; break;
-                    case 3: key = 'MOUSE4'; break;
-                    case 4: key = 'MOUSE5'; break;
-                    default: key = `MOUSE${ev.button + 1}`;
-                }
-
-                applyKeyToBtn(key);
-                cleanup();
-            };
-
-            document.addEventListener('keydown', kdHandler, true);
-            document.addEventListener('mousedown', mdHandler, true);
+document.addEventListener('keydown', kdHandler, { capture: true, once: true });
+document.addEventListener('mousedown', mdHandler, { capture: true, once: true });
         };
     };
 
@@ -2053,7 +2210,6 @@ function setupKeybindListeners() {
         } catch(e){}
     }
 }
-
 function setupChatToggle(hotkey) {
     document.removeEventListener('keydown', window.__chatToggleHandler);
 
@@ -2152,6 +2308,7 @@ function findGameElement(id) {
 
 function performSync() {
     try {
+        console.log('🔄 performSync starting...');
         let syncedCount = 0;
 
         const panel = document.getElementById('unified-settings-panel');
@@ -2179,7 +2336,7 @@ function performSync() {
             } catch(e){ }
         });
 
-        panel.querySelectorAll('select').forEach(select => {
+       panel.querySelectorAll('select').forEach(select => {
             try {
                 const gameSelect = findGameElement(select.id);
                 if (gameSelect && gameSelect.tagName === 'SELECT') {
@@ -2201,6 +2358,11 @@ function performSync() {
                     });
                 }
             } catch(e){}
+        });
+
+        console.log('🔍 Checking if keybind buttons are being touched...');
+        panel.querySelectorAll('.keybind-btn').forEach(btn => {
+            console.log('Found keybind button:', btn.id || btn.dataset.key, 'hasListener:', btn.dataset._listeningAttached);
         });
 
         panel.querySelectorAll('input[type="text"]').forEach(input => {
@@ -2287,12 +2449,28 @@ function open() {
 function close() {
     const overlay = document.getElementById('unified-settings-overlay');
     if (overlay && state.isOpen) {
+        const panel = document.getElementById('unified-settings-panel');
+        if (panel) {
+            panel.style.pointerEvents = 'none';
+        }
+
         overlay.classList.remove('show');
         state.isOpen = false;
 
         if (window.Coloris) {
             try { window.Coloris.close(); } catch(e) {}
         }
+
+        const allColorPickers = document.querySelectorAll('#unified-settings-panel [data-coloris]');
+        allColorPickers.forEach(picker => {
+            picker.blur();
+        });
+
+        setTimeout(() => {
+            if (panel) {
+                panel.style.pointerEvents = '';
+            }
+        }, 400);
     }
 }
 
@@ -2468,7 +2646,6 @@ function init() {
                 try { savedFont = GM_getValue('gameFont', 'default'); } catch(e) { savedFont = localStorage.getItem('gameFont') || 'default'; }
                 applyFont(savedFont);
 
-                setupKeybindListeners();
                 setupRangeListeners();
                 setupColorPickers();
                 setupFontSelector();
@@ -2550,11 +2727,10 @@ if (!localStorage.getItem("changelogShown")) {
             <h2>📝 Changelog v2.0</h2>
             <ul>
                 <li>!!!!NEW SETTINGS MENU!!!!</li>
-                <li>Removed old custom features menu</li>
+                <li>ok i might have remade the ui again</li>
                 <li>added fonts (might be some problems with the ui for now will change later)</li>
-                <li>remade ui again!! (improvements will come) </li>
-                <li>You will now need camlan to use this script!</li>
-                <li>made it prettier and fixed some stuff</li>
+                <li>You now need camlan to use this script!</li>
+                <li>fixed some stuff</li>
             </ul>
             <button id="closeChangelog">Close</button>
         `;
