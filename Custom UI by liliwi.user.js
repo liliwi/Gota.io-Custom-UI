@@ -50,6 +50,42 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     padding-bottom: 15px !important;
 }
 
+.main > div {
+    vertical-align: top !important;
+}
+
+.main-left,
+.main-content,
+#main-right {
+    display: inline-block !important;
+    vertical-align: top !important;
+}
+
+
+div#main-account.main-panel {
+    height: auto !important;
+    min-height: fit-content !important;
+}
+
+.main-content.main-panel {
+    height: auto !important;
+    min-height: fit-content !important;
+}
+
+.main-content.main-divider.main-panel {
+    vertical-align: top !important;
+    margin-top: 0 !important;
+}
+
+#main-right.main-divider.main-panel {
+    vertical-align: top !important;
+    margin-top: 0 !important;
+}
+
+.main-left.main-divider {
+    vertical-align: top !important;
+}
+
 div#main-right.main-divider.main-panel,
 div#main-scrimmage.main-panel.interface-color {
     height: 500px !important;
@@ -2727,10 +2763,8 @@ if (!localStorage.getItem("changelogShown")) {
             <h2>📝 Changelog v2.0</h2>
             <ul>
                 <li>!!!!NEW SETTINGS MENU!!!!</li>
-                <li>ok i might have remade the ui again</li>
-                <li>added fonts (might be some problems with the ui for now will change later)</li>
+                <li>Hotkeys are fixed!!!!</li>
                 <li>You now need camlan to use this script!</li>
-                <li>fixed some stuff</li>
             </ul>
             <button id="closeChangelog">Close</button>
         `;
