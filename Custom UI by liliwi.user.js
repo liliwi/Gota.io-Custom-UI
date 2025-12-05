@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      3.0
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -14,6 +14,155 @@
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // ==/UserScript==
+
+(function () {
+    'use strict';
+
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes bgFade {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes textReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+                filter: blur(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+        @keyframes letterStagger {
+            0% {
+                opacity: 0;
+                transform: translateY(60px) rotateX(80deg);
+                filter: blur(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+                filter: blur(0);
+            }
+        }
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.4); }
+            50% { text-shadow: 0 0 40px rgba(255,255,255,0.7), 0 0 80px rgba(255,255,255,0.3); }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+        #liliwi-pro-splash {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 50%, #000 100%);
+            background-size: 300% 300%;
+            animation: bgFade 20s ease infinite;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            cursor: default;
+        }
+        #liliwi-pro-splash.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .pro-text-container {
+            perspective: 1000px;
+            text-align: center;
+        }
+        .pro-line {
+            opacity: 0;
+            animation: textReveal 1.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            color: #ffffff;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin: 0;
+        }
+        .pro-line-1 {
+            font-size: clamp(1.4rem, 4vw, 2.4rem);
+            animation-delay: 0.4s;
+        }
+        .pro-line-2 {
+            font-size: clamp(2.2rem, 7vw, 5rem);
+            font-weight: 100;
+            letter-spacing: 16px;
+            animation-delay: 1s;
+            animation-duration: 1.8s;
+        }
+        .pro-letter {
+            display: inline-block;
+            opacity: 0;
+            transform-origin: center bottom;
+            animation: letterStagger 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards,
+                       glowPulse 4s ease-in-out infinite;
+        }
+        .skip-hint {
+            position: absolute;
+            bottom: 50px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.4);
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+
+    const splash = document.createElement('div');
+    splash.id = 'liliwi-pro-splash';
+
+    const container = document.createElement('div');
+    container.className = 'pro-text-container';
+
+    const line1 = document.createElement('p');
+    line1.className = 'pro-line pro-line-1';
+    line1.textContent = 'Developed by';
+
+    const line2 = document.createElement('p');
+    line2.className = 'pro-line pro-line-2';
+    const text = 'Liliwi';
+    line2.innerHTML = text.split('').map((char, i) =>
+        `<span class="pro-letter" style="animation-delay:${1.6 + i * 0.12}s">${char}</span>`
+    ).join('');
+
+    const hint = document.createElement('div');
+    hint.className = 'skip-hint';
+    hint.textContent = 'Click or tap to continue';
+
+    container.appendChild(line1);
+    container.appendChild(line2);
+    splash.appendChild(container);
+    splash.appendChild(hint);
+    document.body.appendChild(splash);
+
+    const removeNow = () => {
+        splash.classList.add('fade-out');
+        setTimeout(() => splash.remove(), 1200);
+    };
+    splash.addEventListener('click', removeNow);
+    splash.addEventListener('touchend', (e) => { e.preventDefault(); removeNow(); });
+
+    setTimeout(() => {
+        if (splash.isConnected) {
+            splash.classList.add('fade-out');
+            setTimeout(() => splash.remove(), 1200);
+        }
+    }, 4000);
+
+})();
+
 
 (function() {
     'use strict';
@@ -34,57 +183,433 @@ div#party-panel.ui-pane.interface-color.hud-panel,
 div#main-right.main-divider.main-panel,
 div#main-scrimmage.main-panel.interface-color {
     background: rgba(20, 20, 20, 0.95) !important;
-    border: 2px solid rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
 }
 
 div#party-panel.ui-pane.interface-color.hud-panel {
     padding-bottom: 10px;
 }
-
+.main {margin 0 350px !important;}
 .main-panel {
     height: auto !important;
     min-height: unset !important;
     padding-bottom: 15px !important;
 }
-
-.main > div {
-    vertical-align: top !important;
+/* ===== FRIENDS PANEL STYLING ===== */
+#main-friends,
+.main-left.main-divider.main-panel {
+    background: rgba(20, 20, 20, 0.95) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
-.main-left,
-.main-content,
-#main-right {
-    display: inline-block !important;
-    vertical-align: top !important;
+#main-friends:hover,
+.main-left.main-divider.main-panel:hover {
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
+}
+
+/* Friends list items */
+#main-friends .friend-item,
+.main-left .friend-item {
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    margin: 4px 0 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#main-friends .friend-item:hover,
+.main-left .friend-item:hover {
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    transform: translateX(4px) scale(1.02) !important;
+}
+
+/* Friends panel buttons */
+#main-friends button,
+.main-left button {
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+
+#main-friends button:hover,
+.main-left button:hover {
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    transform: scale(1.03) !important;
+}
+
+/* Friends panel scrollbar */
+#main-friends::-webkit-scrollbar,
+.main-left::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+#main-friends::-webkit-scrollbar-track,
+.main-left::-webkit-scrollbar-track {
+    background: rgba(20,20,20,0.5) !important;
+    border-radius: 3px !important;
+}
+
+#main-friends::-webkit-scrollbar-thumb,
+.main-left::-webkit-scrollbar-thumb {
+    background: rgba(100,100,100,0.5) !important;
+    border-radius: 3px !important;
+    transition: background 0.2s ease !important;
+}
+
+#main-friends::-webkit-scrollbar-thumb:hover,
+.main-left::-webkit-scrollbar-thumb:hover {
+    background: rgba(120,120,120,0.6) !important;
+}
+/* ===== POPUP PROFILE STYLING ===== */
+#popup-profile,
+.popup-panel {
+    background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important;
+}
+
+/* Profile header */
+#popup-profile .popup-header,
+.popup-panel .popup-header {
+    background: rgba(30,30,30,0.9) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 18px 24px !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Profile close button */
+#profile-close-btn,
+.popup-panel .close-btn {
+    background: rgba(50,50,50,0.7) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: #fff !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.2s ease !important;
+}
+
+#profile-close-btn:hover,
+.popup-panel .close-btn:hover {
+    background: rgba(70,70,70,0.9) !important;
+    border-color: rgba(255,255,255,0.25) !important;
+    transform: scale(1.05) !important;
+}
+
+/* Profile content area */
+#popup-profile .popup-content,
+.popup-panel .popup-content {
+    background: rgba(18,18,18,0.8) !important;
+    padding: 20px !important;
+}
+
+/* Profile inputs */
+#popup-profile input,
+.popup-panel input {
+    background: rgba(30,30,30,0.9) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: #fff !important;
+    padding: 10px 14px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    transition: all 0.25s ease !important;
+}
+
+#popup-profile input:hover,
+.popup-panel input:hover {
+    border-color: rgba(255,255,255,0.18) !important;
+    background: rgba(35,35,35,0.95) !important;
+}
+
+#popup-profile input:focus,
+.popup-panel input:focus {
+    outline: none !important;
+    border-color: rgba(255,255,255,0.25) !important;
+    background: rgba(38,38,38,1) !important;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.08) !important;
+}
+
+/* Profile buttons */
+#popup-profile button,
+.popup-panel button {
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 10px 18px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+
+#popup-profile button:hover,
+.popup-panel button:hover {
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    transform: scale(1.03) !important;
+}
+
+#popup-profile button:active,
+.popup-panel button:active {
+    transform: scale(0.98) !important;
+}
+
+/* Profile stats/info rows */
+#popup-profile .profile-row,
+.popup-panel .profile-row {
+    background: rgba(25,25,25,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    margin: 8px 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+#popup-profile .profile-row:hover,
+.popup-panel .profile-row:hover {
+    background: rgba(30,30,30,0.7) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+}
+
+/* Profile labels */
+#popup-profile label,
+.popup-panel label {
+    color: #e0e0e0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+/* Profile scrollbar */
+#popup-profile::-webkit-scrollbar,
+.popup-panel::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+#popup-profile::-webkit-scrollbar-track,
+.popup-panel::-webkit-scrollbar-track {
+    background: rgba(20,20,20,0.5) !important;
+    border-radius: 4px !important;
+}
+
+#popup-profile::-webkit-scrollbar-thumb,
+.popup-panel::-webkit-scrollbar-thumb {
+    background: rgba(100,100,100,0.5) !important;
+    border-radius: 4px !important;
+}
+
+#popup-profile::-webkit-scrollbar-thumb:hover,
+.popup-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(120,120,120,0.6) !important;
+}
+/* ===== ACCOUNT USERNAME POPUP STYLING ===== */
+#popup-account-username,
+#popup-account-username.popup-panel {
+    background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important;
+    padding: 0 !important;
+}
+
+/* Username popup header */
+#popup-account-username .popup-header {
+    background: rgba(30,30,30,0.9) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 18px 24px !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+#popup-account-username h2,
+#popup-account-username h3 {
+    color: #fff !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+
+/* Username popup content */
+#popup-account-username .popup-content {
+    background: rgba(18,18,18,0.8) !important;
+    padding: 24px !important;
+}
+
+/* Username input field */
+#popup-account-username input[type="text"],
+#popup-account-username input[type="password"] {
+    background: rgba(30,30,30,0.9) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: #fff !important;
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 0.25s ease !important;
+}
+
+#popup-account-username input:hover {
+    border-color: rgba(255,255,255,0.18) !important;
+    background: rgba(35,35,35,0.95) !important;
+}
+
+#popup-account-username input:focus {
+    outline: none !important;
+    border-color: rgba(255,255,255,0.25) !important;
+    background: rgba(38,38,38,1) !important;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.08) !important;
+}
+
+#popup-account-username input::placeholder {
+    color: rgba(255,255,255,0.4) !important;
+}
+
+/* Username popup buttons */
+#popup-account-username button {
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    margin: 4px !important;
+}
+
+#popup-account-username button:hover {
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    transform: scale(1.03) !important;
+}
+
+#popup-account-username button:active {
+    transform: scale(0.98) !important;
+}
+
+/* Primary button (submit/save) */
+#popup-account-username button[type="submit"],
+#popup-account-username .btn-primary {
+    background: rgba(70,70,70,0.8) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+#popup-account-username button[type="submit"]:hover,
+#popup-account-username .btn-primary:hover {
+    background: rgba(85,85,85,0.9) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+}
+
+/* Close button */
+#popup-account-username .close-btn,
+#popup-account-username-close {
+    background: rgba(50,50,50,0.7) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: #fff !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.2s ease !important;
+    position: absolute !important;
+    top: 18px !important;
+    right: 24px !important;
+}
+/* Clear All button styling */
+#clear-all-saved-players {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 38px !important;
+    padding: 10px 16px !important;
+    background: rgba(120,50,50,0.7) !important;
+    border: 1px solid rgba(255,100,100,0.3) !important;
+    color: #ffb3b3 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    transition: all 0.25s ease !important;
+    margin-bottom: 16px !important;
+}
+
+#clear-all-saved-players:hover {
+    background: rgba(140,60,60,0.85) !important;
+    border-color: rgba(255,120,120,0.5) !important;
+    transform: scale(1.02) !important;
 }
 
 
-div#main-account.main-panel {
-    height: auto !important;
-    min-height: fit-content !important;
+#popup-account-username .close-btn:hover,
+#popup-account-username-close:hover {
+    background: rgba(70,70,70,0.9) !important;
+    border-color: rgba(255,255,255,0.25) !important;
+    transform: scale(1.05) !important;
 }
 
-.main-content.main-panel {
-    height: auto !important;
-    min-height: fit-content !important;
+/* Error/success messages */
+#popup-account-username .error-message {
+    background: rgba(120,50,50,0.3) !important;
+    border: 1px solid rgba(255,100,100,0.3) !important;
+    color: #ffb3b3 !important;
+    padding: 10px 14px !important;
+    border-radius: 8px !important;
+    margin: 10px 0 !important;
 }
 
-.main-content.main-divider.main-panel {
-    vertical-align: top !important;
-    margin-top: 0 !important;
+#popup-account-username .success-message {
+    background: rgba(50,120,50,0.3) !important;
+    border: 1px solid rgba(100,255,100,0.3) !important;
+    color: #b3ffb3 !important;
+    padding: 10px 14px !important;
+    border-radius: 8px !important;
+    margin: 10px 0 !important;
 }
 
-#main-right.main-divider.main-panel {
-    vertical-align: top !important;
-    margin-top: 0 !important;
+/* Labels */
+#popup-account-username label {
+    color: #e0e0e0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
 }
 
-.main-left.main-divider {
-    vertical-align: top !important;
-}
+
+
 
 div#main-right.main-divider.main-panel,
 div#main-scrimmage.main-panel.interface-color {
@@ -94,11 +619,20 @@ div#main-scrimmage.main-panel.interface-color {
 div#main-scrimmage.main-panel.interface-color {
     height: 470px !important;
 }
+.main  {
+    position: absolute;
+    inset: 6% 0 0;
+    width: 1020px;
+    height: 470px;
+    padding: 10px;
+        z-index: 2;
+        margin: 0 !important;
+        }
 
 .main-panel-wrapper {
-    margin-top: 100px;
+    margin-top: 110px;
+    margin-left: 640px !important;
 }
-
 div.options-container {
     background: transparent !important;
     height: 458px !important;
@@ -121,7 +655,7 @@ div#server-content {
 #name-box {
     background: rgba(30,30,30) !important;
     color: white !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
 }
 
 name-box.gota.input {
@@ -133,31 +667,66 @@ name-box.gota.input {
 .gota-btn,
 button.gota-btn.bottom-btn,
 .gota-menu-btn {
-    background: rgba(20, 20, 20, 0.6) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
     color: #fff !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
 }
 
 .gota-btn:hover,
 button.gota-btn.bottom-btn:hover,
 .gota-menu-btn:hover {
-    background: rgba(50, 50, 50, 0.7) !important;
+    background: rgba(45, 45, 45, 0.85) !important;
+
+    transform: scale(1.03) !important;
+}
+.xp-meter {
+    height: 6px;
+    width: 100%;
+    margin-top: 10px;
+    align-self: center;
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.xp-meter > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #6b6b6b, #8a8a8a);
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    transition: width 0.6s ease-in-out;
+}
+.material-icons {
+    font-family: 'Material Icons' !important;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
 }
 
 #account-actions .gota-btn {
     width: 50px !important;
     height: 30px;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     background: rgba(20,20,20,0.6) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
     color: #fff !important;
     font-size: 14px !important;
-    transition: background 0.2s ease !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 button#btn-updateSP.gota-btn {
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
     background: rgba(20,20,20,0.6) !important;
 }
 
@@ -212,6 +781,9 @@ div.server-container {
     padding: 0 !important;
 }
 
+#main-social {
+margin-left: 640px !important;}
+
 server-body-na,
 div#social-friends.menu-sub-bg {
     background: rgba(20,20,20) !important;
@@ -220,9 +792,12 @@ div#social-friends.menu-sub-bg {
 /* ===== SERVER TABS ===== */
 li#server-tab-eu.server-tab,
 li#server-tab-na.server-tab {
-    background: rgba(40, 40, 40, 0.6) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    color: #aaa !important;
+    background: linear-gradient(135deg, rgba(45, 45, 48, 0.75), rgba(35, 35, 40, 0.65)) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    color: #b8b8b8 !important;
     width: auto !important;
     min-width: 90px !important;
     padding: 6px 12px !important;
@@ -231,19 +806,57 @@ li#server-tab-na.server-tab {
     text-align: center !important;
     border-radius: 8px !important;
     cursor: pointer !important;
-    transition: background 0.2s ease !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px !important;
+}
+
+li#server-tab-eu.server-tab::before,
+li#server-tab-na.server-tab::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent) !important;
+    transition: left 0.5s ease !important;
 }
 
 li#server-tab-eu.server-tab:hover,
 li#server-tab-na.server-tab:hover {
-    background: rgba(50, 50, 50, 0.7) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, rgba(60, 60, 65, 0.85), rgba(50, 50, 58, 0.75)) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+}
+
+li#server-tab-eu.server-tab:hover::before,
+li#server-tab-na.server-tab:hover::before {
+    left: 100% !important;
 }
 
 li.server-active {
-    background: rgba(80,80,255,0.3) !important;
-    border-color: rgba(80,80,255,0.5) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, rgba(90,90,255,0.4), rgba(70,70,235,0.35)) !important;
+    border-color: rgba(120,120,255,0.6) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(80,80,255,0.3), 0 0 20px rgba(80,80,255,0.15), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+    font-weight: 600 !important;
+}
+
+li.server-active::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 70% !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, rgba(150,150,255,0.8), transparent) !important;
+    border-radius: 2px !important;
 }
 
 ul#server-tabs {
@@ -254,6 +867,72 @@ ul#server-tabs {
     padding: 4px !important;
     margin: 0 auto !important;
     width: fit-content !important;
+    position: relative !important;
+}
+.server-table {
+display: block;
+}
+
+.server-table-name {
+width: 120px;
+white-space: nowrap;
+text-align: left;
+}
+
+.server-table-players {
+width: 100px;
+white-space: nowrap;
+text-align: center;
+}
+
+.server-table-mode {
+width: 150px;
+white-space: nowrap;
+text-align: right;
+}
+
+.server-table thead {
+display: none;
+}
+
+.server-table tbody {
+display: flex;
+overflow: auto;
+background-color: transparent !important;
+border-collapse: collapse;
+flex-direction: column;
+gap: 1px;
+}
+
+.server-table tbody::-webkit-scrollbar {
+width: 5px;
+}
+
+.server-table tbody::-webkit-scrollbar-thumb {
+background-color: #414141;
+border-radius: 2px;
+}
+
+.server-row {
+cursor: pointer;
+height: 25px;
+border-radius: 5px;
+display: flex;
+align-items: center;
+padding-inline: 5px;
+transition: all 0.1s ease;
+}
+
+.server-row:hover:not(.server-selected) {
+background-color: #35353547;
+}
+
+.account-server {
+background-color: rgb(246, 115, 115, 0.7);
+}
+
+.server-selected {
+background-color: #353535;
 }
 
 /* ===== CONTEXT MENU ===== */
@@ -261,8 +940,8 @@ ul.context-list {
     background: rgba(22,22,22,0.8) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    border-radius: 14px !important;
-    border: 1px solid rgba(255,255,255,0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     box-shadow: none !important;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -276,7 +955,7 @@ ul.context-list.active {
 .context-list li {
     padding: 6px 10px !important;
     border-radius: 6px !important;
-    transition: background 0.2s ease !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .context-list li:hover {
@@ -292,10 +971,10 @@ ul.context-list.active {
     font-size: 12px !important;
     padding: 0 6px !important;
     background: rgba(20,20,20,0.6) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
     color: #fff !important;
     cursor: pointer !important;
-    transition: background 0.2s ease !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     flex: none !important;
 }
 
@@ -368,32 +1047,166 @@ div.main-bottom-links {
 * {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
+#chat-tab-container {
+list-style-type: none;
+display: flex;
+font-size: 14pt;
+pointer-events: auto;
+}
+
+.chat-tab {
+text-align: center;
+padding: 0 10px;
+border-right: 1px solid;
+opacity: 0.6;
+border-color: #ffffff1c !important;
+}
+
+.chat-tab:hover {
+cursor: pointer;
+}
+
+.chat-tab span {
+display: block;
+padding: 2px 0;
+}
+
+.chat-active-tab {
+opacity: 1;
+}
+
+#chat-components {
+display: flex;
+border-top: 1px solid #ffffff0d !important;
+}
+
+#chat-container {
+display: block;
+width: 100%;
+height: calc(100% - 58px);
+border-color: rgb(255, 255, 255, 0.2);
+word-break: break-word;
+background-color: rgb(0, 0, 0, 0.7);
+pointer-events: auto;
+user-select: auto;
+}
+
+.chat-inner-container {
+height: 100%;
+width: 100%;
+overflow-y: auto;
+overflow-x: hidden;
+}
+
+.chat-inner-container::-webkit-scrollbar {
+width: 5px;
+}
+
+.chat-inner-container::-webkit-scrollbar-thumb {
+background-color: #414141;
+border-radius: 2px;
+}
+
+#chat-resize {
+position: absolute;
+width: 15px;
+height: 15px;
+background-color: #50505085;
+border-radius: 0 0 0 100%;
+right: 0;
+top: 0;
+pointer-events: auto;
+cursor: ne-resize;
+}
+
+#chat-input {
+background-color: #29292999;
+color: #ffffff;
+border: none;
+border-right: 1px solid #474747;
+font-size: 14px;
+flex: 1;
+height: 25px;
+text-indent: 5px;
+user-select: auto;
+pointer-events: auto;
+}
+
+#chat-emote-btn {
+background-color: #29292999;
+background-position: center;
+background-size: 20px 20px;
+background-repeat: no-repeat;
+width: 25px;
+border: none;
+pointer-events: auto;
+user-select: auto;
+transition: all 0.1s ease;
+filter: grayscale(0.4);
+border-radius: 1000px;
+}
+
+#chat-emote-btn:hover {
+background-size: 22px 22px;
+filter: grayscale(0);
+}
+
+#chat-table {
+table-layout: fixed;
+}
+
+.chat-text {
+overflow-wrap: break-word;
+pointer-events: none;
+user-select: auto;
+position: relative;
+display: inline-block;
+z-index: 1;
+}
+
+.chat-table td {
+display: table-cell;
+vertical-align: top;
+font-size: 14px;
+}
+
+.chat-table span {
+vertical-align: top;
+}
 
 /* ===== UNIFIED SETTINGS BUTTON ===== */
 #unified-settings-btn {
     width: 270px !important;
-    height: 35px !important;
+    height: 40px !important;
     border-radius: 10px !important;
-    background: rgba(20,20,20,0.6) !important;
+    background: linear-gradient(135deg, rgba(60,60,60,0.3) 0%, rgba(50,50,50,0.3) 100%) !important;
     backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    border: 2px solid rgba(140,140,140,0.3) !important;
     color: #fff !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     margin: 0 auto !important;
     cursor: pointer !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
 }
 
 #unified-settings-btn:hover {
-    background: rgba(40,40,40,0.7) !important;
-    transform: scale(1.02) !important;
+    background: linear-gradient(135deg, rgba(80,80,80,0.4) 0%, rgba(70,70,70,0.4) 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255,255,255,0.15) !important;
+    border-color: rgba(160,160,160,0.5) !important;
 }
 
-/* ===== SETTINGS PANEL STRUCTURE ===== */
+#unified-settings-btn:active {
+    transform: translateY(0px) !important;
+}
+
+/* ===== SETTINGS PANEL OVERLAY ===== */
 #unified-settings-overlay {
     position: fixed !important;
     top: 0 !important;
@@ -408,29 +1221,39 @@ div.main-bottom-links {
     align-items: center !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    transition: all 0.4s ease !important;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 #unified-settings-overlay.show {
     opacity: 1 !important;
-    background: rgba(0,0,0,0.7) !important;
-    backdrop-filter: blur(5px) !important;
+    background: rgba(0,0,0,0.75) !important;
+    backdrop-filter: blur(8px) !important;
     pointer-events: auto !important;
 }
 
+body > #clr-picker {
+    z-index: 10002 !important;
+    position: fixed !important;
+}
+
+#unified-settings-overlay.show ~ #clr-picker {
+    z-index: 10002 !important;
+    position: fixed !important;
+}
+
+/* ===== SETTINGS PANEL ===== */
 #unified-settings-panel {
-    background: rgba(20,20,20,0.95) !important;
-    border: 2px solid rgba(255,255,255,0.1) !important;
-    border-radius: 16px !important;
+    background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%) !important;
+    border: 2px solid rgba(140,140,140,0.25) !important;
+    border-radius: 14px !important;
     width: 90% !important;
     max-width: 900px !important;
     max-height: 85vh !important;
     overflow: hidden !important;
     opacity: 0 !important;
-    transform: scale(0.8) translateY(30px) !important;
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
-    pointer-events: auto !important;
+    transform: scale(0.9) translateY(30px) !important;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
 }
 
 #unified-settings-overlay.show #unified-settings-panel {
@@ -438,108 +1261,157 @@ div.main-bottom-links {
     transform: scale(1) translateY(0) !important;
 }
 
-#unified-settings-overlay:not(.show) #unified-settings-panel {
-    pointer-events: none !important;
-}
-
+/* ===== HEADER ===== */
 .settings-header {
-    padding: 20px 25px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(30,30,30,0.5);
+    padding: 18px 24px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: rgba(30,30,30,0.8) !important;
 }
 
 .settings-header h2 {
-    margin: 0;
-    font-size: 24px;
-    color: #fff;
-    font-weight: 600;
+    margin: 0 !important;
+    font-size: 22px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
 }
 
 .settings-close-btn {
-    background: rgba(220,38,38,0.3);
-    border: 1px solid rgba(220,38,38,0.5);
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    transition: all 0.2s ease;
+    background: rgba(80,80,80,0.4) !important;
+    border: 2px solid rgba(140,140,140,0.3) !important;
+    color: #fff !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .settings-close-btn:hover {
-    background: rgba(220,38,38,0.5);
-    transform: scale(1.1);
+    background: rgba(100,100,100,0.5) !important;
+    transform: rotate(90deg) !important;
+    border-color: rgba(160,160,160,0.5) !important;
 }
 
+
+/* ===== SEARCH INPUT ===== */
+#settings-search-input {
+    background: rgba(40,40,40,0.8) !important;
+    border: 2px solid rgba(100,100,100,0.3) !important;
+    color: #fff !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    width: 280px !important;
+    outline: none !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#settings-search-input:focus {
+    border-color: rgba(160,160,160,0.7) !important;
+    box-shadow: 0 0 0 3px rgba(100,100,100,0.15) !important;
+}
+
+#settings-search-input::placeholder {
+    color: rgba(255,255,255,0.4) !important;
+}
+
+@keyframes searchPulse {
+    0%, 100% { background: rgba(120,120,120,0.12) !important; }
+    50% { background: rgba(140,140,140,0.25) !important; }
+}
+
+/* ===== TABS ===== */
 .settings-tabs {
-    display: flex;
-    gap: 8px;
-    padding: 15px 25px;
-    background: rgba(15,15,15,0.5);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    overflow-x: auto;
+    display: flex !important;
+    gap: 8px !important;
+    padding: 12px 20px !important;
+    background: rgba(18,18,18,0.8) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    overflow-x: auto !important;
     justify-content: center !important;
-    align-items: center;
+}
+
+.settings-tabs::-webkit-scrollbar {
+    height: 6px !important;
+}
+
+.settings-tabs::-webkit-scrollbar-track {
+    background: rgba(20,20,20,0.5) !important;
+    border-radius: 3px !important;
+}
+
+.settings-tabs::-webkit-scrollbar-thumb {
+    background: rgba(100,100,100,0.5) !important;
+    border-radius: 3px !important;
 }
 
 .settings-tab {
-    padding: 10px 20px;
-    background: rgba(40,40,40,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    color: #aaa;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    font-size: 14px;
-    font-weight: 500;
+    padding: 8px 16px !important;
+    background: rgba(40,40,40,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    color: #999 !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    white-space: nowrap !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
 }
 
 .settings-tab:hover {
-    background: rgba(50,50,50,0.7);
-    color: #fff;
+    background: rgba(55,55,55,0.7) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.12) !important;
 }
 
 .settings-tab.active {
-    background: rgba(80,80,255,0.3);
-    border-color: rgba(80,80,255,0.5);
-    color: #fff;
+    background: rgba(90,90,90,0.5) !important;
+    border-color: rgba(140,140,140,0.4) !important;
+    color: #fff !important;
 }
 
+/* ===== CONTENT ===== */
 .settings-content {
-    padding: 25px;
-    max-height: calc(85vh - 160px);
-    overflow-y: auto;
+    padding: 16px 20px !important;
+    max-height: calc(85vh - 160px) !important;
+    overflow-y: auto !important;
+    background: rgba(15,15,15,0.5) !important;
 }
 
 .settings-content::-webkit-scrollbar {
-    width: 8px;
+    width: 8px !important;
 }
 
 .settings-content::-webkit-scrollbar-track {
-    background: rgba(40,40,40,0.3);
-    border-radius: 4px;
+    background: rgba(20,20,20,0.6) !important;
+    border-radius: 4px !important;
 }
 
 .settings-content::-webkit-scrollbar-thumb {
-    background: rgba(80,80,80,0.6);
-    border-radius: 4px;
+    background: rgba(100,100,100,0.5) !important;
+    border-radius: 4px !important;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(120,120,120,0.6) !important;
 }
 
 .tab-content {
-    display: none;
+    display: none !important;
 }
 
 .tab-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
+    display: block !important;
+    animation: fadeIn 0.3s ease !important;
 }
 
 @keyframes fadeIn {
@@ -553,167 +1425,334 @@ div.main-bottom-links {
     }
 }
 
-/* ===== SETTINGS GROUPS & CONTROLS ===== */
+/* ===== SETTING GROUPS ===== */
 .setting-group {
-    background: rgba(30,30,30,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
+    background: rgba(28,28,28,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 10px !important;
+    padding: 16px 18px !important;
+    margin-bottom: 16px !important;
+    transition: border-color 0.2s ease !important;
+}
+
+.setting-group:hover {
+    border-color: rgba(255,255,255,0.12) !important;
 }
 
 .setting-group h3 {
-    margin: 0 0 15px 0;
-    color: #fff;
-    font-size: 18px;
-    font-weight: 600;
+    margin: 0 0 12px 0 !important;
+    color: #fff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
 }
 
+/* ===== SETTING ROWS ===== */
 .setting-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.04) !important;
 }
 
 .setting-row:last-child {
-    border-bottom: none;
+    border-bottom: none !important;
 }
 
 .setting-label {
-    color: #ccc;
-    font-size: 14px;
+    color: #ddd !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
 }
 
+/* ===== CHECKBOX (TOGGLE STYLE) ===== */
 .setting-control input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    accent-color: rgb(80,80,255);
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    width: 46px !important;
+    height: 24px !important;
+    background: rgba(60,60,60,0.6) !important;
+    border: 2px solid rgba(100,100,100,0.4) !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    outline: none !important;
 }
 
+.setting-control input[type="checkbox"]::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    top: 2px !important;
+    left: 2px !important;
+    background: rgba(100,100,100,0.8) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.setting-control input[type="checkbox"]:checked {
+    background: rgba(120,120,120,0.8) !important;
+    border-color: rgba(140,140,140,0.6) !important;
+}
+
+.setting-control input[type="checkbox"]:checked::before {
+    left: 24px !important;
+    background: rgba(220,220,220,1) !important;
+}
+
+.setting-control input[type="checkbox"]:hover {
+    border-color: rgba(140,140,140,0.5) !important;
+}
+
+/* ===== OTHER INPUTS ===== */
 .setting-control select,
 .setting-control input[type="text"] {
-    background: rgba(40,40,40,0.8);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
+    background: rgba(40,40,40,0.8) !important;
+    border: 2px solid rgba(100,100,100,0.3) !important;
+    color: #fff !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s ease !important;
+}
+
+.setting-control select:hover,
+.setting-control input[type="text"]:hover {
+    border-color: rgba(140,140,140,0.4) !important;
+}
+
+.setting-control select:focus,
+.setting-control input[type="text"]:focus {
+    outline: none !important;
+    border-color: rgba(160,160,160,0.6) !important;
 }
 
 .setting-control input[type="range"] {
-    width: 150px;
-    accent-color: rgb(80,80,255);
+    width: 160px !important;
+    accent-color: rgb(120,120,120) !important;
+    cursor: pointer !important;
 }
 
 .range-value {
-    display: inline-block;
-    min-width: 50px;
-    margin-left: 10px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
-    background: rgba(40,40,40,0.8);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: text;
+    display: inline-block !important;
+    min-width: 50px !important;
+    margin-left: 10px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    background: rgba(50,50,50,0.8) !important;
+    border: 2px solid rgba(120,120,120,0.3) !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    text-align: center !important;
+    transition: border-color 0.2s ease !important;
 }
 
 .range-value:hover {
-    border-color: rgba(255,255,255,0.3);
+    border-color: rgba(140,140,140,0.5) !important;
 }
 
-/* ===== COLOR PICKER STYLES ===== */
-input[data-coloris] {
-    background: transparent !important;
+
+.clr-field button {
+display: none;
+}
+.clr-field {
+    display: inline-block !important;
 }
 
-.setting-control input[data-coloris] {
+.range-value:focus {
+    outline: none !important;
+    border-color: rgba(160,160,160,0.6) !important;
+}
+
+/* ===== KEYBIND BUTTONS ===== */
+.keybinds-btn {
+    background: rgba(60,60,60,0.8) !important;
+    border: 2px solid rgba(120,120,120,0.3) !important;
+    color: #fff !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    min-width: 80px !important;
+    text-align: center !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+}
+
+.keybinds-btn:hover {
+    background: rgba(75,75,75,0.9) !important;
+    border-color: rgba(140,140,140,0.5) !important;
+}
+
+.keybinds-btn.listening {
+    background: rgba(120,120,120,0.7) !important;
+    border-color: rgba(160,160,160,0.7) !important;
+    animation: pulse 1.5s ease-in-out infinite !important;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ===== COLOR PICKER ===== */
+.setting-control input[data-coloris],
+#unified-settings-panel input[data-coloris] {
     width: 80px !important;
     height: 40px !important;
     border-radius: 8px !important;
-    border: 2px solid rgba(255,255,255,0.2) !important;
+    border: 2px solid rgba(120,120,120,0.4) !important;
     cursor: pointer !important;
-    padding: 5px !important;
-    font-size: 11px !important;
-    text-align: center !important;
-    color: #fff !important;
-    text-shadow: 0 0 3px #000, 0 0 3px #000 !important;
-    font-weight: 600 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0px !important;
+    text-indent: -9999px !important;
+    color: transparent !important;
+    transition: border-color 0.2s ease !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
 }
 
-.setting-control input[data-coloris]:focus {
-    box-shadow: 0 0 0 2px rgba(80,80,255,0.5) !important;
+
+.setting-control input[data-coloris]::-webkit-color-swatch-wrapper {
+    padding: 0 !important;
 }
 
 .setting-control input[data-coloris]::-webkit-color-swatch {
-    border: none;
-    border-radius: 8px;
+    border: none !important;
+    border-radius: 6px !important;
 }
 
-.setting-control input[data-coloris]::-moz-focus-inner {
-    border: none;
-    padding: 0;
+
+.setting-control input[data-coloris]:hover {
+    border-color: rgba(140,140,140,0.6) !important;
 }
 
-#unified-settings-panel input[data-coloris] {
-    pointer-events: auto !important;
+.setting-control input[data-coloris]:focus {
+    outline: none !important;
+    border-color: rgba(160,160,160,0.7) !important;
+}
+
+/* ===== UTILITY BUTTONS ===== */
+.x-small-btn {
+    width: auto !important;
+    min-width: 65px !important;
+    height: 26px !important;
+    border-radius: 7px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 0 10px !important;
+    background: rgba(60,60,60,0.7) !important;
+    border: 2px solid rgba(120,120,120,0.3) !important;
+    color: #fff !important;
     cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-#unified-settings-overlay:not(.show) #unified-settings-panel [data-coloris] {
-    pointer-events: none !important;
+.x-small-btn:hover {
+    background: rgba(80,80,80,0.8) !important;
+    border-color: rgba(140,140,140,0.5) !important;
 }
 
-button[aria-labelledby="clr-open-label"] {
-    display: none !important;
-    pointer-events: none !important;
-    visibility: hidden !important;
-    position: absolute !important;
-    left: -9999px !important;
+.x-small-del {
+    background: rgba(80,50,50,0.7) !important;
+    border-color: rgba(120,80,80,0.4) !important;
 }
 
-.clr-field button {
-    display: none !important;
+.x-small-del:hover {
+    background: rgba(100,60,60,0.8) !important;
+    border-color: rgba(140,90,90,0.6) !important;
 }
 
-body > #clr-picker {
-    z-index: 10001 !important;
-}
-
-#unified-settings-overlay.show ~ #clr-picker .clr-gradient,
-#unified-settings-overlay.show ~ #clr-picker .clr-hue,
-#unified-settings-overlay.show ~ #clr-picker .clr-alpha,
-#unified-settings-overlay.show ~ #clr-picker .clr-color,
-#unified-settings-overlay.show ~ #clr-picker .clr-marker,
-#unified-settings-overlay.show ~ #clr-picker .clr-format,
-#unified-settings-overlay.show ~ #clr-picker .clr-swatches {
+/* ===== LARGE UPDATE BUTTON ===== */
+#btn-updateSP-custom {
+    width: 100% !important;
+    max-width: 350px !important;
+    height: 42px !important;
+    padding: 10px 18px !important;
+    background: rgba(90,90,90,0.5) !important;
+    border: 2px solid rgba(140,140,140,0.4) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 0 auto !important;
     display: block !important;
 }
 
-/* ===== KEYBIND BUTTON STYLES ===== */
-.keybind-btn {
-    background: rgba(60,60,60,0.8);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    min-width: 80px;
-    text-align: center;
-    transition: all 0.2s;
+#btn-updateSP-custom:hover {
+    background: rgba(110,110,110,0.6) !important;
+    border-color: rgba(160,160,160,0.5) !important;
+    transform: translateY(-2px) !important;
 }
 
-.keybind-btn:hover {
-    background: rgba(80,80,80,0.9);
+/* ===== FONT PREVIEW ===== */
+#fontPreview {
+    padding: 16px !important;
+    background: rgba(40,40,40,0.7) !important;
+    border: 2px solid rgba(120,120,120,0.3) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-size: 18px !important;
 }
 
-.keybind-btn.listening {
-    background: rgba(80,80,255,0.5);
-    border-color: rgba(80,80,255,0.8);
+/* ===== SAVED PLAYERS LIST ===== */
+#saved-players-list {
+    margin-top: 12px !important;
+}
+
+#saved-players-list > div {
+    background: rgba(25,25,25,0.5) !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+}
+
+/* ===== SEARCH HIGHLIGHTING ===== */
+.setting-row.search-match {
+    background: rgba(120,120,120,0.12) !important;
+    border-left: 3px solid rgba(140,140,140,0.6) !important;
+    padding-left: 12px !important;
+    margin-left: -4px !important;
+    border-radius: 6px !important;
+}
+
+.setting-row.search-hidden,
+.setting-group.search-hidden {
+    display: none !important;
+}
+
+.search-no-results {
+    text-align: center !important;
+    padding: 30px 20px !important;
+    color: rgba(160,160,160,0.6) !important;
+    font-size: 15px !important;
+    display: none !important;
+}
+
+.search-no-results.visible {
+    display: block !important;
+}
+
+.setting-label mark,
+.setting-group h3 mark {
+    background: rgba(140,140,140,0.3) !important;
+    color: #fff !important;
+    padding: 2px 4px !important;
+    border-radius: 3px !important;
+    font-weight: 700 !important;
 }
 
 /* ===== MISC ===== */
@@ -721,8 +1760,10 @@ body > #clr-picker {
     display: block !important;
     visibility: visible !important;
 }
+
 `);
 })();
+
 const extraBtns = ["#btn-servers", "#btn-options", "#btn-hotkeys", "#btn-themes", "#btn-cellpanel"];
 function moveButtons() {
     const container = document.querySelector(".main-input-btns");
@@ -1096,24 +2137,27 @@ function saveColorSettings() {
     document.querySelectorAll('#unified-settings-panel input[type="color"], #unified-settings-panel input[data-coloris]').forEach(inp => {
         if (inp.id) {
             colors[inp.id] = inp.value;
+            
         }
     });
     try {
         GM_setValue('savedColors', JSON.stringify(colors));
     } catch(e) {
         localStorage.setItem('savedColors', JSON.stringify(colors));
+     
     }
 }
-
 
 function loadSavedColors() {
     let saved = null;
     try { saved = GM_getValue('savedColors', null); } catch(e) { saved = localStorage.getItem('savedColors'); }
     if (!saved) {
+        console.log('⚠️ No saved colors found');
         return;
     }
     try {
         const colors = JSON.parse(saved);
+        
         setTimeout(() => {
             Object.keys(colors).forEach(id => {
                 const input = document.querySelector(`#unified-settings-panel #${CSS.escape(id)}`);
@@ -1128,10 +2172,12 @@ function loadSavedColors() {
                         gameInput.dispatchEvent(new Event('input', { bubbles: true }));
                         gameInput.dispatchEvent(new Event('change', { bubbles: true }));
                     }
+                  
                 }
             });
         }, 600);
     } catch (e) {
+        console.error('❌ Error loading colors:', e);
     }
 }
 
@@ -1176,6 +2222,7 @@ function createPanel() {
     panel.innerHTML = `
         <div class="settings-header">
             <h2>Settings</h2>
+            <input type="text" id="settings-search-input" placeholder="🔍 Search settings..." />
             <button class="settings-close-btn" id="close-settings-btn">×</button>
         </div>
         <div class="settings-tabs">
@@ -1189,12 +2236,6 @@ function createPanel() {
             <div class="tab-content" id="tab-customfeatures">${getCustomFeaturesHTML()}</div>
         </div>
     `;
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && state.isOpen && !state.listeningForKey) {
-            close();
-        }
-    });
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
@@ -1211,45 +2252,18 @@ function createPanel() {
             const node = panel.querySelector(id);
             if (node) node.classList.add('active');
 
-            const settingsContent = panel.querySelector('.settings-content');
-            if (settingsContent) {
-                settingsContent.scrollTop = 0;
-            }
-
             if (tab.dataset.tab === 'customfeatures') {
                 renderSavedPlayers();
             }
         };
     });
-document.querySelectorAll('.keybinds-btn').forEach(gameBtn => {
-    gameBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
-    }, true);
-
-    gameBtn.addEventListener('keydown', (e) => {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
-    }, true);
-
-    gameBtn.addEventListener('mousedown', (e) => {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
-    }, true);
-});
-
 
     setupRangeListeners();
-    setupKeybindListeners();
     setupColorPickers();
     setupFontSelector();
     setupSavedPlayersFeature();
     setupUpdateButton();
 }
-
 
 function setupUpdateButton() {
     const checkButton = setInterval(() => {
@@ -1485,54 +2499,54 @@ function getHotkeysHTML() {
     return `
             <div class="setting-group">
                 <h3>Movement & Splits</h3>
-                <div class="setting-row"><span class="setting-label">Split</span><div class="setting-control"><button class="keybind-btn" data-key="kSplit">SPACE</button></div></div>
-                <div class="setting-row"><span class="setting-label">Linesplit</span><div class="setting-control"><button class="keybind-btn" data-key="kLinesplit">C</button></div></div>
-                <div class="setting-row"><span class="setting-label">Double Split (4x)</span><div class="setting-control"><button class="keybind-btn" data-key="kDoubleSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Triple Split (8x)</span><div class="setting-control"><button class="keybind-btn" data-key="kTripleSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Quad Split (16x)</span><div class="setting-control"><button class="keybind-btn" data-key="kQuadSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Penta Split (32x)</span><div class="setting-control"><button class="keybind-btn" data-key="kPentaSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Hexa Split (64x)</span><div class="setting-control"><button class="keybind-btn" data-key="kHexaSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Septi Split (128x)</span><div class="setting-control"><button class="keybind-btn" data-key="kSeptiSplit">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Octo Split (256x)</span><div class="setting-control"><button class="keybind-btn" data-key="kOctoSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Split</span><div class="setting-control"><button class="keybinds-btn" data-key="kSplit">SPACE</button></div></div>
+                <div class="setting-row"><span class="setting-label">Linesplit</span><div class="setting-control"><button class="keybinds-btn" data-key="kLinesplit">C</button></div></div>
+                <div class="setting-row"><span class="setting-label">Double Split (4x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kDoubleSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Triple Split (8x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kTripleSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Quad Split (16x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kQuadSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Penta Split (32x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kPentaSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Hexa Split (64x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kHexaSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Septi Split (128x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kSeptiSplit">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Octo Split (256x)</span><div class="setting-control"><button class="keybinds-btn" data-key="kOctoSplit">-</button></div></div>
             </div>
 
             <div class="setting-group">
                 <h3>Freeze Mouse</h3>
-                <div class="setting-row"><span class="setting-label">Freeze Mouse (Toggle)</span><div class="setting-control"><button class="keybind-btn" data-key="kFreezeMouse">S</button></div></div>
-                <div class="setting-row"><span class="setting-label">Freeze Mouse (Hold)</span><div class="setting-control"><button class="keybind-btn" data-key="kFreezeMouseHold">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Double Split Freeze Hold</span><div class="setting-control"><button class="keybind-btn" data-key="kDoubleFreezeHold">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Triple Split Freeze Hold</span><div class="setting-control"><button class="keybind-btn" data-key="kTripleFreezeHold">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Freeze Mouse (Toggle)</span><div class="setting-control"><button class="keybinds-btn" data-key="kFreezeMouse">S</button></div></div>
+                <div class="setting-row"><span class="setting-label">Freeze Mouse (Hold)</span><div class="setting-control"><button class="keybinds-btn" data-key="kFreezeMouseHold">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Double Split Freeze Hold</span><div class="setting-control"><button class="keybinds-btn" data-key="kDoubleFreezeHold">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Triple Split Freeze Hold</span><div class="setting-control"><button class="keybinds-btn" data-key="kTripleFreezeHold">-</button></div></div>
             </div>
 
             <div class="setting-group">
                 <h3>Zoom Levels</h3>
-                <div class="setting-row"><span class="setting-label">Zoom Level 1</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom1">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 2</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom2">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 3</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom3">F5</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 4</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom4">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 5</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom5">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 6</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom6">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 7</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom7">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 8</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom8">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 9</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom9">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Zoom Level 10</span><div class="setting-control"><button class="keybind-btn" data-key="kZoom10">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 1</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom1">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 2</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom2">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 3</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom3">F5</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 4</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom4">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 5</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom5">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 6</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom6">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 7</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom7">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 8</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom8">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 9</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom9">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Zoom Level 10</span><div class="setting-control"><button class="keybinds-btn" data-key="kZoom10">-</button></div></div>
             </div>
 
             <div class="setting-group">
                 <h3>Option Toggles</h3>
-                <div class="setting-row"><span class="setting-label">Hide Food</span><div class="setting-control"><button class="keybind-btn" data-key="kHideFood">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Hide Chat</span><div class="setting-control"><button class="keybind-btn" data-key="kHideChat">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Auto Respawn</span><div class="setting-control"><button class="keybind-btn" data-key="kAutoRespawn">-</button></div></div>
-                <div class="setting-row"><span class="setting-label">Cycle Names</span><div class="setting-control"><button class="keybind-btn" data-key="kCycleNames">N</button></div></div>
-                <div class="setting-row"><span class="setting-label">Cycle Masses</span><div class="setting-control"><button class="keybind-btn" data-key="kCycleMasses">M</button></div></div>
-                <div class="setting-row"><span class="setting-label">Cycle Skins</span><div class="setting-control"><button class="keybind-btn" data-key="kCycleSkins">K</button></div></div>
+                <div class="setting-row"><span class="setting-label">Hide Food</span><div class="setting-control"><button class="keybinds-btn" data-key="kHideFood">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Hide Chat</span><div class="setting-control"><button class="keybinds-btn" data-key="kHideChat">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Auto Respawn</span><div class="setting-control"><button class="keybinds-btn" data-key="kAutoRespawn">-</button></div></div>
+                <div class="setting-row"><span class="setting-label">Cycle Names</span><div class="setting-control"><button class="keybinds-btn" data-key="kCycleNames">N</button></div></div>
+                <div class="setting-row"><span class="setting-label">Cycle Masses</span><div class="setting-control"><button class="keybinds-btn" data-key="kCycleMasses">M</button></div></div>
+                <div class="setting-row"><span class="setting-label">Cycle Skins</span><div class="setting-control"><button class="keybinds-btn" data-key="kCycleSkins">K</button></div></div>
             </div>
 
             <div class="setting-group">
                 <h3>General Keybinds</h3>
-                <div class="setting-row"><span class="setting-label">Eject Mass</span><div class="setting-control"><button class="keybind-btn" data-key="kEjectMass">E</button></div></div>
-                <div class="setting-row"><span class="setting-label">Context Menu</span><div class="setting-control"><button class="keybind-btn" data-key="kContextMenu">MOUSE3</button></div></div>
-                <div class="setting-row"><span class="setting-label">Toggle Spectate</span><div class="setting-control"><button class="keybind-btn" data-key="kToggleSpec">Q</button></div></div>
+                <div class="setting-row"><span class="setting-label">Eject Mass</span><div class="setting-control"><button class="keybinds-btn" data-key="kEjectMass">E</button></div></div>
+                <div class="setting-row"><span class="setting-label">Context Menu</span><div class="setting-control"><button class="keybinds-btn" data-key="kContextMenu">MOUSE3</button></div></div>
+                <div class="setting-row"><span class="setting-label">Toggle Spectate</span><div class="setting-control"><button class="keybinds-btn" data-key="kToggleSpec">Q</button></div></div>
             </div>
         `;
 }
@@ -1540,15 +2554,47 @@ function getHotkeysHTML() {
 function getThemesHTML() {
     return `
             <div class="setting-group">
+                <h3>Theme Toggle</h3>
+                <div class="setting-row"><span class="setting-label">Enable Custom Theme</span><div class="setting-control"><input type="checkbox" id="cThemeEnabled"></div></div>
+                <div class="setting-row"><span class="setting-label">Disable Event Theme</span><div class="setting-control"><input type="checkbox" id="cDisableEventSkins"></div></div>
+            </div>
+
+            <div class="setting-group">
                 <h3>Map & Background</h3>
                 <div class="setting-row"><span class="setting-label">Map Background URL</span><div class="setting-control"><input type="text" id="iMapBackground" placeholder="https://example.png" style="width:300px"></div></div>
                 <div class="setting-row"><span class="setting-label">Game Background Color</span><div class="setting-control"><input type="text" id="uiGameBackgroundColor" data-coloris></div></div>
                 <div class="setting-row"><span class="setting-label">Game Border Color</span><div class="setting-control"><input type="text" id="uiGameBorderColor" data-coloris></div></div>
+                <div class="setting-row">
+                    <span class="setting-label">Border Size</span>
+                    <div class="setting-control">
+                        <input type="range" id="rBorderSize" min="1" max="256" value="64" step="1">
+                        <input type="number" class="range-value" data-range="rBorderSize" min="1" max="256" value="64">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Background Opacity</span>
+                    <div class="setting-control">
+                        <input type="range" id="rBackgroundOpacity" min="0" max="1" value="1" step="0.01">
+                        <input type="number" class="range-value" data-range="rBackgroundOpacity" min="0" max="1" value="1" step="0.01">
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3>Interface Colors</h3>
+                <div class="setting-row"><span class="setting-label">Foreground Color</span><div class="setting-control"><input type="text" id="uiForegroundColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Background Color</span><div class="setting-control"><input type="text" id="uiBackgroundColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Border Color</span><div class="setting-control"><input type="text" id="uiBorderColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Menu Background</span><div class="setting-control"><input type="text" id="uiMenuBackgroundColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Menu Title Background</span><div class="setting-control"><input type="text" id="uiMenuTitleBackgroundColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Menu Sub Background</span><div class="setting-control"><input type="text" id="uiMenuSubBackgroundColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Menu Sub Background 2</span><div class="setting-control"><input type="text" id="uiMenuSubBackground2Color" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Button Color</span><div class="setting-control"><input type="text" id="uiButtonColor" data-coloris></div></div>
             </div>
 
             <div class="setting-group">
                 <h3>Mouse Tracer</h3>
-                <div class="setting-row"><span class="setting-label">Tracer Color</span><div class="setting-control"><input type="text" id="uiTracerColor" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Tracer Color & Opacity</span><div class="setting-control"><input type="text" id="uiTracerColor" data-coloris></div></div>
                 <div class="setting-row">
                     <span class="setting-label">Tracer Width</span>
                     <div class="setting-control">
@@ -1568,6 +2614,13 @@ function getThemesHTML() {
                         <input type="number" class="range-value" data-range="rPastelIntensity" min="0" max="100" value="50">
                     </div>
                 </div>
+            </div>
+
+            <div class="setting-group">
+                <h3>Interface Highlights</h3>
+                <div class="setting-row"><span class="setting-label">Leaderboard Highlight (Self)</span><div class="setting-control"><input type="text" id="uiLeaderboardHighlightSelf" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Leaderboard Highlight (Party)</span><div class="setting-control"><input type="text" id="uiLeaderboardHighlightParty" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Party Leader Color</span><div class="setting-control"><input type="text" id="uiPartyLeaderColor" data-coloris></div></div>
             </div>
 
             <div class="setting-group">
@@ -1603,9 +2656,10 @@ function getThemesHTML() {
                     </div>
                 </div>
             </div>
+
+
         `;
 }
-
 function getCellPanelHTML() {
     return `
         <div class="setting-group">
@@ -1731,35 +2785,56 @@ function getCellPanelHTML() {
 }
 function getCustomFeaturesHTML() {
     return `
-            <div class="setting-group">
-                <h3>Chat Toggle</h3>
-                <div class="setting-row">
-                    <span class="setting-label">Chat Toggle Hotkey</span>
-                    <div class="setting-control">
-                        <button class="keybind-btn" id="chat-toggle-key" data-custom="chatToggle">Y</button>
-                    </div>
+          <div class="setting-group">
+            <h3>Chat Toggle</h3>
+            <div class="setting-row">
+                <span class="setting-label">Chat Toggle Hotkey</span>
+                <div class="setting-control">
+                    <button class="keybinds-btn" id="chat-toggle-key" data-custom="chatToggle">Y</button>
                 </div>
             </div>
+        </div>
 
-            <div class="setting-group">
-                <h3>Tab Invite</h3>
-                <div class="setting-row">
-                    <span class="setting-label">Tab Invite Hotkey</span>
-                    <div class="setting-control">
-                        <button class="keybind-btn" id="tab-invite-key" data-custom="tabInvite">J</button>
-                    </div>
+
+        <div class="setting-group">
+            <h3>Tab Invite</h3>
+            <div class="setting-row">
+                <span class="setting-label">Tab Invite Hotkey</span>
+                <div class="setting-control">
+                    <button class="keybinds-btn" id="tab-invite-key" data-custom="tabInvite">J</button>
                 </div>
-                <p style="color: #aaa; font-size: 12px; margin-top: 10px;">Automatically invites and accepts party invites from another tab.</p>
             </div>
+            <p style="color: #aaa; font-size: 12px; margin-top: 10px;">Automatically invites and accepts party invites from another tab.</p>
+        </div>
 
-            <div class="setting-group">
-                <h3 Saved Players</h3>
-                <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">Right-click on players in-game and select "Copy" to save them here.</p>
-                <div id="saved-players-list"></div>
+      <div class="setting-group">
+            <h3>Quick Add Player</h3>
+            <p style="color: #bbb; font-size: 13px; margin-bottom: 12px;">As an example liliwi [sasa] and then pressing on both with save it seperatly REMEMBER TO USE []</p>
+            <div class="setting-row">
+                <span class="setting-label">Input</span>
+                <div class="setting-control">
+                    <input type="text" id="quick-player-input" placeholder="Enter name/skin..." style="width:300px;">
+                </div>
             </div>
-        `;
+            <div class="setting-row">
+
+                <span class="setting-label"></span>
+                <div class="setting-control" style="display:flex; gap:10px;">
+                    <button id="save-name-btn" class="x-small-btn" style="min-width:90px;">Save Name</button>
+                    <button id="save-skin-btn" class="x-small-btn" style="min-width:90px;">Save Skin</button>
+                    <button id="save-both-btn" class="x-small-btn" style="min-width:90px;">Save Both</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <h3>Saved Players</h3>
+            <p style="color: #bbb; font-size: 13px; margin-bottom: 12px;">Right-click players in-game and select "Copy" to save them, or use Quick Add above.</p>
+            <button id="clear-all-saved-players">Clear All</button>
+            <div id="saved-players-list"></div>
+        </div>
+    `;
 }
-
 
 const LS_KEY = 'savedPlayers';
 
@@ -2034,7 +3109,10 @@ function setupColorPickers() {
             !inp.closest('#unified-settings-panel')
         );
 
+        console.log(`Game color inputs found: ${gameColorInputs.length}`);
+
         if (gameColorInputs.length === 0) {
+            console.warn('⚠️ NO GAME COLOR INPUTS FOUND! Retrying in 2 seconds...');
             setTimeout(setupColorPickers, 2000);
             return;
         }
@@ -2049,31 +3127,39 @@ function setupColorPickers() {
                     if (isUpdating) return;
                     isUpdating = true;
 
+                    let hexColor = color;
+                    if (color.startsWith('rgba') || color.startsWith('rgb')) {
+                        hexColor = rgbaToHex(color);
+                    }
+
                     const style =
-                          `background: ${color} !important; ` +
-                          `background-color: ${color} !important; ` +
-                          `width: 100px !important; ` +
+                          `background: ${hexColor} !important; ` +
+                          `background-color: ${hexColor} !important; ` +
+                          `width: 80px !important; ` +
                           `height: 40px !important; ` +
                           `border-radius: 8px !important; ` +
-                          `border: 2px solid rgba(255,255,255,0.3) !important; ` +
+                          `border: 2px solid rgba(120,120,120,0.4) !important; ` +
                           `cursor: pointer !important; ` +
                           `padding: 5px !important; ` +
                           `margin: 0 !important; ` +
-                          `font-size: 11px !important; ` +
-                          `text-align: center !important; ` +
-                          `color: #fff !important; ` +
-                          `text-shadow: 0 0 3px #000, 0 0 3px #000 !important; ` +
-                          `font-weight: 600 !important; ` +
+                          `font-size: 0px !important; ` + // Hide the text
+                          `text-indent: -9999px !important; ` + // Hide any text
+                          `color: transparent !important; ` + // Make text transparent
                           `box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;`;
 
                     ourInput.setAttribute('style', style);
+                    ourInput.value = hexColor;
 
                     setTimeout(() => { isUpdating = false; }, 50);
                 };
 
                 const updateOurColor = (newColor) => {
-                    ourInput.value = newColor;
-                    applyPersistentStyle(newColor);
+                    let hexColor = newColor;
+                    if (newColor.startsWith('rgba') || newColor.startsWith('rgb')) {
+                        hexColor = rgbaToHex(newColor);
+                    }
+                    ourInput.value = hexColor;
+                    applyPersistentStyle(hexColor);
                     saveColorSettings();
                 };
 
@@ -2086,7 +3172,8 @@ function setupColorPickers() {
                 ['input', 'change'].forEach(eventType => {
                     gameInput.addEventListener(eventType, () => {
                         const newValue = gameInput.value;
-                        if (newValue && /^#[0-9A-Fa-f]{6}$/i.test(newValue) && newValue !== lastValue) {
+                        if (newValue && newValue !== lastValue) {
+                            console.log(`📡 Game ${eventType}: ${gameInput.id} = ${newValue}`);
                             lastValue = newValue;
                             updateOurColor(newValue);
                         }
@@ -2096,6 +3183,7 @@ function setupColorPickers() {
                 ourInput.addEventListener('input', () => {
                     const newValue = ourInput.value;
                     if (newValue && /^#[0-9A-Fa-f]{6}$/i.test(newValue)) {
+                        console.log(`🎨 Our input changed: ${ourInput.id} = ${newValue}`);
                         gameInput.value = newValue;
                         gameInput.dispatchEvent(new Event('input', { bubbles: true }));
                         gameInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -2111,141 +3199,35 @@ function setupColorPickers() {
                         return;
                     }
 
-                    const currentWidth = ourInput.offsetWidth;
-                    if (currentWidth !== 100 && ourInput.value && /^#[0-9A-Fa-f]{6}$/i.test(ourInput.value)) {
+                    if (ourInput.value && (ourInput.value.startsWith('#') || ourInput.value.startsWith('rgb'))) {
                         applyPersistentStyle(ourInput.value);
                     }
                 }, 100);
 
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('#clr-picker') && !e.target.closest('[data-coloris]')) {
-                        setTimeout(() => {
-                            if (ourInput.value && /^#[0-9A-Fa-f]{6}$/i.test(ourInput.value)) {
-                                applyPersistentStyle(ourInput.value);
-                            }
-                        }, 100);
-                    }
-                });
-
+            } else {
+                console.warn(`  ❌ No matching game input for ${ourInput.id}`);
             }
         });
 
         loadSavedColors();
     }, 500);
 }
-function setupKeybindListeners() {
 
+function rgbaToHex(rgba) {
+    if (rgba.startsWith('#')) return rgba;
 
- const attach = (btn) => {
-    if (!btn || btn.dataset._listeningAttached) {
-        console.log('⚠️ Button already has listener or is null:', btn?.id);
-        return;
-    }
-    console.log('✅ Attaching listener to:', btn.id || btn.dataset.key);
-    btn.dataset._listeningAttached = '1';
+    const parts = rgba.match(/[\d.]+/g);
+    if (!parts || parts.length < 3) return rgba;
 
-    btn.onclick = function(e) {
-        e && e.stopPropagation && e.stopPropagation();
-        const explicitKeyId = btn.dataset.key || btn.id || btn.dataset.custom || btn.dataset.mb;
-        const keyId = explicitKeyId || null;
-        btn.classList.add('listening');
-        const prevText = btn.textContent;
-        btn.textContent = 'Press key...';
-        state.listeningForKey = true;
+    const r = parseInt(parts[0]);
+    const g = parseInt(parts[1]);
+    const b = parseInt(parts[2]);
 
-        const cleanup = () => {
-            btn.classList.remove('listening');
-            state.listeningForKey = false;
-            document.removeEventListener('keydown', kdHandler, true);
-            document.removeEventListener('mousedown', mdHandler, true);
-        };
-
-        const applyKeyToBtn = (keyStr) => {
-            btn.textContent = keyStr;
-            btn.blur();
-            cleanup();
-
-            if (btn.id === 'chat-toggle-key') {
-                localStorage.setItem('chatToggleHotkey', keyStr.toLowerCase());
-                setupChatToggle(keyStr.toLowerCase());
-            } else if (btn.id === 'tab-invite-key') {
-                localStorage.setItem("tabInviteHotkey", keyStr.toLowerCase());
-                window.__TAB_INVITE_HOTKEY = keyStr.toLowerCase();
-            }
-
-            if (keyStr === "MOUSE1") {
-                return;
-            }
-
-            if (keyId) {
-                const gameBtn = findGameElement(keyId);
-                if (gameBtn) {
-                    gameBtn.textContent = keyStr;
-                    gameBtn.dispatchEvent(new Event('change', { bubbles: true }));
-                    gameBtn.dispatchEvent(new Event('input', { bubbles: true }));
-                    gameBtn.dispatchEvent(new Event('click', { bubbles: true }));
-                }
-            }
-        };
-const kdHandler = (ev) => {
-    ev.preventDefault && ev.preventDefault();
-    ev.stopPropagation && ev.stopPropagation();
-    ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-
-    if (ev.key === 'Escape') {
-        applyKeyToBtn('-');
-        return;
-    }
-
-    let key = ev.key ? ev.key.toUpperCase() : '';
-    if (key === ' ') key = 'SPACE';
-
-    applyKeyToBtn(key);
-};
-
-const mdHandler = (ev) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-    ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-
-    let key = '';
-    switch(ev.button) {
-        case 0: key = 'MOUSE1'; break;
-        case 1: key = 'MOUSE2'; break;
-        case 2: key = 'MOUSE3'; break;
-        case 3: key = 'MOUSE4'; break;
-        case 4: key = 'MOUSE5'; break;
-        default: key = `MOUSE${ev.button + 1}`;
-    }
-
-    applyKeyToBtn(key);
-    document.removeEventListener('keydown', kdHandler, true);
-};
-
-document.addEventListener('keydown', kdHandler, { capture: true, once: true });
-document.addEventListener('mousedown', mdHandler, { capture: true, once: true });
-        };
-    };
-
-    document.querySelectorAll('#unified-settings-panel .keybind-btn').forEach(attach);
-
-    const panel = document.getElementById('unified-settings-panel');
-    if (panel) {
-        try {
-            const mo = new MutationObserver((mutations) => {
-                mutations.forEach(m => {
-                    m.addedNodes && m.addedNodes.forEach(node => {
-                        if (node.nodeType === 1) {
-                            if (node.matches && node.matches('.keybind-btn')) attach(node);
-                            node.querySelectorAll && node.querySelectorAll('.keybind-btn').forEach(attach);
-                        }
-                    });
-                });
-            });
-            mo.observe(panel, { childList: true, subtree: true });
-        } catch(e){}
-    }
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
+
+
+
 function setupChatToggle(hotkey) {
     document.removeEventListener('keydown', window.__chatToggleHandler);
 
@@ -2265,22 +3247,129 @@ function setupChatToggle(hotkey) {
     document.addEventListener("keydown", window.__chatToggleHandler);
 }
 
+
+
+function syncHotkeysFromGame() {
+    const hotkeysTab = document.querySelector('#tab-hotkeys');
+    if (!hotkeysTab) return;
+
+    const gameHotkeysPanel = document.querySelector('#main-hotkeys') ||
+                             document.querySelector('[id*="hotkey"]') ||
+                             document.querySelector('.hotkeys-panel');
+
+    if (!gameHotkeysPanel) {
+        console.warn('⚠️ Game hotkeys panel not found');
+        return;
+    }
+
+    const gameButtons = gameHotkeysPanel.querySelectorAll('.keybinds-btn, button[data-key]');
+
+    gameButtons.forEach(btn => {
+        const customBtn = hotkeysTab.querySelector(`[data-key="${btn.dataset.key}"]`);
+        if (customBtn) {
+            customBtn.textContent = btn.textContent;
+            customBtn.onclick = () => btn.click();
+
+        }
+
+    });
+}
+
+
+function syncHotkeysWithGame() {
+    let isCapturing = false;
+    let currentGameBtn = null;
+    let currentKeyId = null;
+
+    const escapeHandler = (e) => {
+        if (isCapturing && e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            setTimeout(() => {
+                const keybinds = JSON.parse(localStorage.getItem('keybinds') || '{}');
+                keybinds[currentKeyId] = -1;
+                localStorage.setItem('keybinds', JSON.stringify(keybinds));
+
+                if (currentGameBtn) currentGameBtn.textContent = ' ';
+                const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${currentKeyId}"]`);
+                if (customBtn) customBtn.textContent = '-';
+
+                window.dispatchEvent(new Event('storage'));
+            }, 50);
+
+            isCapturing = false;
+            currentGameBtn = null;
+            currentKeyId = null;
+
+            return false;
+        }
+    };
+
+    document.addEventListener('keydown', escapeHandler, { capture: true, passive: false });
+    document.addEventListener('keypress', escapeHandler, { capture: true, passive: false });
+    document.addEventListener('keyup', escapeHandler, { capture: true, passive: false });
+
+    const stopHandler = (e) => {
+        if (isCapturing) {
+            setTimeout(() => {
+                isCapturing = false;
+                currentGameBtn = null;
+                currentKeyId = null;
+            }, 200);
+        }
+    };
+
+    document.addEventListener('keydown', stopHandler, true);
+    document.addEventListener('mousedown', stopHandler, true);
+
+    setInterval(() => {
+        const gameButtons = document.querySelectorAll('button.keybinds-btn[id]');
+        gameButtons.forEach(gameBtn => {
+            const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
+            if (customBtn && gameBtn.textContent !== customBtn.textContent) {
+                customBtn.textContent = gameBtn.textContent || '-';
+            }
+        });
+    }, 100);
+
+    const gameButtons = document.querySelectorAll('button.keybinds-btn[id]');
+    gameButtons.forEach(gameBtn => {
+        const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
+        if (customBtn) {
+            customBtn.onclick = () => {
+                gameBtn.click();
+                isCapturing = true;
+                currentGameBtn = gameBtn;
+                currentKeyId = gameBtn.id;
+            };
+        }
+    });
+
+    console.log('✅ Hotkeys synced with aggressive Escape handling');
+}
+
 function syncWithGameSettings() {
     try {
-        console.log('🔄 Starting sync with game settings...');
+        console.log('Starting sync with game settings...');
 
         const mainOptions = findPotentialGamePanel();
         if (!mainOptions) {
-            console.warn('⚠️ Game settings panel not found, retrying...');
+            console.warn('Game settings panel not found, retrying...');
             setTimeout(syncWithGameSettings, 1000);
             return;
         }
 
-        setTimeout(() => performSync(), 500);
+        setTimeout(() => {
+            performSync();
+            syncHotkeysWithGame();
+        }, 500);
     } catch (e) {
         console.error('syncWithGameSettings error', e);
     }
 }
+
 
 function findPotentialGamePanel() {
     const possible = [
@@ -2337,14 +3426,13 @@ function findGameElement(id) {
         });
         if (broad) return broad;
     } catch (e) {
-        /* ignore */
+        
     }
     return null;
 }
 
 function performSync() {
     try {
-        console.log('🔄 performSync starting...');
         let syncedCount = 0;
 
         const panel = document.getElementById('unified-settings-panel');
@@ -2372,7 +3460,7 @@ function performSync() {
             } catch(e){ }
         });
 
-       panel.querySelectorAll('select').forEach(select => {
+        panel.querySelectorAll('select').forEach(select => {
             try {
                 const gameSelect = findGameElement(select.id);
                 if (gameSelect && gameSelect.tagName === 'SELECT') {
@@ -2394,11 +3482,6 @@ function performSync() {
                     });
                 }
             } catch(e){}
-        });
-
-        console.log('🔍 Checking if keybind buttons are being touched...');
-        panel.querySelectorAll('.keybind-btn').forEach(btn => {
-            console.log('Found keybind button:', btn.id || btn.dataset.key, 'hasListener:', btn.dataset._listeningAttached);
         });
 
         panel.querySelectorAll('input[type="text"]').forEach(input => {
@@ -2478,6 +3561,7 @@ function open() {
         });
 
         syncWithGameSettings();
+        syncHotkeysWithGame();
         setupColorPickers();
     }
 }
@@ -2485,28 +3569,12 @@ function open() {
 function close() {
     const overlay = document.getElementById('unified-settings-overlay');
     if (overlay && state.isOpen) {
-        const panel = document.getElementById('unified-settings-panel');
-        if (panel) {
-            panel.style.pointerEvents = 'none';
-        }
-
         overlay.classList.remove('show');
         state.isOpen = false;
 
         if (window.Coloris) {
             try { window.Coloris.close(); } catch(e) {}
         }
-
-        const allColorPickers = document.querySelectorAll('#unified-settings-panel [data-coloris]');
-        allColorPickers.forEach(picker => {
-            picker.blur();
-        });
-
-        setTimeout(() => {
-            if (panel) {
-                panel.style.pointerEvents = '';
-            }
-        }, 400);
     }
 }
 
@@ -2663,6 +3731,236 @@ function close() {
     watchContextMenu();
 })();
 
+
+
+
+function setupSearchFunctionality() {
+    const searchInput = document.getElementById('settings-search-input');
+    if (!searchInput) return;
+
+    const labelTexts = new Map();
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const allGroups = document.querySelectorAll('.setting-group');
+        const allRows = document.querySelectorAll('.setting-row');
+
+        if (!query) {
+            allGroups.forEach(g => g.classList.remove('search-hidden'));
+            allRows.forEach(row => {
+                row.classList.remove('search-match', 'search-hidden');
+                const label = row.querySelector('.setting-label');
+                if (label && labelTexts.has(label)) {
+                    label.textContent = labelTexts.get(label);
+                }
+            });
+            return;
+        }
+
+        allGroups.forEach(group => {
+            let hasMatch = false;
+            const rows = group.querySelectorAll('.setting-row');
+
+            rows.forEach(row => {
+                const label = row.querySelector('.setting-label');
+                if (!label) return;
+
+                if (!labelTexts.has(label)) {
+                    labelTexts.set(label, label.textContent);
+                }
+
+                const originalText = labelTexts.get(label);
+
+                if (originalText.toLowerCase().includes(query)) {
+                    row.classList.add('search-match');
+                    row.classList.remove('search-hidden');
+                    hasMatch = true;
+
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    label.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+                } else {
+                    row.classList.remove('search-match');
+                    row.classList.add('search-hidden');
+                    label.textContent = originalText;
+                }
+            });
+
+            if (hasMatch) {
+                group.classList.remove('search-hidden');
+            } else {
+                group.classList.add('search-hidden');
+            }
+        });
+    });
+
+    console.log('✅ Search functionality initialized - highlights cleared on empty search');
+}
+function setupThemeButtons() {
+    const checkButtons = setInterval(() => {
+        const customBgBtn = document.getElementById('aCustomBackground');
+        const customSpikeBtn = document.getElementById('aCustomSpike');
+        const customMotherBtn = document.getElementById('aCustomMother');
+        const foodColorsBtn = document.getElementById('btn-food-colors');
+        const importBtn = document.getElementById('btn-theme-import');
+        const exportBtn = document.getElementById('btn-theme-export');
+
+        if (customBgBtn && customSpikeBtn && customMotherBtn && foodColorsBtn && importBtn && exportBtn) {
+            clearInterval(checkButtons);
+
+            // Link to game buttons
+            customBgBtn.onclick = () => {
+                const gameBtn = document.getElementById('aCustomBackground');
+                if (gameBtn) gameBtn.click();
+            };
+
+            customSpikeBtn.onclick = () => {
+                const gameBtn = document.getElementById('aCustomSpike');
+                if (gameBtn) gameBtn.click();
+            };
+
+            customMotherBtn.onclick = () => {
+                const gameBtn = document.getElementById('aCustomMother');
+                if (gameBtn) gameBtn.click();
+            };
+
+            foodColorsBtn.onclick = () => {
+                const gameBtn = document.getElementById('btn-food-colors');
+                if (gameBtn) gameBtn.click();
+            };
+
+            importBtn.onclick = () => {
+                const gameBtn = document.getElementById('btn-theme-import');
+                if (gameBtn) gameBtn.click();
+            };
+
+            exportBtn.onclick = () => {
+                const gameBtn = document.getElementById('btn-theme-export');
+                if (gameBtn) gameBtn.click();
+            };
+
+            console.log('✅ Theme buttons linked successfully');
+        }
+    }, 100);
+}
+
+function parsePlayerInput(input) {
+    if (!input) return { name: '', skin: 'none' };
+
+    input = input.trim();
+
+
+   const match = input.match(/^(.+?)\s*\[([^\]]+)\]\s*$/);
+    if (match) {
+        return {
+            name: match[1].trim(),
+            skin: match[2].trim()
+        };
+    }
+
+    const match2 = input.match(/^\s*\[([^\]]+)\]\s*(.+)$/);
+    if (match2) {
+        return {
+            name: match2[2].trim(),
+            skin: match2[1].trim()
+        };
+    }
+
+    return {
+        name: input,
+        skin: 'none'
+    };
+}
+
+function setupQuickAddName() {
+    const checkButtons = setInterval(() => {
+        const saveNameBtn = document.getElementById('save-name-btn');
+        const saveSkinBtn = document.getElementById('save-skin-btn');
+        const saveBothBtn = document.getElementById('save-both-btn');
+        const playerInput = document.getElementById('quick-player-input');
+
+        if (saveNameBtn && saveSkinBtn && saveBothBtn && playerInput) {
+            clearInterval(checkButtons);
+
+            saveNameBtn.onclick = () => {
+                const input = playerInput.value.trim();
+                if (!input) {
+                    alert('Please enter something first!');
+                    return;
+                }
+
+                const list = loadSavedPlayers();
+                list.push({ name: input, skin: 'none' });
+                saveSavedPlayers(list);
+
+                playerInput.value = '';
+                saveNameBtn.textContent = '✓ Saved!';
+                saveNameBtn.style.background = 'rgba(50,120,50,0.7)';
+
+                setTimeout(() => {
+                    saveNameBtn.textContent = 'Save Name';
+                    saveNameBtn.style.background = 'rgba(28, 28, 28, 0.7)';
+                }, 1500);
+
+                renderSavedPlayers();
+            };
+
+            saveSkinBtn.onclick = () => {
+                const input = playerInput.value.trim();
+                if (!input) {
+                    alert('Please enter something first!');
+                    return;
+                }
+
+                const list = loadSavedPlayers();
+                list.push({ name: '[skin]', skin: input });
+                saveSavedPlayers(list);
+
+                playerInput.value = '';
+                saveSkinBtn.textContent = '✓ Saved!';
+                saveSkinBtn.style.background = 'rgba(50,120,50,0.7)';
+
+                setTimeout(() => {
+                    saveSkinBtn.textContent = 'Save Skin';
+                    saveSkinBtn.style.background = 'rgba(28, 28, 28, 0.7)';
+                }, 1500);
+
+                renderSavedPlayers();
+            };
+
+            saveBothBtn.onclick = () => {
+                const input = playerInput.value.trim();
+                if (!input) {
+                    alert('Please enter something first!');
+                    return;
+                }
+
+                const { name, skin } = parsePlayerInput(input);
+
+                if (!name) {
+                    alert('Could not parse player name!');
+                    return;
+                }
+
+                const list = loadSavedPlayers();
+                list.push({ name: name, skin: skin });
+                saveSavedPlayers(list);
+
+                playerInput.value = '';
+                saveBothBtn.textContent = '✓ Saved!';
+                saveBothBtn.style.background = 'rgba(50,120,50,0.7)';
+
+                setTimeout(() => {
+                    saveBothBtn.textContent = 'Save Both';
+                    saveBothBtn.style.background = 'rgba(28, 28, 28, 0.7)';
+                }, 1500);
+
+                renderSavedPlayers();
+            };
+
+            console.log('✅ Quick add buttons initialized');
+        }
+    }, 100);
+}
 function init() {
     if (state.initialized) return;
     let attempts = 0;
@@ -2682,9 +3980,12 @@ function init() {
                 try { savedFont = GM_getValue('gameFont', 'default'); } catch(e) { savedFont = localStorage.getItem('gameFont') || 'default'; }
                 applyFont(savedFont);
 
+                setupSearchFunctionality();
                 setupRangeListeners();
                 setupColorPickers();
                 setupFontSelector();
+                setupQuickAddName();
+                setupThemeButtons();
 
                 const savedChatKey = localStorage.getItem('chatToggleHotkey') || 'y';
                 const chatToggleBtn = document.getElementById('chat-toggle-key');
@@ -2703,7 +4004,7 @@ function init() {
             } else {
                 createPanel();
                 state.initialized = true;
-                console.warn('⚠️ Could not find game button container; panel created but sync may be limited');
+                console.warn('Could not find game button container; panel created but sync may be limited');
             }
         }
     }, 500);
@@ -2726,7 +4027,7 @@ init();
 
             bottomLinks.insertBefore(customText, bottomLinks.firstChild);
 
-            console.log('✅ Custom text added to bottom links');
+           
         }
     }, 100);
 
@@ -2743,7 +4044,6 @@ init();
             const youtubeLink = bottomLinks.querySelector('a[href*="youtube"]');
             if (youtubeLink) {
                 youtubeLink.href = 'https://www.youtube.com/@liliwigota1';
-                console.log('✅ YouTube link changed to your channel');
             }
         
         }
@@ -2760,11 +4060,13 @@ if (!localStorage.getItem("changelogShown")) {
     const modal = document.createElement("div");
     modal.id = "changelogModal";
     modal.innerHTML = `
-            <h2>📝 Changelog v2.0</h2>
+            <h2>📝 Changelog v3.0</h2>
             <ul>
-                <li>!!!!NEW SETTINGS MENU!!!!</li>
-                <li>Hotkeys are fixed!!!!</li>
-                <li>You now need camlan to use this script!</li>
+                <li>BIG UPDATE!!!</li>
+                <li>REMADE HOTKEY CODE SO IT ACTULLY WORKS!!!!</li>
+                <li>Added more stuff to theme</li>
+                <li>remade ui again!!</li>
+                <li>You will now need camlan to use this script!</li>
             </ul>
             <button id="closeChangelog">Close</button>
         `;
@@ -2826,3 +4128,452 @@ if (!localStorage.getItem("changelogShown")) {
         localStorage.setItem("changelogShown", "true");
     });
 }
+(function() {
+    'use strict';
+
+    GM_addStyle(`
+        .main-top,
+        div.main-top,
+        div[class="main-top"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        .loader,
+        #account-loader,
+        div.loader,
+        div#account-loader,
+        [id="account-loader"],
+        [class*="loader"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+
+        .main-content.main-divider.main-panel,
+        .main-content.main-panel {
+            min-width: 350px !important;
+        }
+
+        .main-mid.menu-sub-bg {
+            padding: 20px !important;
+            padding-top: 0px !important;
+        }
+
+        #name-box {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            height: 45px !important;
+            font-size: 15px !important;
+            border-radius: 8px !important;
+        }
+
+        .main-input-btns {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+        }
+
+        .main-input-btns button,
+        .main-input-btns .gota-btn,
+        .main-input-btns .gota-menu-btn,
+        #unified-settings-btn,
+        #btn-servers {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            height: 45px !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+        }
+
+        .play-spec-wrapper {
+            width: 100% !important;
+            display: flex !important;
+            gap: 10px !important;
+            margin-bottom: 0 !important;
+        }
+
+        .play-spec-wrapper #btn-play,
+        .play-spec-wrapper #btn-spec {
+            flex: 1 !important;
+            height: 50px !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+        }
+
+        .main-input-btns button:hover,
+        #unified-settings-btn:hover,
+        #btn-servers:hover,
+        #btn-play:hover,
+        #btn-spec:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+        }
+
+        #main-account,
+        div#main-account {
+            position: relative !important;
+            top: unset !important;
+            left: unset !important;
+            transform: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 20px 20px 0px 20px !important;
+            margin-bottom: 10px !important;
+            margin-right: 16px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 8px !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            order: -1 !important;
+        }
+
+        #main-account .profile-section,
+        #main-account > div:first-child {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px !important;
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+
+        #main-account #userinfo {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px !important;
+            width: 100% !important;
+        }
+
+        #main-account #account-avatar {
+            max-height: 50px !important;
+            max-width: 50px !important;
+            min-height: 50px !important;
+            min-width: 50px !important;
+            border-radius: 50% !important;
+            border: 2px solid rgba(255,255,255,0.15) !important;
+            flex-shrink: 0 !important;
+        }
+
+        #main-account #username-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            flex: 1 !important;
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+
+        #main-account #account-username {
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            color: #fff !important;
+            letter-spacing: 0.3px !important;
+        }
+
+        #main-account #account-level,
+        #main-account [class*="level"],
+        #main-account [id*="level"] {
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+            opacity: 0.85 !important;
+        }
+
+        #main-account .xp-meter {
+            width: 90% !important;
+            min-width: 200px !important;
+        }
+
+        #main-account .xp-meter,
+        #main-account [class*="xp"],
+        #main-account [id*="xp"] {
+            color: #fff !important;
+            opacity: 0.85 !important;
+        }
+
+        #main-account .xp-meter > div,
+        #main-account [class*="xp-bar"],
+        #main-account [class*="progress"] {
+            background: rgba(60,60,60,0.6) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+        }
+
+        #main-account .xp-meter > div > div,
+        #main-account [class*="xp-fill"],
+        #main-account [class*="progress-fill"] {
+            background: linear-gradient(90deg, rgba(100,100,100,0.8), rgba(120,120,120,0.8)) !important;
+        }
+
+        #main-account .xp-text,
+        #main-account [class*="xp-text"] {
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+            opacity: 0.9 !important;
+        }
+
+        #main-account > div:last-child,
+        #main-account .account-buttons-wrapper {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 14px !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            width: 100% !important;
+            flex-wrap: wrap !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+        #main-account button,
+        #main-account .gota-btn {
+            background: rgba(40, 40, 40, 0.6) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: #fff !important;
+            padding: 6px 14px !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            flex: 0 1 auto !important;
+            min-width: fit-content !important;
+            height: 32px !important;
+            margin: 0 !important;
+        }
+
+        #main-account button:hover,
+        #main-account .gota-btn:hover {
+            background: rgba(60, 60, 60, 0.8) !important;
+            border-color: rgba(255,255,255,0.2) !important;
+            transform: translateY(-2px) !important;
+
+    transform: scale(1.03) !important;
+}
+
+        #main-account.logged-out {
+            gap: 6px !important;
+        }
+
+        #main-account.logged-out .account-buttons-wrapper {
+            gap: 14px !important;
+        }
+
+        #main-account.logged-out button,
+        #main-account.logged-out .gota-btn {
+            padding: 5px 10px !important;
+            font-size: 12px !important;
+            height: 30px !important;
+        }
+
+        #main-account span,
+        #main-account p,
+        #main-account div {
+            color: #fff !important;
+        }
+
+        @media (max-width: 768px) {
+            #main-account {
+                flex-direction: column !important;
+                gap: 6px !important;
+            }
+
+            #main-account .account-buttons-wrapper {
+                gap: 6px !important;
+            }
+        }
+
+
+    `);
+
+    function hideLoaders() {
+        const loaders = [
+            document.getElementById('account-loader'),
+            document.querySelector('.loader'),
+            document.querySelector('#account-loader'),
+            ...document.querySelectorAll('[class*="loader"]')
+        ];
+
+        loaders.forEach(loader => {
+            if (loader) {
+                loader.style.display = 'none';
+                loader.style.visibility = 'hidden';
+                loader.style.opacity = '0';
+                loader.style.pointerEvents = 'none';
+                loader.style.position = 'absolute';
+                loader.style.left = '-9999px';
+            }
+        });
+    }
+
+    function moveAccountMenu() {
+        const accountMenu = document.getElementById('main-account') ||
+                          document.querySelector('#main-account') ||
+                          document.querySelector('div#main-account');
+
+        if (!accountMenu) {
+            return false;
+        }
+
+        const guestDiv = document.getElementById('guest');
+        const isLoggedIn = !guestDiv || guestDiv.style.display === 'none';
+
+        if (!isLoggedIn) {
+            accountMenu.classList.add('logged-out');
+        } else {
+            accountMenu.classList.remove('logged-out');
+        }
+
+
+        const loginButton = Array.from(accountMenu.querySelectorAll('button')).find(btn =>
+            btn.textContent.trim().toLowerCase().includes('login') ||
+            btn.textContent.trim().toLowerCase().includes('log in') ||
+            btn.id === 'btn-login'
+        );
+
+        if (loginButton) {
+            if (isLoggedIn) {
+                loginButton.style.display = 'none';
+            } else {
+                loginButton.style.display = 'block';
+            }
+        }
+
+        const buttons = accountMenu.querySelectorAll('button, .gota-btn');
+        const userInfo = accountMenu.querySelector('#userinfo');
+
+        if (buttons.length > 0) {
+            let buttonWrapper = accountMenu.querySelector('.account-buttons-wrapper');
+            if (!buttonWrapper) {
+                buttonWrapper = document.createElement('div');
+                buttonWrapper.className = 'account-buttons-wrapper';
+                buttonWrapper.style.cssText = `
+                    flex-direction: row !important;
+                    gap: 15px !important;
+                    width: 100% !important;
+                `;
+
+                buttons.forEach(btn => {
+                    if (btn.style.display !== 'none') {
+                        buttonWrapper.appendChild(btn);
+                    }
+                });
+
+                accountMenu.appendChild(buttonWrapper);
+            }
+        }
+
+        if (userInfo && isLoggedIn) {
+            userInfo.style.cssText = `
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 12px !important;
+                width: 100% !important;
+            `;
+        }
+
+        const mainContent = document.querySelector('.main-content.main-divider.main-panel') ||
+                          document.querySelector('.main-content') ||
+                          document.querySelector('.main-panel');
+
+        if (!mainContent) {
+            return false;
+        }
+
+        if (mainContent.contains(accountMenu) && mainContent.firstChild === accountMenu) {
+            return true;
+        }
+
+        mainContent.insertBefore(accountMenu, mainContent.firstChild);
+
+        console.log('Account menu moved to main panel');
+        return true;
+    }
+
+    hideLoaders();
+
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    const moveInterval = setInterval(() => {
+        attempts++;
+        hideLoaders();
+        const success = moveAccountMenu();
+
+        if (success || attempts >= maxAttempts) {
+            clearInterval(moveInterval);
+            if (!success) {
+            }
+        }
+    }, 500);
+
+    const observer = new MutationObserver(() => {
+        hideLoaders();
+        moveAccountMenu();
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    console.log('Account Menu Integration script loaded');
+})();
+function setupClearAllButton() {
+    const checkButton = setInterval(() => {
+        const clearBtn = document.getElementById('clear-all-saved-players');
+        if (clearBtn) {
+            clearInterval(checkButton);
+
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all saved players?')) {
+                    const LSKEY = 'savedPlayers';
+                    localStorage.setItem(LSKEY, JSON.stringify([]));
+
+                    GM_setValue('savedPlayers', JSON.stringify([]));
+
+                    const listContainer = document.getElementById('saved-players-list');
+                    if (listContainer) {
+                        listContainer.innerHTML = '<p style="color: #888; font-size: 13px; text-align: center; padding: 20px;">No saved players yet.</p>';
+                    }
+
+                    if (typeof renderSavedPlayers === 'function') {
+                        renderSavedPlayers();
+                    }
+
+                    clearBtn.textContent = 'Cleared!';
+                    clearBtn.style.background = 'rgba(50,120,50,0.5)';
+                    clearBtn.style.borderColor = 'rgba(100,255,100,0.3)';
+                    clearBtn.style.color = '#b3ffb3';
+
+                    setTimeout(() => {
+                        clearBtn.textContent = 'Clear All';
+                        clearBtn.style.background = 'rgba(120,50,50,0.7)';
+                        clearBtn.style.borderColor = 'rgba(255,100,100,0.3)';
+                        clearBtn.style.color = '#ffb3b3';
+                    }, 2000);
+
+                
+                }
+            });
+        }
+    }, 100);
+}
+
