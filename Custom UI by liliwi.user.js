@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.0
+// @version      3.1
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -84,13 +84,14 @@
             font-family: 'Helvetica Neue', 'Arial', sans-serif;
             color: #ffffff;
             letter-spacing: 8px;
-            text-transform: uppercase;
+            text-transform: lowercase;
             font-weight: 300;
             margin: 0;
         }
         .pro-line-1 {
             font-size: clamp(1.4rem, 4vw, 2.4rem);
             animation-delay: 0.4s;
+            text-transform: none;
         }
         .pro-line-2 {
             font-size: clamp(2.2rem, 7vw, 5rem);
@@ -132,7 +133,7 @@
 
     const line2 = document.createElement('p');
     line2.className = 'pro-line pro-line-2';
-    const text = 'Liliwi';
+    const text = 'liliwi';
     line2.innerHTML = text.split('').map((char, i) =>
         `<span class="pro-letter" style="animation-delay:${1.6 + i * 0.12}s">${char}</span>`
     ).join('');
@@ -153,13 +154,6 @@
     };
     splash.addEventListener('click', removeNow);
     splash.addEventListener('touchend', (e) => { e.preventDefault(); removeNow(); });
-
-    setTimeout(() => {
-        if (splash.isConnected) {
-            splash.classList.add('fade-out');
-            setTimeout(() => splash.remove(), 1200);
-        }
-    }, 4000);
 
 })();
 
@@ -1036,7 +1030,7 @@ button#profile-close-btn.gota-btn {
 }
 
 div.main-bottom-links {
-    padding-top: 178px !important;
+    padding-top: 125px !important;
 }
 
 .x-show {
@@ -2125,7 +2119,9 @@ const CONFIG = {
         { id: 'hotkeys', label: 'Hotkeys' },
         { id: 'themes', label: 'Themes' },
         { id: 'cellpanel', label: 'Cell Panel' },
-        { id: 'customfeatures', label: 'Custom Features' }
+        { id: 'customfeatures', label: 'Custom Features' },
+
+
     ],
     hiddenButtons: ['#btn-options', '#btn-hotkeys', '#btn-themes', '#btn-cellpanel']
 };
@@ -2137,17 +2133,15 @@ function saveColorSettings() {
     document.querySelectorAll('#unified-settings-panel input[type="color"], #unified-settings-panel input[data-coloris]').forEach(inp => {
         if (inp.id) {
             colors[inp.id] = inp.value;
-            
         }
     });
     try {
         GM_setValue('savedColors', JSON.stringify(colors));
     } catch(e) {
         localStorage.setItem('savedColors', JSON.stringify(colors));
-     
+       
     }
 }
-
 function loadSavedColors() {
     let saved = null;
     try { saved = GM_getValue('savedColors', null); } catch(e) { saved = localStorage.getItem('savedColors'); }
@@ -2277,7 +2271,7 @@ function setupUpdateButton() {
                     console.log('🔄 Triggering game update button...');
                     gameBtn.click();
 
-                    customBtn.textContent = '✓ Updated!';
+                    customBtn.textContent = 'Updated!';
                     customBtn.style.background = 'rgba(0, 255, 0, 0.3)';
                     customBtn.style.borderColor = 'rgba(0, 255, 0, 0.5)';
 
@@ -2287,8 +2281,8 @@ function setupUpdateButton() {
                         customBtn.style.borderColor = 'rgba(80,80,255,0.5)';
                     }, 2000);
                 } else {
-                    console.warn('⚠️ Game update button not found!');
-                    customBtn.textContent = '❌ Not Found';
+                    console.warn('Game update button not found!');
+                    customBtn.textContent = 'Not Found';
                     customBtn.style.background = 'rgba(255, 0, 0, 0.3)';
 
                     setTimeout(() => {
@@ -2308,7 +2302,6 @@ function setupUpdateButton() {
                 customBtn.style.transform = 'scale(1)';
             });
 
-            console.log('✅ Update button linked successfully');
         }
     }, 100);
 
@@ -2341,9 +2334,8 @@ function setupUpdateButton() {
                 const gameLnBtn = document.getElementById('btn-use-ln');
                 if (gameLnBtn) {
                     gameLnBtn.click();
-                    console.log('✅ Used locked name');
                 } else {
-                    console.warn('⚠️ Game use-ln button not found');
+                 
                 }
             });
 
@@ -2351,13 +2343,11 @@ function setupUpdateButton() {
                 const gameEditBtn = document.getElementById('btn-chg-ln');
                 if (gameEditBtn) {
                     gameEditBtn.click();
-                    console.log('✅ Opened edit locked name');
                 } else {
-                    console.warn('⚠️ Game chg-ln button not found');
+                    
                 }
             });
 
-            console.log('✅ Locked name controls linked successfully');
         }
     }, 100);
 }
@@ -2494,7 +2484,6 @@ function getOptionsHTML() {
             </div>
         `;
 }
-
 function getHotkeysHTML() {
     return `
             <div class="setting-group">
@@ -2550,7 +2539,6 @@ function getHotkeysHTML() {
             </div>
         `;
 }
-
 function getThemesHTML() {
     return `
             <div class="setting-group">
@@ -2785,19 +2773,15 @@ function getCellPanelHTML() {
 }
 function getCustomFeaturesHTML() {
     return `
-          <div class="setting-group">
-            <h3>Chat Toggle</h3>
+        <!-- HOTKEYS GROUP -->
+        <div class="setting-group">
+            <h3>Hotkeys</h3>
             <div class="setting-row">
                 <span class="setting-label">Chat Toggle Hotkey</span>
                 <div class="setting-control">
                     <button class="keybinds-btn" id="chat-toggle-key" data-custom="chatToggle">Y</button>
                 </div>
             </div>
-        </div>
-
-
-        <div class="setting-group">
-            <h3>Tab Invite</h3>
             <div class="setting-row">
                 <span class="setting-label">Tab Invite Hotkey</span>
                 <div class="setting-control">
@@ -2807,17 +2791,45 @@ function getCustomFeaturesHTML() {
             <p style="color: #aaa; font-size: 12px; margin-top: 10px;">Automatically invites and accepts party invites from another tab.</p>
         </div>
 
+
       <div class="setting-group">
-            <h3>Quick Add Player</h3>
-            <p style="color: #bbb; font-size: 13px; margin-bottom: 12px;">As an example liliwi [sasa] and then pressing on both with save it seperatly REMEMBER TO USE []</p>
+            <h3>UI Features</h3>
+
             <div class="setting-row">
-                <span class="setting-label">Input</span>
+                <span class="setting-label">Show Clock</span>
                 <div class="setting-control">
-                    <input type="text" id="quick-player-input" placeholder="Enter name/skin..." style="width:300px;">
+                <span style="color: white; margin-left: 8px;">Display real-time clock in extra panel</span>
+
+                    <input type="checkbox" id="liliwi-show-clock" checked>
+                    </label>
                 </div>
             </div>
-            <div class="setting-row">
 
+            <div class="setting-row">
+                <span class="setting-label">Show Session Timer</span>
+                <div class="setting-control">
+                              <span style="color: white; margin-left: 8px;">Display time since tab opened (persists across servers)</span>
+                    <input type="checkbox" id="liliwi-show-session" checked>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAYER MANAGEMENT GROUP -->
+        <div class="setting-group">
+            <h3>Player Management</h3>
+            <p style="color: #bbb; font-size: 13px; margin-bottom: 12px;">
+                Quick Add example: liliwi [sasa] → use [] for skin. Right-click in-game → "Copy" to save players.
+            </p>
+
+            <div class="setting-row">
+                <span class="setting-label">Quick Add Input</span>
+                <div class="setting-control">
+                    <input type="text" id="quick-player-input" placeholder="Enter name and/or [skin]..." style="width:300px;">
+                </div>
+            </div>
+
+            <div class="setting-row">
                 <span class="setting-label"></span>
                 <div class="setting-control" style="display:flex; gap:10px;">
                     <button id="save-name-btn" class="x-small-btn" style="min-width:90px;">Save Name</button>
@@ -2825,14 +2837,18 @@ function getCustomFeaturesHTML() {
                     <button id="save-both-btn" class="x-small-btn" style="min-width:90px;">Save Both</button>
                 </div>
             </div>
+
+            <div class="setting-row" style="margin-top: 16px;">
+                <span class="setting-label">Saved Players</span>
+                <div class="setting-control">
+                    <button id="clear-all-saved-players">Clear All</button>
+                </div>
+            </div>
+            <div id="saved-players-list" style="margin-top: 8px;"></div>
         </div>
 
-        <div class="setting-group">
-            <h3>Saved Players</h3>
-            <p style="color: #bbb; font-size: 13px; margin-bottom: 12px;">Right-click players in-game and select "Copy" to save them, or use Quick Add above.</p>
-            <button id="clear-all-saved-players">Clear All</button>
-            <div id="saved-players-list"></div>
-        </div>
+
+
     `;
 }
 
@@ -2997,6 +3013,43 @@ function renderSavedPlayers() {
     container.appendChild(wrapper);
 }
 
+function setupRandomizer() {
+    const btn = document.getElementById('random-player-btn');
+    if (!btn) return setTimeout(setupRandomizer, 500);
+
+    btn.onclick = () => {
+        const saved = loadSavedPlayers();
+        if (!saved.length) {
+            alert('❌ Inga sparade spelare!\nLägg till via Quick Add eller högerklick "Copy" på spelare.');
+            return;
+        }
+        const randomIdx = Math.floor(Math.random() * saved.length);
+        const randomPlayer = saved[randomIdx];
+        const input = getNameInput();
+        if (!input) {
+            alert('Name-box wasnt found! (Öppna server-select först)');
+            return;
+        }
+
+        let newName = randomPlayer.name || '';
+        if (randomPlayer.skin && randomPlayer.skin !== 'none') {
+            newName += ` [${randomPlayer.skin}]`;
+        }
+        setInputValue(input, newName);
+
+        const oldText = btn.textContent;
+        btn.textContent = `🎉 ${randomPlayer.name || 'Random'} vald!`;
+        btn.style.background = 'rgba(50,150,50,0.8) !important';
+        btn.style.borderColor = 'rgba(100,255,100,0.5) !important';
+        setTimeout(() => {
+            btn.textContent = oldText;
+            btn.style.background = '';
+            btn.style.borderColor = '';
+        }, 2000);
+        console.log(`🎲 Random: ${newName}`);
+    };
+}
+
 function setupSavedPlayersFeature() {
     const waitForContextMenu = setInterval(() => {
         const contextMenu = document.querySelector('#context-menu');
@@ -3142,9 +3195,9 @@ function setupColorPickers() {
                           `cursor: pointer !important; ` +
                           `padding: 5px !important; ` +
                           `margin: 0 !important; ` +
-                          `font-size: 0px !important; ` + // Hide the text
-                          `text-indent: -9999px !important; ` + // Hide any text
-                          `color: transparent !important; ` + // Make text transparent
+                          `font-size: 0px !important; ` + 
+                          `text-indent: -9999px !important; ` + 
+                          `color: transparent !important; ` + 
                           `box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;`;
 
                     ourInput.setAttribute('style', style);
@@ -3193,6 +3246,16 @@ function setupColorPickers() {
                     }
                 });
 
+                const overlay = document.getElementById('unified-settings-overlay');
+                if (overlay) {
+                    const observer = new MutationObserver(() => {
+                        if (!overlay.classList.contains('show')) {
+                            saveColorSettings();
+                        }
+                    });
+                    observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+                }
+
                 const styleMonitor = setInterval(() => {
                     const overlay = document.getElementById('unified-settings-overlay');
                     if (!overlay || !overlay.classList.contains('show')) {
@@ -3226,8 +3289,6 @@ function rgbaToHex(rgba) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
 
-
-
 function setupChatToggle(hotkey) {
     document.removeEventListener('keydown', window.__chatToggleHandler);
 
@@ -3246,8 +3307,6 @@ function setupChatToggle(hotkey) {
 
     document.addEventListener("keydown", window.__chatToggleHandler);
 }
-
-
 
 function syncHotkeysFromGame() {
     const hotkeysTab = document.querySelector('#tab-hotkeys');
@@ -3274,7 +3333,6 @@ function syncHotkeysFromGame() {
 
     });
 }
-
 
 function syncHotkeysWithGame() {
     let isCapturing = false;
@@ -3347,7 +3405,6 @@ function syncHotkeysWithGame() {
         }
     });
 
-    console.log('✅ Hotkeys synced with aggressive Escape handling');
 }
 
 function syncWithGameSettings() {
@@ -3369,7 +3426,6 @@ function syncWithGameSettings() {
         console.error('syncWithGameSettings error', e);
     }
 }
-
 
 function findPotentialGamePanel() {
     const possible = [
@@ -3430,6 +3486,126 @@ function findGameElement(id) {
     }
     return null;
 }
+
+(function() {
+    'use strict';
+
+    let clockLine = null;
+    let sessionLine = null;
+    let clockInterval = null;
+    let sessionInterval = null;
+    let sessionStart = null;
+
+    const formatTime = (seconds) => {
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
+
+    function createClock() {
+        if (clockLine) return;
+        const extraPanel = document.getElementById('extra-panel');
+        if (!extraPanel) return;
+
+        clockLine = document.createElement('p');
+        clockLine.className = 'liliwi-timer-line';
+        clockLine.style.display = 'block';
+        clockLine.innerHTML = `Time: <span id="liliwi-clock">00:00:00</span>`;
+
+
+        if (sessionLine && sessionLine.parentNode) {
+            extraPanel.insertBefore(clockLine, sessionLine);
+        } else {
+            extraPanel.appendChild(clockLine);
+        }
+
+        const updateClock = () => {
+            const now = new Date();
+            const span = document.getElementById('liliwi-clock');
+            if (span) span.textContent = now.toTimeString().slice(0, 8);
+        };
+        updateClock();
+        clockInterval = setInterval(updateClock, 1000);
+    }
+
+    function createSession() {
+        if (sessionLine) return;
+        const extraPanel = document.getElementById('extra-panel');
+        if (!extraPanel) return;
+
+        sessionLine = document.createElement('p');
+        sessionLine.className = 'liliwi-timer-line';
+        sessionLine.style.display = 'block';
+        sessionLine.innerHTML = `Session: <span id="liliwi-session">00:00:00</span>`;
+
+        if (clockLine && clockLine.parentNode) {
+            clockLine.parentNode.insertBefore(sessionLine, clockLine.nextSibling);
+        } else {
+            extraPanel.appendChild(sessionLine);
+        }
+
+        sessionStart = Date.now();
+        sessionInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+            const span = document.getElementById('liliwi-session');
+            if (span) span.textContent = formatTime(elapsed);
+        }, 1000);
+    }
+
+    function removeClock() {
+        if (clockLine && clockLine.parentNode) {
+            clockLine.parentNode.removeChild(clockLine);
+        }
+        if (clockInterval) clearInterval(clockInterval);
+        clockLine = null;
+        clockInterval = null;
+    }
+
+    function removeSession() {
+        if (sessionLine && sessionLine.parentNode) {
+            sessionLine.parentNode.removeChild(sessionLine);
+        }
+        if (sessionInterval) clearInterval(sessionInterval);
+        sessionLine = null;
+        sessionInterval = null;
+    }
+
+    const waitForCheckboxes = setInterval(() => {
+        const clockCheckbox = document.getElementById('liliwi-show-clock');
+        const sessionCheckbox = document.getElementById('liliwi-show-session');
+
+        if (!clockCheckbox || !sessionCheckbox) return;
+
+        clearInterval(waitForCheckboxes);
+
+        if (localStorage.getItem('liliwi-show-clock') === 'false') clockCheckbox.checked = false;
+        if (localStorage.getItem('liliwi-show-session') === 'false') sessionCheckbox.checked = false;
+
+        clockCheckbox.addEventListener('change', (e) => {
+            localStorage.setItem('liliwi-show-clock', e.target.checked);
+            e.target.checked ? createClock() : removeClock();
+        });
+
+        sessionCheckbox.addEventListener('change', (e) => {
+            localStorage.setItem('liliwi-show-session', e.target.checked);
+            e.target.checked ? createSession() : removeSession();
+        });
+
+        if (clockCheckbox.checked) createClock();
+        if (sessionCheckbox.checked) createSession();
+
+    }, 300);
+
+    setTimeout(() => {
+        if (document.getElementById('extra-panel')) {
+            const clockCB = document.getElementById('liliwi-show-clock');
+            const sessionCB = document.getElementById('liliwi-show-session');
+            if (clockCB?.checked) createClock();
+            if (sessionCB?.checked) createSession();
+        }
+    }, 5000);
+})();
 
 function performSync() {
     try {
@@ -3563,12 +3739,13 @@ function open() {
         syncWithGameSettings();
         syncHotkeysWithGame();
         setupColorPickers();
+        loadSavedColors(); 
     }
 }
-
 function close() {
     const overlay = document.getElementById('unified-settings-overlay');
     if (overlay && state.isOpen) {
+        saveColorSettings(); 
         overlay.classList.remove('show');
         state.isOpen = false;
 
@@ -3731,9 +3908,6 @@ function close() {
     watchContextMenu();
 })();
 
-
-
-
 function setupSearchFunctionality() {
     const searchInput = document.getElementById('settings-search-input');
     if (!searchInput) return;
@@ -3793,7 +3967,6 @@ function setupSearchFunctionality() {
         });
     });
 
-    console.log('✅ Search functionality initialized - highlights cleared on empty search');
 }
 function setupThemeButtons() {
     const checkButtons = setInterval(() => {
@@ -3807,7 +3980,6 @@ function setupThemeButtons() {
         if (customBgBtn && customSpikeBtn && customMotherBtn && foodColorsBtn && importBtn && exportBtn) {
             clearInterval(checkButtons);
 
-            // Link to game buttons
             customBgBtn.onclick = () => {
                 const gameBtn = document.getElementById('aCustomBackground');
                 if (gameBtn) gameBtn.click();
@@ -3843,124 +4015,6 @@ function setupThemeButtons() {
     }, 100);
 }
 
-function parsePlayerInput(input) {
-    if (!input) return { name: '', skin: 'none' };
-
-    input = input.trim();
-
-
-   const match = input.match(/^(.+?)\s*\[([^\]]+)\]\s*$/);
-    if (match) {
-        return {
-            name: match[1].trim(),
-            skin: match[2].trim()
-        };
-    }
-
-    const match2 = input.match(/^\s*\[([^\]]+)\]\s*(.+)$/);
-    if (match2) {
-        return {
-            name: match2[2].trim(),
-            skin: match2[1].trim()
-        };
-    }
-
-    return {
-        name: input,
-        skin: 'none'
-    };
-}
-
-function setupQuickAddName() {
-    const checkButtons = setInterval(() => {
-        const saveNameBtn = document.getElementById('save-name-btn');
-        const saveSkinBtn = document.getElementById('save-skin-btn');
-        const saveBothBtn = document.getElementById('save-both-btn');
-        const playerInput = document.getElementById('quick-player-input');
-
-        if (saveNameBtn && saveSkinBtn && saveBothBtn && playerInput) {
-            clearInterval(checkButtons);
-
-            saveNameBtn.onclick = () => {
-                const input = playerInput.value.trim();
-                if (!input) {
-                    alert('Please enter something first!');
-                    return;
-                }
-
-                const list = loadSavedPlayers();
-                list.push({ name: input, skin: 'none' });
-                saveSavedPlayers(list);
-
-                playerInput.value = '';
-                saveNameBtn.textContent = '✓ Saved!';
-                saveNameBtn.style.background = 'rgba(50,120,50,0.7)';
-
-                setTimeout(() => {
-                    saveNameBtn.textContent = 'Save Name';
-                    saveNameBtn.style.background = 'rgba(28, 28, 28, 0.7)';
-                }, 1500);
-
-                renderSavedPlayers();
-            };
-
-            saveSkinBtn.onclick = () => {
-                const input = playerInput.value.trim();
-                if (!input) {
-                    alert('Please enter something first!');
-                    return;
-                }
-
-                const list = loadSavedPlayers();
-                list.push({ name: '[skin]', skin: input });
-                saveSavedPlayers(list);
-
-                playerInput.value = '';
-                saveSkinBtn.textContent = '✓ Saved!';
-                saveSkinBtn.style.background = 'rgba(50,120,50,0.7)';
-
-                setTimeout(() => {
-                    saveSkinBtn.textContent = 'Save Skin';
-                    saveSkinBtn.style.background = 'rgba(28, 28, 28, 0.7)';
-                }, 1500);
-
-                renderSavedPlayers();
-            };
-
-            saveBothBtn.onclick = () => {
-                const input = playerInput.value.trim();
-                if (!input) {
-                    alert('Please enter something first!');
-                    return;
-                }
-
-                const { name, skin } = parsePlayerInput(input);
-
-                if (!name) {
-                    alert('Could not parse player name!');
-                    return;
-                }
-
-                const list = loadSavedPlayers();
-                list.push({ name: name, skin: skin });
-                saveSavedPlayers(list);
-
-                playerInput.value = '';
-                saveBothBtn.textContent = '✓ Saved!';
-                saveBothBtn.style.background = 'rgba(50,120,50,0.7)';
-
-                setTimeout(() => {
-                    saveBothBtn.textContent = 'Save Both';
-                    saveBothBtn.style.background = 'rgba(28, 28, 28, 0.7)';
-                }, 1500);
-
-                renderSavedPlayers();
-            };
-
-            console.log('✅ Quick add buttons initialized');
-        }
-    }, 100);
-}
 function init() {
     if (state.initialized) return;
     let attempts = 0;
@@ -3980,13 +4034,12 @@ function init() {
                 try { savedFont = GM_getValue('gameFont', 'default'); } catch(e) { savedFont = localStorage.getItem('gameFont') || 'default'; }
                 applyFont(savedFont);
 
+                setupRandomizer();
                 setupSearchFunctionality();
                 setupRangeListeners();
                 setupColorPickers();
                 setupFontSelector();
-                setupQuickAddName();
                 setupThemeButtons();
-
                 const savedChatKey = localStorage.getItem('chatToggleHotkey') || 'y';
                 const chatToggleBtn = document.getElementById('chat-toggle-key');
                 if (chatToggleBtn) {
@@ -3999,7 +4052,9 @@ function init() {
                 if (tabInviteBtn) {
                     tabInviteBtn.textContent = savedTabKey.toUpperCase();
                 }
-
+if (localStorage.getItem('autoRandomEnabled') === 'true') {
+    document.getElementById('cAutoRandomSkin')?.dispatchEvent(new Event('change'));
+}
                 console.log('✔ Unified Settings with custom UI loaded');
             } else {
                 createPanel();
@@ -4060,14 +4115,13 @@ if (!localStorage.getItem("changelogShown")) {
     const modal = document.createElement("div");
     modal.id = "changelogModal";
     modal.innerHTML = `
-            <h2>📝 Changelog v3.0</h2>
+            <h2>📝 Changelog v3.1</h2>
             <ul>
-                <li>BIG UPDATE!!!</li>
-                <li>REMADE HOTKEY CODE SO IT ACTULLY WORKS!!!!</li>
-                <li>Added more stuff to theme</li>
-                <li>remade ui again!!</li>
+                <li>Added Time and session time</li>
+                <li>Added an option to add ur own players into the saved players</li>
+                <li>improvements have come</li>
                 <li>You will now need camlan to use this script!</li>
-            </ul>
+                </ul>
             <button id="closeChangelog">Close</button>
         `;
     document.body.appendChild(modal);
@@ -4157,6 +4211,7 @@ if (!localStorage.getItem("changelogShown")) {
         .main-content.main-divider.main-panel,
         .main-content.main-panel {
             min-width: 350px !important;
+            height: 500px !important;
         }
 
         .main-mid.menu-sub-bg {
@@ -4327,7 +4382,7 @@ if (!localStorage.getItem("changelogShown")) {
             color: #fff !important;
             opacity: 0.9 !important;
         }
-
+        
         #main-account > div:last-child,
         #main-account .account-buttons-wrapper {
             display: flex !important;
@@ -4340,7 +4395,7 @@ if (!localStorage.getItem("changelogShown")) {
             margin-top: 0 !important;
             padding-top: 0 !important;
         }
-
+        
         #main-account button,
         #main-account .gota-btn {
             background: rgba(40, 40, 40, 0.6) !important;
@@ -4358,7 +4413,7 @@ if (!localStorage.getItem("changelogShown")) {
             height: 32px !important;
             margin: 0 !important;
         }
-
+        
         #main-account button:hover,
         #main-account .gota-btn:hover {
             background: rgba(60, 60, 60, 0.8) !important;
@@ -4371,38 +4426,35 @@ if (!localStorage.getItem("changelogShown")) {
         #main-account.logged-out {
             gap: 6px !important;
         }
-
+        
         #main-account.logged-out .account-buttons-wrapper {
             gap: 14px !important;
         }
-
+        
         #main-account.logged-out button,
         #main-account.logged-out .gota-btn {
             padding: 5px 10px !important;
             font-size: 12px !important;
             height: 30px !important;
         }
-
+        
         #main-account span,
         #main-account p,
         #main-account div {
             color: #fff !important;
         }
-
+        
         @media (max-width: 768px) {
             #main-account {
                 flex-direction: column !important;
                 gap: 6px !important;
             }
-
             #main-account .account-buttons-wrapper {
                 gap: 6px !important;
             }
         }
-
-
     `);
-
+    
     function hideLoaders() {
         const loaders = [
             document.getElementById('account-loader'),
@@ -4410,7 +4462,6 @@ if (!localStorage.getItem("changelogShown")) {
             document.querySelector('#account-loader'),
             ...document.querySelectorAll('[class*="loader"]')
         ];
-
         loaders.forEach(loader => {
             if (loader) {
                 loader.style.display = 'none';
@@ -4422,16 +4473,14 @@ if (!localStorage.getItem("changelogShown")) {
             }
         });
     }
-
+    
     function moveAccountMenu() {
         const accountMenu = document.getElementById('main-account') ||
                           document.querySelector('#main-account') ||
                           document.querySelector('div#main-account');
-
         if (!accountMenu) {
             return false;
         }
-
         const guestDiv = document.getElementById('guest');
         const isLoggedIn = !guestDiv || guestDiv.style.display === 'none';
 
@@ -4440,14 +4489,11 @@ if (!localStorage.getItem("changelogShown")) {
         } else {
             accountMenu.classList.remove('logged-out');
         }
-
-
         const loginButton = Array.from(accountMenu.querySelectorAll('button')).find(btn =>
             btn.textContent.trim().toLowerCase().includes('login') ||
             btn.textContent.trim().toLowerCase().includes('log in') ||
             btn.id === 'btn-login'
         );
-
         if (loginButton) {
             if (isLoggedIn) {
                 loginButton.style.display = 'none';
@@ -4455,10 +4501,8 @@ if (!localStorage.getItem("changelogShown")) {
                 loginButton.style.display = 'block';
             }
         }
-
         const buttons = accountMenu.querySelectorAll('button, .gota-btn');
         const userInfo = accountMenu.querySelector('#userinfo');
-
         if (buttons.length > 0) {
             let buttonWrapper = accountMenu.querySelector('.account-buttons-wrapper');
             if (!buttonWrapper) {
@@ -4469,17 +4513,15 @@ if (!localStorage.getItem("changelogShown")) {
                     gap: 15px !important;
                     width: 100% !important;
                 `;
-
                 buttons.forEach(btn => {
                     if (btn.style.display !== 'none') {
                         buttonWrapper.appendChild(btn);
                     }
                 });
-
                 accountMenu.appendChild(buttonWrapper);
             }
         }
-
+        
         if (userInfo && isLoggedIn) {
             userInfo.style.cssText = `
                 flex-direction: row !important;
@@ -4488,11 +4530,9 @@ if (!localStorage.getItem("changelogShown")) {
                 width: 100% !important;
             `;
         }
-
         const mainContent = document.querySelector('.main-content.main-divider.main-panel') ||
                           document.querySelector('.main-content') ||
                           document.querySelector('.main-panel');
-
         if (!mainContent) {
             return false;
         }
@@ -4506,12 +4546,9 @@ if (!localStorage.getItem("changelogShown")) {
         console.log('Account menu moved to main panel');
         return true;
     }
-
     hideLoaders();
-
     let attempts = 0;
     const maxAttempts = 20;
-
     const moveInterval = setInterval(() => {
         attempts++;
         hideLoaders();
@@ -4520,10 +4557,10 @@ if (!localStorage.getItem("changelogShown")) {
         if (success || attempts >= maxAttempts) {
             clearInterval(moveInterval);
             if (!success) {
+                console.log('Could not find account menu after', maxAttempts, 'attempts');
             }
         }
     }, 500);
-
     const observer = new MutationObserver(() => {
         hideLoaders();
         moveAccountMenu();
@@ -4533,8 +4570,6 @@ if (!localStorage.getItem("changelogShown")) {
         childList: true,
         subtree: true
     });
-
-    console.log('Account Menu Integration script loaded');
 })();
 function setupClearAllButton() {
     const checkButton = setInterval(() => {
@@ -4557,7 +4592,6 @@ function setupClearAllButton() {
                     if (typeof renderSavedPlayers === 'function') {
                         renderSavedPlayers();
                     }
-
                     clearBtn.textContent = 'Cleared!';
                     clearBtn.style.background = 'rgba(50,120,50,0.5)';
                     clearBtn.style.borderColor = 'rgba(100,255,100,0.3)';
@@ -4570,7 +4604,7 @@ function setupClearAllButton() {
                         clearBtn.style.color = '#ffb3b3';
                     }, 2000);
 
-                
+                    console.log('All saved players cleared');
                 }
             });
         }
