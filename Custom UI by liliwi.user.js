@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.1
+// @version      3.2
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -16,10 +16,10 @@
 // ==/UserScript==
 
 (function () {
-    'use strict';
+  'use strict';
 
-    const style = document.createElement('style');
-    style.textContent = `
+  const style = document.createElement("style");
+  style.textContent = `
         @keyframes bgFade {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -119,49 +119,45 @@
         }
         @keyframes fadeIn { to { opacity: 1; } }
     `;
-    document.head.appendChild(style);
-
-    const splash = document.createElement('div');
-    splash.id = 'liliwi-pro-splash';
-
-    const container = document.createElement('div');
-    container.className = 'pro-text-container';
-
-    const line1 = document.createElement('p');
-    line1.className = 'pro-line pro-line-1';
-    line1.textContent = 'Developed by';
-
-    const line2 = document.createElement('p');
-    line2.className = 'pro-line pro-line-2';
-    const text = 'liliwi';
-    line2.innerHTML = text.split('').map((char, i) =>
-        `<span class="pro-letter" style="animation-delay:${1.6 + i * 0.12}s">${char}</span>`
-    ).join('');
-
-    const hint = document.createElement('div');
-    hint.className = 'skip-hint';
-    hint.textContent = 'Click or tap to continue';
-
-    container.appendChild(line1);
-    container.appendChild(line2);
-    splash.appendChild(container);
-    splash.appendChild(hint);
-    document.body.appendChild(splash);
-
-    const removeNow = () => {
-        splash.classList.add('fade-out');
-        setTimeout(() => splash.remove(), 1200);
-    };
-    splash.addEventListener('click', removeNow);
-    splash.addEventListener('touchend', (e) => { e.preventDefault(); removeNow(); });
-
+  document.head.appendChild(style);
+  const splash = document.createElement("div");
+  splash.id = "liliwi-pro-splash";
+  const container = document.createElement("div");
+  container.className = "pro-text-container";
+  const line1 = document.createElement("p");
+  line1.className = "pro-line pro-line-1";
+  line1.textContent = "Developed by";
+  const line2 = document.createElement("p");
+  line2.className = "pro-line pro-line-2";
+  const text = "liliwi";
+  line2.innerHTML = text.split("").map((char, i) => `<span class="pro-letter" style="animation-delay:${1.6 + i * 0.12}s">${char}</span>`).join("");
+  const hint = document.createElement("div");
+  hint.className = "skip-hint";
+  hint.textContent = "Click or tap to continue";
+  container.appendChild(line1);
+  container.appendChild(line2);
+  splash.appendChild(container);
+  splash.appendChild(hint);
+  document.body.appendChild(splash);
+  const removeNow = () => {
+    splash.classList.add("fade-out");
+    setTimeout(() => splash.remove(), 1200);
+  };
+  splash.addEventListener("click", removeNow);
+  splash.addEventListener("touchend", e => {
+    e.preventDefault();
+    removeNow();
+  });
 })();
+if (window.location.hostname === "play.gota.io") {
+  setTimeout(() => {
+    alert("⚠️ This script is designed for gota.io/camlan/!\n\nPlease go to https://gota.io/camlan/ for the best experience and full compatibility.\n\n(play.gota.io may have compatibility issues or reduced features.)");
+  }, 500);
+}
+(function () {
+  'use strict';
 
-
-(function() {
-    'use strict';
-
-   GM_addStyle(`
+  GM_addStyle(`
 /* ===== MAIN PANELS & CONTAINERS ===== */
 .main-panel,
 #main-right,
@@ -1757,470 +1753,464 @@ display: none;
 
 `);
 })();
-
 const extraBtns = ["#btn-servers", "#btn-options", "#btn-hotkeys", "#btn-themes", "#btn-cellpanel"];
 function moveButtons() {
-    const container = document.querySelector(".main-input-btns");
-    if (container) {
-        extraBtns.forEach(sel => {
-            const btn = document.querySelector(sel);
-            if (btn) container.appendChild(btn);
-        });
-    }
+  const container = document.querySelector(".main-input-btns");
+  if (container) {
+    extraBtns.forEach(sel => {
+      const btn = document.querySelector(sel);
+      if (btn) {
+        container.appendChild(btn);
+      }
+    });
+  }
 }
 moveButtons();
 setTimeout(moveButtons, 1000);
+(function () {
+  'use strict';
 
-(function() {
-    'use strict';
-
-    const channel = new BroadcastChannel("gota_multi");
-    let myId = null;
-    let otherTabId = null;
-
-    const feeders = {};
-
-    function getCurrentPlayerId() {
-        const el = document.querySelector("#pId span");
-        return el?.innerText?.trim() || null;
+  const channel = new BroadcastChannel("gota_multi");
+  let myId = null;
+  let otherTabId = null;
+  const feeders = {};
+  function getCurrentPlayerId() {
+    const el = document.querySelector("#pId span");
+    return el?.innerText?.trim() || null;
+  }
+  function updateMyId() {
+    const newId = getCurrentPlayerId();
+    if (!newId || newId === "0") {
+      return;
     }
-
-    function updateMyId() {
-        const newId = getCurrentPlayerId();
-        if (!newId || newId === "0") return;
-
-        if (myId !== newId) {
-            if (myId) {
-                delete feeders[myId];
-                channel.postMessage({ action: "deregisterFeeder", feederId: myId });
-            }
-            myId = newId;
-            feeders[myId] = Date.now();
-            console.log(`📄 Updated myId: ${myId}`);
-            channel.postMessage({ action: "registerFeeder", feederId: myId });
-        }
-    }
-
-    setInterval(updateMyId, 1000);
-
-    channel.onmessage = (e) => {
-        const data = e.data;
-        if (!data) return;
-
-        switch (data.action) {
-            case "registerFeeder":
-            case "feederPing":
-                feeders[data.feederId] = Date.now();
-                updateOtherTabId();
-                break;
-            case "deregisterFeeder":
-                delete feeders[data.feederId];
-                updateOtherTabId();
-                break;
-            case "autoAccept":
-                scheduleAcceptScan();
-                break;
-        }
-    };
-
-    function updateOtherTabId() {
-        const now = Date.now();
-        const validIds = Object.entries(feeders)
-        .filter(([id, ts]) => id !== myId && id !== "0" && (now - ts < 5000))
-        .map(([id]) => id);
-
-        otherTabId = validIds.length ? validIds[0] : null;
-        if (otherTabId) console.log(`📡 Detected other tab: ${otherTabId}`);
-    }
-
-    setInterval(() => {
-        if (myId && myId !== "0") {
-            channel.postMessage({ action: "feederPing", feederId: myId });
-        }
-    }, 3000);
-
-    function setNativeValue(el, value) {
-        const valueSetter = Object.getOwnPropertyDescriptor(el.__proto__, "value")?.set;
-        const prototype = Object.getPrototypeOf(el);
-        const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
-
-        if (valueSetter && valueSetter !== prototypeValueSetter) {
-            prototypeValueSetter.call(el, value);
-        } else {
-            valueSetter.call(el, value);
-        }
-    }
-
-    function pressEnter(el) {
-        ["keydown", "keypress", "keyup"].forEach(type => {
-            el.dispatchEvent(new KeyboardEvent(type, {
-                bubbles: true,
-                cancelable: true,
-                key: "Enter",
-                code: "Enter",
-                keyCode: 13,
-                which: 13
-            }));
+    if (myId !== newId) {
+      if (myId) {
+        delete feeders[myId];
+        channel.postMessage({
+          action: "deregisterFeeder",
+          feederId: myId
         });
+      }
+      myId = newId;
+      feeders[myId] = Date.now();
+      console.log(`📄 Updated myId: ${myId}`);
+      channel.postMessage({
+        action: "registerFeeder",
+        feederId: myId
+      });
     }
-
-    function findAcceptButton() {
-        const candidates = [
-            ...document.querySelectorAll('button, [role="button"], .gota-btn, .btn-accept, #btn-accept')
-        ];
-        const lowerIncludes = (s, sub) => (s || "").toLowerCase().includes(sub);
-
-        let btn = candidates.find(b =>
-                                  lowerIncludes(b.id, "accept") || lowerIncludes(b.className, "accept")
-                                 );
-        if (btn) return btn;
-
-        btn = [...document.querySelectorAll('*')].find(el => {
-            const text = (el.textContent || "").trim().toLowerCase();
-            if (!text) return false;
-            const clickable = (el.tagName === "BUTTON") ||
-                  el.getAttribute("role") === "button" ||
-                  el.classList.contains("gota-btn") ||
-                  el.onclick || el.dataset?.onClick;
-            return clickable && (text.includes("accept") || text.includes("join"));
-        });
-        return btn || null;
+  }
+  setInterval(updateMyId, 1000);
+  channel.onmessage = e => {
+    const data = e.data;
+    if (!data) {
+      return;
     }
-
-    function scheduleAcceptScan() {
-        let tries = 0;
-        const maxTries = 40;
-        const timer = setInterval(() => {
-            const btn = findAcceptButton();
-            if (btn) {
-                btn.click();
-                console.log("✅ Accepted invite automatically");
-                clearInterval(timer);
-            } else if (++tries >= maxTries) {
-                console.log("❌ No accept button detected within timeout.");
-                clearInterval(timer);
-            }
-        }, 150);
+    switch (data.action) {
+      case "registerFeeder":
+      case "feederPing":
+        feeders[data.feederId] = Date.now();
+        updateOtherTabId();
+        break;
+      case "deregisterFeeder":
+        delete feeders[data.feederId];
+        updateOtherTabId();
+        break;
+      case "autoAccept":
+        scheduleAcceptScan();
+        break;
     }
-
-    function sendInviteAndAccept(id) {
-        const chat = document.querySelector("input#chat-input");
-        if (!chat) return console.log("⚠️ Chat input not found");
-
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true }));
-
-        setTimeout(() => {
-            chat.focus();
-            setNativeValue(chat, `/invite ${id}`);
-            chat.dispatchEvent(new Event("input", { bubbles: true }));
-            pressEnter(chat);
-            console.log(`📨 Invite sent for ${id}`);
-            scheduleAcceptScan();
-            setTimeout(() => {
-                channel.postMessage({ action: "autoAccept" });
-            }, 200);
-        }, 50);
+  };
+  function updateOtherTabId() {
+    const now = Date.now();
+    const validIds = Object.entries(feeders).filter(([id, ts]) => id !== myId && id !== "0" && now - ts < 5000).map(([id]) => id);
+    otherTabId = validIds.length ? validIds[0] : null;
+    if (otherTabId) {}
+  }
+  setInterval(() => {
+    if (myId && myId !== "0") {
+      channel.postMessage({
+        action: "feederPing",
+        feederId: myId
+      });
     }
-
-    document.addEventListener("keydown", (e) => {
-        if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
-
-        if (e.key.toLowerCase() === (window.__TAB_INVITE_HOTKEY || 'j')) {
-            if (!otherTabId) return console.log("⚠️ No other tab detected yet!");
-            sendInviteAndAccept(otherTabId);
-        }
-    });
-
-    window.__TAB_INVITE_HOTKEY = localStorage.getItem("tabInviteHotkey") || "j";
-})();
-
-function findPanel() {
-    return document.querySelector("#party-panel");
-}
-
-function styleButton(btn) {
-    Object.assign(btn.style, {
-        backgroundColor: "transparent",
-        color: "#fff",
-        border: "groove",
-        borderColor: "grey",
-        padding: "6px 12px",
-        borderRadius: "6px",
-        fontSize: "14px",
-        cursor: "pointer",
-        margin: "auto",
-        width: "150px",
-        display: "block",
-        transition: "0.2s",
-        userSelect: "none",
-        zIndex: 2147483647,
-        position: "relative",
-        pointerEvents: "auto"
-    });
-
-    btn.addEventListener("mouseenter", () => {
-        btn.style.backgroundColor = "#666";
-        btn.style.transform = "scale(1.05)";
-    });
-    btn.addEventListener("mouseleave", () => {
-        btn.style.backgroundColor = "transparent";
-        btn.style.transform = "scale(1)";
-    });
-}
-
-function createLeaveButton(panel) {
-    let btn = panel.querySelector("#leaveBtn");
-    if (!btn) {
-        btn = document.createElement("button");
-        btn.id = "leaveBtn";
-        btn.textContent = "Leave";
-        panel.appendChild(btn);
+  }, 3000);
+  function setNativeValue(el, value) {
+    const valueSetter = Object.getOwnPropertyDescriptor(el.__proto__, "value")?.set;
+    const prototype = Object.getPrototypeOf(el);
+    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
+    if (valueSetter && valueSetter !== prototypeValueSetter) {
+      prototypeValueSetter.call(el, value);
+    } else {
+      valueSetter.call(el, value);
     }
-
-    if (!btn.dataset.wired) {
-        styleButton(btn);
-        btn.addEventListener("click", () => {
-            sendLeaveCommand();
-        });
-        btn.dataset.wired = "1";
-    }
-}
-
-function sendLeaveCommand() {
-    const chatBar = document.querySelector("#chat-input");
-    if (!chatBar) return alert("Chat input not found!");
-
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
-    setter.call(chatBar, "/l");
-    chatBar.dispatchEvent(new Event("input", { bubbles: true }));
-
-    const form = chatBar.closest("form");
-    if (form) {
-        form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-        return;
-    }
-
+  }
+  function pressEnter(el) {
     ["keydown", "keypress", "keyup"].forEach(type => {
-        chatBar.dispatchEvent(new KeyboardEvent(type, {
-            key: "Enter",
-            code: "Enter",
-            keyCode: 13,
-            which: 13,
-            bubbles: true
-        }));
+      el.dispatchEvent(new KeyboardEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        key: "Enter",
+        code: "Enter",
+        keyCode: 13,
+        which: 13
+      }));
     });
-
-    chatBar.value = "";
+  }
+  function findAcceptButton() {
+    const candidates = [...document.querySelectorAll("button, [role=\"button\"], .gota-btn, .btn-accept, #btn-accept")];
+    const lowerIncludes = (s, sub) => (s || "").toLowerCase().includes(sub);
+    let btn = candidates.find(b => lowerIncludes(b.id, "accept") || lowerIncludes(b.className, "accept"));
+    if (btn) {
+      return btn;
+    }
+    btn = [...document.querySelectorAll("*")].find(el => {
+      const text = (el.textContent || "").trim().toLowerCase();
+      if (!text) {
+        return false;
+      }
+      const clickable = el.tagName === "BUTTON" || el.getAttribute("role") === "button" || el.classList.contains("gota-btn") || el.onclick || el.dataset?.onClick;
+      return clickable && (text.includes("accept") || text.includes("join"));
+    });
+    return btn || null;
+  }
+  function scheduleAcceptScan() {
+    let tries = 0;
+    const maxTries = 40;
+    const timer = setInterval(() => {
+      const btn = findAcceptButton();
+      if (btn) {
+        btn.click();
+        clearInterval(timer);
+      } else if (++tries >= maxTries) {
+        clearInterval(timer);
+      }
+    }, 150);
+  }
+  function sendInviteAndAccept(id) {
+    const chat = document.querySelector("input#chat-input");
+    if (!chat) {}
+    document.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Escape",
+      code: "Escape",
+      bubbles: true
+    }));
+    document.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Escape",
+      code: "Escape",
+      bubbles: true
+    }));
+    setTimeout(() => {
+      chat.focus();
+      setNativeValue(chat, `/invite ${id}`);
+      chat.dispatchEvent(new Event("input", {
+        bubbles: true
+      }));
+      pressEnter(chat);
+      scheduleAcceptScan();
+      setTimeout(() => {
+        channel.postMessage({
+          action: "autoAccept"
+        });
+      }, 200);
+    }, 50);
+  }
+  document.addEventListener("keydown", e => {
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+      return;
+    }
+    if (e.key.toLowerCase() === (window.__TAB_INVITE_HOTKEY || "j")) {
+      if (!otherTabId) {}
+      sendInviteAndAccept(otherTabId);
+    }
+  });
+  window.__TAB_INVITE_HOTKEY = localStorage.getItem("tabInviteHotkey") || "j";
+})();
+function findPanel() {
+  return document.querySelector("#party-panel");
 }
-
+function styleButton(btn) {
+  Object.assign(btn.style, {
+    backgroundColor: "transparent",
+    color: "#fff",
+    border: "groove",
+    borderColor: "grey",
+    padding: "6px 12px",
+    borderRadius: "6px",
+    fontSize: "14px",
+    cursor: "pointer",
+    margin: "auto",
+    width: "150px",
+    display: "block",
+    transition: "0.2s",
+    userSelect: "none",
+    zIndex: 2147483647,
+    position: "relative",
+    pointerEvents: "auto"
+  });
+  btn.addEventListener("mouseenter", () => {
+    btn.style.backgroundColor = "#666";
+    btn.style.transform = "scale(1.05)";
+  });
+  btn.addEventListener("mouseleave", () => {
+    btn.style.backgroundColor = "transparent";
+    btn.style.transform = "scale(1)";
+  });
+}
+function createLeaveButton(panel) {
+  let btn = panel.querySelector("#leaveBtn");
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.id = "leaveBtn";
+    btn.textContent = "Leave";
+    panel.appendChild(btn);
+  }
+  if (!btn.dataset.wired) {
+    styleButton(btn);
+    btn.addEventListener("click", () => {
+      sendLeaveCommand();
+    });
+    btn.dataset.wired = "1";
+  }
+}
+function sendLeaveCommand() {
+  const chatBar = document.querySelector("#chat-input");
+  if (!chatBar) {
+    return alert("Chat input not found!");
+  }
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+  setter.call(chatBar, "/l");
+  chatBar.dispatchEvent(new Event("input", {
+    bubbles: true
+  }));
+  const form = chatBar.closest("form");
+  if (form) {
+    form.dispatchEvent(new Event("submit", {
+      bubbles: true,
+      cancelable: true
+    }));
+    return;
+  }
+  ["keydown", "keypress", "keyup"].forEach(type => {
+    chatBar.dispatchEvent(new KeyboardEvent(type, {
+      key: "Enter",
+      code: "Enter",
+      keyCode: 13,
+      which: 13,
+      bubbles: true
+    }));
+  });
+  chatBar.value = "";
+}
 let lastPanel = null;
 function ensureButton() {
-    const panel = findPanel();
-    if (!panel) return;
-
-    if (panel !== lastPanel || !panel.querySelector("#leaveBtn")) {
-        createLeaveButton(panel);
-        lastPanel = panel;
-    }
+  const panel = findPanel();
+  if (!panel) {
+    return;
+  }
+  if (panel !== lastPanel || !panel.querySelector("#leaveBtn")) {
+    createLeaveButton(panel);
+    lastPanel = panel;
+  }
 }
-
 setInterval(ensureButton, 1000);
+(function () {
+  'use strict';
 
-(function() {
-    'use strict';
-
-    function modifyDonutButton() {
-        const cellPanelBtn = document.querySelector('#btn-cellpanel');
-        if (!cellPanelBtn) return;
-
-        const donutBtn = document.querySelector('.donut-features-btn');
-        if (!donutBtn) return;
-
-        donutBtn.style.opacity = "1";
-        donutBtn.style.pointerEvents = "auto";
-        donutBtn.style.background = "#222";
-        donutBtn.style.color = "#fff";
-        donutBtn.style.width = "270px";
-        donutBtn.style.height = "35px";
-        donutBtn.style.borderRadius = "10px";
-        donutBtn.style.marginTop = "8px";
-        donutBtn.style.display = "flex";
-        donutBtn.style.justifyContent = "center";
-        donutBtn.style.alignItems = "center";
-        donutBtn.style.cursor = "pointer";
-        donutBtn.style.fontWeight = "bold";
-        donutBtn.style.position = "static";
-
-        if (cellPanelBtn.nextElementSibling !== donutBtn) {
-            cellPanelBtn.parentNode.insertBefore(donutBtn, cellPanelBtn.nextSibling);
-        }
-
-        donutBtn.addEventListener('click', () => {
-            const menu = document.querySelector('.donut-features-table');
-            if (!menu) {
-                console.warn("⚠️ Donut menu not found in DOM yet");
-                return;
-            }
-            menu.style.display = (menu.style.display === "none" || !menu.style.display)
-                ? "block"
-            : "none";
-        });
-
-        console.log("✅ Donut button forced under Cell Panel");
+  function modifyDonutButton() {
+    const cellPanelBtn = document.querySelector("#btn-cellpanel");
+    if (!cellPanelBtn) {
+      return;
     }
-
-    const observer = new MutationObserver(() => {
-        modifyDonutButton();
+    const donutBtn = document.querySelector(".donut-features-btn");
+    if (!donutBtn) {
+      return;
+    }
+    donutBtn.style.opacity = "1";
+    donutBtn.style.pointerEvents = "auto";
+    donutBtn.style.background = "#222";
+    donutBtn.style.color = "#fff";
+    donutBtn.style.width = "270px";
+    donutBtn.style.height = "35px";
+    donutBtn.style.borderRadius = "10px";
+    donutBtn.style.marginTop = "8px";
+    donutBtn.style.display = "flex";
+    donutBtn.style.justifyContent = "center";
+    donutBtn.style.alignItems = "center";
+    donutBtn.style.cursor = "pointer";
+    donutBtn.style.fontWeight = "bold";
+    donutBtn.style.position = "static";
+    if (cellPanelBtn.nextElementSibling !== donutBtn) {
+      cellPanelBtn.parentNode.insertBefore(donutBtn, cellPanelBtn.nextSibling);
+    }
+    donutBtn.addEventListener("click", () => {
+      const menu = document.querySelector(".donut-features-table");
+      if (!menu) {
+        console.warn("⚠️ Donut menu not found in DOM yet");
+        return;
+      }
+      menu.style.display = menu.style.display === "none" || !menu.style.display ? "block" : "none";
     });
-
-    const menu = document.querySelector('#btn-cellpanel')?.parentNode;
-    if (menu) {
-        observer.observe(menu, { childList: true, subtree: false });
+  }
+  const observer = new MutationObserver(() => {
+    modifyDonutButton();
+  });
+  const menu = document.querySelector("#btn-cellpanel")?.parentNode;
+  if (menu) {
+    observer.observe(menu, {
+      childList: true,
+      subtree: false
+    });
+  }
+  const interval = setInterval(() => {
+    modifyDonutButton();
+    if (document.querySelector(".donut-features-btn")) {
+      clearInterval(interval);
     }
-
-    const interval = setInterval(() => {
-        modifyDonutButton();
-        if (document.querySelector('.donut-features-btn')) {
-            clearInterval(interval);
-        }
-    }, 300);
+  }, 300);
 })();
+(function () {
+  'use strict';
 
-(function() {
-    'use strict';
-
-    function arrangePlaySpec() {
-        const playBtn = document.querySelector('#btn-play');
-        const specBtn = document.querySelector('#btn-spec');
-
-        if (playBtn && specBtn && !document.querySelector('.play-spec-wrapper')) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'play-spec-wrapper';
-            wrapper.style.display = 'flex';
-            wrapper.style.justifyContent = 'center';
-            wrapper.style.gap = '10px';
-            wrapper.style.marginBottom = '10px';
-
-            wrapper.appendChild(playBtn);
-            wrapper.appendChild(specBtn);
-
-            const parent = document.querySelector('.main-input-btns');
-            if (parent) parent.insertBefore(wrapper, parent.firstChild);
-        }
+  function arrangePlaySpec() {
+    const playBtn = document.querySelector("#btn-play");
+    const specBtn = document.querySelector("#btn-spec");
+    if (playBtn && specBtn && !document.querySelector(".play-spec-wrapper")) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "play-spec-wrapper";
+      wrapper.style.display = "flex";
+      wrapper.style.justifyContent = "center";
+      wrapper.style.gap = "10px";
+      wrapper.style.marginBottom = "10px";
+      wrapper.appendChild(playBtn);
+      wrapper.appendChild(specBtn);
+      const parent = document.querySelector(".main-input-btns");
+      if (parent) {
+        parent.insertBefore(wrapper, parent.firstChild);
+      }
     }
-
-    setTimeout(arrangePlaySpec, 1000);
+  }
+  setTimeout(arrangePlaySpec, 1000);
 })();
-
 const CONFIG = {
-    tabs: [
-        { id: 'options', label: 'Options' },
-        { id: 'hotkeys', label: 'Hotkeys' },
-        { id: 'themes', label: 'Themes' },
-        { id: 'cellpanel', label: 'Cell Panel' },
-        { id: 'customfeatures', label: 'Custom Features' },
-
-
-    ],
-    hiddenButtons: ['#btn-options', '#btn-hotkeys', '#btn-themes', '#btn-cellpanel']
+  tabs: [{
+    id: "options",
+    label: "Options"
+  }, {
+    id: "hotkeys",
+    label: "Hotkeys"
+  }, {
+    id: "themes",
+    label: "Themes"
+  }, {
+    id: "cellpanel",
+    label: "Cell Panel"
+  }, {
+    id: "customfeatures",
+    label: "Custom Features"
+  }],
+  hiddenButtons: ["#btn-options", "#btn-hotkeys", "#btn-themes", "#btn-cellpanel"]
 };
-
-const state = { isOpen: false, initialized: false, listeningForKey: false };
-
+const state = {
+  isOpen: false,
+  initialized: false,
+  listeningForKey: false
+};
 function saveColorSettings() {
-    const colors = {};
-    document.querySelectorAll('#unified-settings-panel input[type="color"], #unified-settings-panel input[data-coloris]').forEach(inp => {
-        if (inp.id) {
-            colors[inp.id] = inp.value;
-        }
-    });
-    try {
-        GM_setValue('savedColors', JSON.stringify(colors));
-    } catch(e) {
-        localStorage.setItem('savedColors', JSON.stringify(colors));
-       
+  const colors = {};
+  document.querySelectorAll("#unified-settings-panel input[type=\"color\"], #unified-settings-panel input[data-coloris]").forEach(inp => {
+    if (inp.id) {
+      colors[inp.id] = inp.value;
     }
+  });
+  try {
+    GM_setValue("savedColors", JSON.stringify(colors));
+  } catch (e) {
+    localStorage.setItem("savedColors", JSON.stringify(colors));
+  }
 }
 function loadSavedColors() {
-    let saved = null;
-    try { saved = GM_getValue('savedColors', null); } catch(e) { saved = localStorage.getItem('savedColors'); }
-    if (!saved) {
-        console.log('⚠️ No saved colors found');
-        return;
-    }
-    try {
-        const colors = JSON.parse(saved);
-        
-        setTimeout(() => {
-            Object.keys(colors).forEach(id => {
-                const input = document.querySelector(`#unified-settings-panel #${CSS.escape(id)}`);
-                if (input) {
-                    input.value = colors[id];
-                    input.setAttribute('style', `background-color: ${colors[id]} !important`);
-
-                    const gameInput = findGameElement(id);
-                    if (gameInput) {
-                        gameInput.value = colors[id];
-                        gameInput.setAttribute('style', `background-color: ${colors[id]} !important`);
-                        gameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        gameInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                  
-                }
-            });
-        }, 600);
-    } catch (e) {
-        console.error('❌ Error loading colors:', e);
-    }
-}
-
-function hideButtons() {
-    CONFIG.hiddenButtons.forEach(sel => {
-        try {
-            const btn = document.querySelector(sel);
-            if (btn) btn.style.display = 'none';
-        } catch (e) {}
-    });
-}
-
-function createButton() {
-    const container = document.querySelector('.main-input-btns');
-    if (!container || document.getElementById('unified-settings-btn')) return;
-    const btn = document.createElement('button');
-    btn.id = 'unified-settings-btn';
-    btn.innerHTML = 'Settings';
-    btn.onclick = open;
-    container.appendChild(btn);
-}
-
-function createPanel() {
-    if (document.getElementById('unified-settings-overlay')) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'unified-settings-overlay';
-
-    const panel = document.createElement('div');
-    panel.id = 'unified-settings-panel';
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && state.isOpen && !state.listeningForKey) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            close();
-            return false;
+  let saved = null;
+  try {
+    saved = GM_getValue("savedColors", null);
+  } catch (e) {
+    saved = localStorage.getItem("savedColors");
+  }
+  if (!saved) {
+    return;
+  }
+  try {
+    const colors = JSON.parse(saved);
+    setTimeout(() => {
+      Object.keys(colors).forEach(id => {
+        const input = document.querySelector(`#unified-settings-panel #${CSS.escape(id)}`);
+        if (input) {
+          input.value = colors[id];
+          input.setAttribute("style", `background-color: ${colors[id]} !important`);
+          const gameInput = findGameElement(id);
+          if (gameInput) {
+            gameInput.value = colors[id];
+            gameInput.setAttribute("style", `background-color: ${colors[id]} !important`);
+            gameInput.dispatchEvent(new Event("input", {
+              bubbles: true
+            }));
+            gameInput.dispatchEvent(new Event("change", {
+              bubbles: true
+            }));
+          }
         }
-    }, true);
-
-    panel.innerHTML = `
+      });
+    }, 600);
+  } catch (e) {
+    console.error("❌ Error loading colors:", e);
+  }
+}
+function hideButtons() {
+  CONFIG.hiddenButtons.forEach(sel => {
+    try {
+      const btn = document.querySelector(sel);
+      if (btn) {
+        btn.style.display = "none";
+      }
+    } catch (e) {}
+  });
+}
+function createButton() {
+  const container = document.querySelector(".main-input-btns");
+  if (!container || document.getElementById("unified-settings-btn")) {
+    return;
+  }
+  const btn = document.createElement("button");
+  btn.id = "unified-settings-btn";
+  btn.innerHTML = "Settings";
+  btn.onclick = open;
+  container.appendChild(btn);
+}
+function createPanel() {
+  if (document.getElementById("unified-settings-overlay")) {
+    return;
+  }
+  const overlay = document.createElement("div");
+  overlay.id = "unified-settings-overlay";
+  const panel = document.createElement("div");
+  panel.id = "unified-settings-panel";
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && state.isOpen && !state.listeningForKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      close();
+      return false;
+    }
+  }, true);
+  panel.innerHTML = `
         <div class="settings-header">
             <h2>Settings</h2>
             <input type="text" id="settings-search-input" placeholder="🔍 Search settings..." />
             <button class="settings-close-btn" id="close-settings-btn">×</button>
         </div>
         <div class="settings-tabs">
-            ${CONFIG.tabs.map((tab,i) => `<div class="settings-tab ${i===0?'active':''}" data-tab="${tab.id}">${tab.label}</div>`).join('')}
+            ${CONFIG.tabs.map((tab, i) => `<div class="settings-tab ${i === 0 ? "active" : ""}" data-tab="${tab.id}">${tab.label}</div>`).join("")}
         </div>
         <div class="settings-content">
             <div class="tab-content active" id="tab-options">${getOptionsHTML()}</div>
@@ -2230,129 +2220,107 @@ function createPanel() {
             <div class="tab-content" id="tab-customfeatures">${getCustomFeaturesHTML()}</div>
         </div>
     `;
-    overlay.appendChild(panel);
-    document.body.appendChild(overlay);
-
-    try {
-        panel.querySelector('#close-settings-btn').onclick = close;
-    } catch(e){}
-
-    panel.querySelectorAll('.settings-tab').forEach(tab => {
-        tab.onclick = () => {
-            panel.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            panel.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            const id = '#tab-'+tab.dataset.tab;
-            const node = panel.querySelector(id);
-            if (node) node.classList.add('active');
-
-            if (tab.dataset.tab === 'customfeatures') {
-                renderSavedPlayers();
-            }
-        };
-    });
-
-    setupRangeListeners();
-    setupColorPickers();
-    setupFontSelector();
-    setupSavedPlayersFeature();
-    setupUpdateButton();
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+  try {
+    panel.querySelector("#close-settings-btn").onclick = close;
+  } catch (e) {}
+  panel.querySelectorAll(".settings-tab").forEach(tab => {
+    tab.onclick = () => {
+      panel.querySelectorAll(".settings-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      panel.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      const id = "#tab-" + tab.dataset.tab;
+      const node = panel.querySelector(id);
+      if (node) {
+        node.classList.add("active");
+      }
+      if (tab.dataset.tab === "customfeatures") {
+        renderSavedPlayers();
+      }
+    };
+  });
+  setupRangeListeners();
+  setupColorPickers();
+  setupFontSelector();
+  setupSavedPlayersFeature();
+  setupUpdateButton();
+  setupThemeImportExport();
+  setupAutoRandomOnDeath();
 }
-
 function setupUpdateButton() {
-    const checkButton = setInterval(() => {
-        const customBtn = document.getElementById('btn-updateSP-custom');
-        if (customBtn) {
-            clearInterval(checkButton);
-
-            customBtn.addEventListener('click', () => {
-                const gameBtn = document.getElementById('btn-updateSP');
-                if (gameBtn) {
-                    console.log('🔄 Triggering game update button...');
-                    gameBtn.click();
-
-                    customBtn.textContent = 'Updated!';
-                    customBtn.style.background = 'rgba(0, 255, 0, 0.3)';
-                    customBtn.style.borderColor = 'rgba(0, 255, 0, 0.5)';
-
-                    setTimeout(() => {
-                        customBtn.textContent = 'Update Cell Settings';
-                        customBtn.style.background = 'rgba(80,80,255,0.3)';
-                        customBtn.style.borderColor = 'rgba(80,80,255,0.5)';
-                    }, 2000);
-                } else {
-                    console.warn('Game update button not found!');
-                    customBtn.textContent = 'Not Found';
-                    customBtn.style.background = 'rgba(255, 0, 0, 0.3)';
-
-                    setTimeout(() => {
-                        customBtn.textContent = 'Update Cell Settings';
-                        customBtn.style.background = 'rgba(80,80,255,0.3)';
-                    }, 2000);
-                }
-            });
-
-            customBtn.addEventListener('mouseenter', () => {
-                customBtn.style.background = 'rgba(100,100,255,0.5)';
-                customBtn.style.transform = 'scale(1.05)';
-            });
-
-            customBtn.addEventListener('mouseleave', () => {
-                customBtn.style.background = 'rgba(80,80,255,0.3)';
-                customBtn.style.transform = 'scale(1)';
-            });
-
+  const checkButton = setInterval(() => {
+    const customBtn = document.getElementById("btn-updateSP-custom");
+    if (customBtn) {
+      clearInterval(checkButton);
+      customBtn.addEventListener("click", () => {
+        const gameBtn = document.getElementById("btn-updateSP");
+        if (gameBtn) {
+          gameBtn.click();
+          customBtn.textContent = "Updated!";
+          customBtn.style.background = "rgba(0, 255, 0, 0.3)";
+          customBtn.style.borderColor = "rgba(0, 255, 0, 0.5)";
+          setTimeout(() => {
+            customBtn.textContent = "Update Cell Settings";
+            customBtn.style.background = "rgba(80,80,255,0.3)";
+            customBtn.style.borderColor = "rgba(80,80,255,0.5)";
+          }, 2000);
+        } else {
+          console.warn("Game update button not found!");
+          customBtn.textContent = "Not Found";
+          customBtn.style.background = "rgba(255, 0, 0, 0.3)";
+          setTimeout(() => {
+            customBtn.textContent = "Update Cell Settings";
+            customBtn.style.background = "rgba(80,80,255,0.3)";
+          }, 2000);
         }
-    }, 100);
-
-    const checkLockedName = setInterval(() => {
-        const display = document.getElementById('spLockedName-display');
-        const useBtn = document.getElementById('btn-use-ln-custom');
-        const editBtn = document.getElementById('btn-chg-ln-custom');
-        const expiryDisplay = document.getElementById('spExpiry-display');
-
-        if (display && useBtn && editBtn && expiryDisplay) {
-            clearInterval(checkLockedName);
-
-            const syncLockedName = () => {
-                const gameLockedName = document.getElementById('spLockedName');
-                const gameExpiry = document.getElementById('spExpiry');
-
-                if (gameLockedName) {
-                    display.textContent = gameLockedName.textContent || 'None';
-                }
-                if (gameExpiry) {
-                    expiryDisplay.textContent = gameExpiry.textContent || 'N/A';
-                }
-            };
-
-            syncLockedName();
-
-            setInterval(syncLockedName, 2000);
-
-            useBtn.addEventListener('click', () => {
-                const gameLnBtn = document.getElementById('btn-use-ln');
-                if (gameLnBtn) {
-                    gameLnBtn.click();
-                } else {
-                 
-                }
-            });
-
-            editBtn.addEventListener('click', () => {
-                const gameEditBtn = document.getElementById('btn-chg-ln');
-                if (gameEditBtn) {
-                    gameEditBtn.click();
-                } else {
-                    
-                }
-            });
-
+      });
+      customBtn.addEventListener("mouseenter", () => {
+        customBtn.style.background = "rgba(100,100,255,0.5)";
+        customBtn.style.transform = "scale(1.05)";
+      });
+      customBtn.addEventListener("mouseleave", () => {
+        customBtn.style.background = "rgba(80,80,255,0.3)";
+        customBtn.style.transform = "scale(1)";
+      });
+    }
+  }, 100);
+  const checkLockedName = setInterval(() => {
+    const display = document.getElementById("spLockedName-display");
+    const useBtn = document.getElementById("btn-use-ln-custom");
+    const editBtn = document.getElementById("btn-chg-ln-custom");
+    const expiryDisplay = document.getElementById("spExpiry-display");
+    if (display && useBtn && editBtn && expiryDisplay) {
+      clearInterval(checkLockedName);
+      const syncLockedName = () => {
+        const gameLockedName = document.getElementById("spLockedName");
+        const gameExpiry = document.getElementById("spExpiry");
+        if (gameLockedName) {
+          display.textContent = gameLockedName.textContent || "None";
         }
-    }, 100);
+        if (gameExpiry) {
+          expiryDisplay.textContent = gameExpiry.textContent || "N/A";
+        }
+      };
+      syncLockedName();
+      setInterval(syncLockedName, 2000);
+      useBtn.addEventListener("click", () => {
+        const gameLnBtn = document.getElementById("btn-use-ln");
+        if (gameLnBtn) {
+          gameLnBtn.click();
+        } else {}
+      });
+      editBtn.addEventListener("click", () => {
+        const gameEditBtn = document.getElementById("btn-chg-ln");
+        if (gameEditBtn) {
+          gameEditBtn.click();
+        } else {}
+      });
+    }
+  }, 100);
 }
 function getOptionsHTML() {
-    return `
+  return `
             <div class="setting-group">
                 <h3>Camera & Display</h3>
                 <div class="setting-row"><span class="setting-label">Hide Own Name</span><div class="setting-control"><input type="checkbox" id="cHideOwnName"></div></div>
@@ -2485,7 +2453,7 @@ function getOptionsHTML() {
         `;
 }
 function getHotkeysHTML() {
-    return `
+  return `
             <div class="setting-group">
                 <h3>Movement & Splits</h3>
                 <div class="setting-row"><span class="setting-label">Split</span><div class="setting-control"><button class="keybinds-btn" data-key="kSplit">SPACE</button></div></div>
@@ -2540,7 +2508,7 @@ function getHotkeysHTML() {
         `;
 }
 function getThemesHTML() {
-    return `
+  return `
             <div class="setting-group">
                 <h3>Theme Toggle</h3>
                 <div class="setting-row"><span class="setting-label">Enable Custom Theme</span><div class="setting-control"><input type="checkbox" id="cThemeEnabled"></div></div>
@@ -2617,7 +2585,22 @@ function getThemesHTML() {
                 <div class="setting-row"><span class="setting-label">Warning Color</span><div class="setting-control"><input type="text" id="uiGameColorWarning" data-coloris></div></div>
                 <div class="setting-row"><span class="setting-label">Error Color</span><div class="setting-control"><input type="text" id="uiGameColorError" data-coloris></div></div>
             </div>
-
+      <div class="setting-group">
+    <h3>Import / Export Theme</h3>
+    <div class="setting-row">
+        <span class="setting-label">Export Current Theme</span>
+        <div class="setting-control">
+            <button id="export-theme-btn" class="x-small-btn" style="background: rgba(0,120,180,0.7); border-color: rgba(0,180,255,0.4);">Export as JSON</button>
+        </div>
+    </div>
+    <div class="setting-row">
+        <span class="setting-label">Import Theme</span>
+        <div class="setting-control">
+            <input type="file" id="import-theme-file" accept=".json" style="display:none;">
+            <button id="import-theme-btn" class="x-small-btn" style="background: rgba(0,150,0,0.7); border-color: rgba(0,255,0,0.4);">Choose File & Import</button>
+        </div>
+    </div>
+</div>
             <div class="setting-group">
                 <h3>Game Font</h3>
                 <div class="setting-row">
@@ -2649,7 +2632,7 @@ function getThemesHTML() {
         `;
 }
 function getCellPanelHTML() {
-    return `
+  return `
         <div class="setting-group">
             <h3>Locked Name</h3>
             <div class="setting-row">
@@ -2772,7 +2755,7 @@ function getCellPanelHTML() {
     `;
 }
 function getCustomFeaturesHTML() {
-    return `
+  return `
         <!-- HOTKEYS GROUP -->
         <div class="setting-group">
             <h3>Hotkeys</h3>
@@ -2815,6 +2798,7 @@ function getCustomFeaturesHTML() {
             </div>
         </div>
 
+
         <!-- PLAYER MANAGEMENT GROUP -->
         <div class="setting-group">
             <h3>Player Management</h3>
@@ -2823,7 +2807,7 @@ function getCustomFeaturesHTML() {
             </p>
 
             <div class="setting-row">
-                <span class="setting-label">Quick Add Input</span>
+                <span class="setting-label">Input player</span>
                 <div class="setting-control">
                     <input type="text" id="quick-player-input" placeholder="Enter name and/or [skin]..." style="width:300px;">
                 </div>
@@ -2837,6 +2821,14 @@ function getCustomFeaturesHTML() {
                     <button id="save-both-btn" class="x-small-btn" style="min-width:90px;">Save Both</button>
                 </div>
             </div>
+   <div style="height: 32px;"></div>
+
+    <div class="setting-row">
+        <span class="setting-label">Random name on Death</span>
+        <div class="setting-control">
+            <input type="checkbox" id="auto-random-on-death">
+        </div>
+    </div>
 
             <div class="setting-row" style="margin-top: 16px;">
                 <span class="setting-label">Saved Players</span>
@@ -2851,920 +2843,1048 @@ function getCustomFeaturesHTML() {
 
     `;
 }
-
-const LS_KEY = 'savedPlayers';
-
+const LS_KEY = "savedPlayers";
 function loadSavedPlayers() {
-    try {
-        return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-    } catch {
-        return [];
-    }
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+  } catch {
+    return [];
+  }
 }
-
 function saveSavedPlayers(list) {
-    localStorage.setItem(LS_KEY, JSON.stringify(list));
+  localStorage.setItem(LS_KEY, JSON.stringify(list));
 }
-
 function parseTitleText(txt) {
-    if (!txt) return { name: '[unknown]', skin: 'none' };
-    txt = txt.trim();
-
-    let m = txt.match(/^\s*\[([^\]]+)\]\s*(.+)$/);
-    if (m) return { skin: m[1].trim(), name: m[2].trim() };
-
-    m = txt.match(/^(.*?)\s*\[([^\]]+)\]\s*$/);
-    if (m) return { name: m[1].trim(), skin: m[2].trim() };
-
-    return { name: txt, skin: 'none' };
+  if (!txt) {
+    return {
+      name: "[unknown]",
+      skin: "none"
+    };
+  }
+  txt = txt.trim();
+  let m = txt.match(/^\s*\[([^\]]+)\]\s*(.+)$/);
+  if (m) {
+    return {
+      skin: m[1].trim(),
+      name: m[2].trim()
+    };
+  }
+  m = txt.match(/^(.*?)\s*\[([^\]]+)\]\s*$/);
+  if (m) {
+    return {
+      name: m[1].trim(),
+      skin: m[2].trim()
+    };
+  }
+  return {
+    name: txt,
+    skin: "none"
+  };
 }
-
 function getNameInput() {
-    return document.querySelector('input#name-box.gota-input')
-    || document.querySelector('input#nick')
-    || document.querySelector('input[name="nick"]')
-    || document.querySelector('input[placeholder*="name" i]');
+  return document.querySelector("input#name-box.gota-input") || document.querySelector("input#nick") || document.querySelector("input[name=\"nick\"]") || document.querySelector("input[placeholder*=\"name\" i]");
 }
-
 function setInputValue(el, value) {
-    if (!el) return;
-
-    const desc = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
-    if (desc && desc.set) desc.set.call(el, value);
-    else el.value = value;
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true }));
+  if (!el) {
+    return;
+  }
+  const desc = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value");
+  if (desc && desc.set) {
+    desc.set.call(el, value);
+  } else {
+    el.value = value;
+  }
+  el.dispatchEvent(new Event("input", {
+    bubbles: true
+  }));
+  el.dispatchEvent(new Event("change", {
+    bubbles: true
+  }));
 }
-
 function renderSavedPlayers() {
-    const container = document.getElementById('saved-players-list');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.gap = "6px";
-
-    const header = document.createElement("div");
-    header.style.display = "grid";
-    header.style.gridTemplateColumns = "1fr 1fr auto";
-    header.style.fontWeight = "600";
-    header.style.marginBottom = "8px";
-    header.style.color = "#fff";
-    header.innerHTML = `
+  const container = document.getElementById("saved-players-list");
+  if (!container) {
+    return;
+  }
+  container.innerHTML = "";
+  const wrapper = document.createElement("div");
+  wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
+  wrapper.style.gap = "6px";
+  const header = document.createElement("div");
+  header.style.display = "grid";
+  header.style.gridTemplateColumns = "1fr 1fr auto";
+  header.style.fontWeight = "600";
+  header.style.marginBottom = "8px";
+  header.style.color = "#fff";
+  header.innerHTML = `
             <div style="text-align:center; color:#fff;">Saved Name</div>
             <div style="text-align:center; color:#fff;">Saved Skin</div>
             <div style="text-align:center; color:#fff;">Actions</div>`;
-    wrapper.appendChild(header);
-
-    let saved = loadSavedPlayers();
-    if (!saved.length) {
-        const empty = document.createElement("div");
-        empty.textContent = "No players saved yet.";
-        empty.style.color = "#aaa";
-        empty.style.textAlign = "center";
-        wrapper.appendChild(empty);
-        container.appendChild(wrapper);
-        return;
-    }
-
-    saved.forEach((p, i) => {
-        const row = document.createElement("div");
-        row.style.display = "grid";
-        row.style.gridTemplateColumns = "1fr 1fr auto";
-        row.style.alignItems = "center";
-        row.style.padding = "6px 10px";
-        row.style.borderRadius = "8px";
-        row.style.background = "rgba(255,255,255,0.05)";
-        row.style.gap = "10px";
-
-        const nameCell = document.createElement("div");
-        nameCell.textContent = p.name || "[unknown]";
-        nameCell.style.textAlign = "center";
-        nameCell.style.color = "#fff";
-
-        const skinCell = document.createElement("div");
-        skinCell.textContent = p.skin || "[none]";
-        skinCell.style.textAlign = "center";
-        skinCell.style.color = "#fff";
-
-        const actions = document.createElement("div");
-        actions.style.display = "flex";
-        actions.style.gap = "6px";
-        actions.style.flexWrap = "wrap";
-        actions.style.justifyContent = "center";
-
-        const useNameBtn = document.createElement("button");
-        useNameBtn.textContent = "Use Name";
-        useNameBtn.className = "x-small-btn";
-        useNameBtn.onclick = () => {
-            const el = getNameInput();
-            setInputValue(el, p.name || "");
-        };
-
-        const useSkinBtn = document.createElement("button");
-        useSkinBtn.textContent = "Use Skin";
-        useSkinBtn.className = "x-small-btn";
-        useSkinBtn.onclick = () => {
-            const el = getNameInput();
-            if (!el) return;
-            const currentName = el.value.replace(/\[.*\]$/, "");
-            const skinVal = (p.skin && p.skin !== "none")
-            ? `[${p.skin.replace(/^\[|\]$/g, "")}]`
-                    : "";
-                setInputValue(el, currentName + skinVal);
-            };
-
-            const useBothBtn = document.createElement("button");
-            useBothBtn.textContent = "Use Both";
-            useBothBtn.className = "x-small-btn";
-            useBothBtn.onclick = () => {
-                const el = getNameInput();
-                if (!el) return;
-                const skinVal = (p.skin && p.skin !== "none")
-                ? `[${p.skin.replace(/^\[|\]$/g, "")}]`
-                    : "";
-                setInputValue(el, (p.name || "") + skinVal);
-            };
-
-            const delBtn = document.createElement("button");
-            delBtn.textContent = "Delete";
-            delBtn.className = "x-small-btn x-small-del";
-            delBtn.onclick = () => {
-                const arr = loadSavedPlayers();
-                arr.splice(i, 1);
-                saveSavedPlayers(arr);
-                renderSavedPlayers();
-            };
-
-            actions.appendChild(useNameBtn);
-            actions.appendChild(useSkinBtn);
-            actions.appendChild(useBothBtn);
-            actions.appendChild(delBtn);
-
-            row.appendChild(nameCell);
-            row.appendChild(skinCell);
-            row.appendChild(actions);
-            wrapper.appendChild(row);
-        });
-
+  wrapper.appendChild(header);
+  let saved = loadSavedPlayers();
+  if (!saved.length) {
+    const empty = document.createElement("div");
+    empty.textContent = "No players saved yet.";
+    empty.style.color = "#aaa";
+    empty.style.textAlign = "center";
+    wrapper.appendChild(empty);
     container.appendChild(wrapper);
-}
-
-function setupRandomizer() {
-    const btn = document.getElementById('random-player-btn');
-    if (!btn) return setTimeout(setupRandomizer, 500);
-
-    btn.onclick = () => {
-        const saved = loadSavedPlayers();
-        if (!saved.length) {
-            alert('❌ Inga sparade spelare!\nLägg till via Quick Add eller högerklick "Copy" på spelare.');
-            return;
-        }
-        const randomIdx = Math.floor(Math.random() * saved.length);
-        const randomPlayer = saved[randomIdx];
-        const input = getNameInput();
-        if (!input) {
-            alert('Name-box wasnt found! (Öppna server-select först)');
-            return;
-        }
-
-        let newName = randomPlayer.name || '';
-        if (randomPlayer.skin && randomPlayer.skin !== 'none') {
-            newName += ` [${randomPlayer.skin}]`;
-        }
-        setInputValue(input, newName);
-
-        const oldText = btn.textContent;
-        btn.textContent = `🎉 ${randomPlayer.name || 'Random'} vald!`;
-        btn.style.background = 'rgba(50,150,50,0.8) !important';
-        btn.style.borderColor = 'rgba(100,255,100,0.5) !important';
-        setTimeout(() => {
-            btn.textContent = oldText;
-            btn.style.background = '';
-            btn.style.borderColor = '';
-        }, 2000);
-        console.log(`🎲 Random: ${newName}`);
+    return;
+  }
+  saved.forEach((p, i) => {
+    const row = document.createElement("div");
+    row.style.display = "grid";
+    row.style.gridTemplateColumns = "1fr 1fr auto";
+    row.style.alignItems = "center";
+    row.style.padding = "6px 10px";
+    row.style.borderRadius = "8px";
+    row.style.background = "rgba(255,255,255,0.05)";
+    row.style.gap = "10px";
+    const nameCell = document.createElement("div");
+    nameCell.textContent = p.name || "[unknown]";
+    nameCell.style.textAlign = "center";
+    nameCell.style.color = "#fff";
+    const skinCell = document.createElement("div");
+    skinCell.textContent = p.skin || "[none]";
+    skinCell.style.textAlign = "center";
+    skinCell.style.color = "#fff";
+    const actions = document.createElement("div");
+    actions.style.display = "flex";
+    actions.style.gap = "6px";
+    actions.style.flexWrap = "wrap";
+    actions.style.justifyContent = "center";
+    const useNameBtn = document.createElement("button");
+    useNameBtn.textContent = "Use Name";
+    useNameBtn.className = "x-small-btn";
+    useNameBtn.onclick = () => {
+      const el = getNameInput();
+      setInputValue(el, p.name || "");
     };
+    const useSkinBtn = document.createElement("button");
+    useSkinBtn.textContent = "Use Skin";
+    useSkinBtn.className = "x-small-btn";
+    useSkinBtn.onclick = () => {
+      const el = getNameInput();
+      if (!el) {
+        return;
+      }
+      const currentName = el.value.replace(/\[.*\]$/, "");
+      const skinVal = p.skin && p.skin !== "none" ? `[${p.skin.replace(/^\[|\]$/g, "")}]` : "";
+      setInputValue(el, currentName + skinVal);
+    };
+    const useBothBtn = document.createElement("button");
+    useBothBtn.textContent = "Use Both";
+    useBothBtn.className = "x-small-btn";
+    useBothBtn.onclick = () => {
+      const el = getNameInput();
+      if (!el) {
+        return;
+      }
+      const skinVal = p.skin && p.skin !== "none" ? `[${p.skin.replace(/^\[|\]$/g, "")}]` : "";
+      setInputValue(el, (p.name || "") + skinVal);
+    };
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    delBtn.className = "x-small-btn x-small-del";
+    delBtn.onclick = () => {
+      const arr = loadSavedPlayers();
+      arr.splice(i, 1);
+      saveSavedPlayers(arr);
+      renderSavedPlayers();
+    };
+    actions.appendChild(useNameBtn);
+    actions.appendChild(useSkinBtn);
+    actions.appendChild(useBothBtn);
+    actions.appendChild(delBtn);
+    row.appendChild(nameCell);
+    row.appendChild(skinCell);
+    row.appendChild(actions);
+    wrapper.appendChild(row);
+  });
+  container.appendChild(wrapper);
 }
-
-function setupSavedPlayersFeature() {
-    const waitForContextMenu = setInterval(() => {
-        const contextMenu = document.querySelector('#context-menu');
-        if (contextMenu) {
-            clearInterval(waitForContextMenu);
-
-            const observer = new MutationObserver(() => {
-                const ul = contextMenu.querySelector('ul.context-list');
-                if (ul && !ul.querySelector('#x-copy-player-li')) {
-                    const copyLi = document.createElement('li');
-                    copyLi.id = 'x-copy-player-li';
-                    copyLi.textContent = 'Copy';
-                    copyLi.style.cursor = 'pointer';
-
-                    copyLi.onclick = () => {
-                        const nameEl = document.querySelector("li#context-name");
-                        let raw = "";
-
-                        if (nameEl) {
-                            raw = (nameEl.textContent || "").trim();
-                        }
-
-                        const { name, skin } = parseTitleText(raw);
-
-                        const list = loadSavedPlayers();
-                        list.push({ name, skin });
-                        saveSavedPlayers(list);
-
-                        const customTab = document.querySelector('.settings-tab[data-tab="customfeatures"]');
-                        if (customTab && customTab.classList.contains('active')) {
-                            renderSavedPlayers();
-                        }
-                    };
-
-                    ul.appendChild(copyLi);
-                }
-            });
-
-            observer.observe(contextMenu, { childList: true, subtree: true });
-        }
-    }, 500);
-}
-
-function setupRangeListeners() {
-    document.querySelectorAll('#unified-settings-panel input[type="range"]').forEach(range => {
-        try {
-            const valueInput = document.querySelector(`input[data-range="${range.id}"]`);
-            if (valueInput) {
-                range.addEventListener('input', () => {
-                    valueInput.value = range.value;
-                });
-
-                valueInput.addEventListener('input', () => {
-                    const val = parseFloat(valueInput.value);
-                    if (!isNaN(val)) {
-                        range.value = val;
-                        range.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                });
-
-                valueInput.value = range.value;
-            }
-        } catch(e){}
-    });
-}
-
-function setupFontSelector() {
-    const fontSelect = document.getElementById('gameFont');
-    const fontPreview = document.getElementById('fontPreview');
-
-    if (!fontSelect || !fontPreview) return;
-
-    let savedFont = 'default';
-    try { savedFont = GM_getValue('gameFont', 'default'); } catch(e) { savedFont = localStorage.getItem('gameFont') || 'default'; }
-
-    fontSelect.value = savedFont;
-    applyFont(savedFont);
-
-    fontSelect.addEventListener('change', () => {
-        const selectedFont = fontSelect.value;
-        try { GM_setValue('gameFont', selectedFont); } catch(e) { localStorage.setItem('gameFont', selectedFont); }
-        applyFont(selectedFont);
-        fontPreview.style.fontFamily = selectedFont === 'default' ? 'Arial, sans-serif' : selectedFont;
-    });
-
-    fontPreview.style.fontFamily = savedFont === 'default' ? 'Arial, sans-serif' : savedFont;
-}
-
-function applyFont(font) {
-    const fontFamily = font === 'default' ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif' : font;
-
-
-
-    let style = document.getElementById('custom-game-font');
-    if (!style) {
-        style = document.createElement('style');
-        style.id = 'custom-game-font';
-        document.head.appendChild(style);
+function setupRandomizer() {
+  const btn = document.getElementById("random-player-btn");
+  if (!btn) {
+    return setTimeout(setupRandomizer, 500);
+  }
+  btn.onclick = () => {
+    const saved = loadSavedPlayers();
+    if (!saved.length) {
+      alert("❌ Inga sparade spelare!\nLägg till via Quick Add eller högerklick \"Copy\" på spelare.");
+      return;
     }
-    style.textContent = `
+    const randomIdx = Math.floor(Math.random() * saved.length);
+    const randomPlayer = saved[randomIdx];
+    const input = getNameInput();
+    if (!input) {
+      alert("Name-box wasnt found! (Öppna server-select först)");
+      return;
+    }
+    let newName = randomPlayer.name || "";
+    if (randomPlayer.skin && randomPlayer.skin !== "none") {
+      newName += ` [${randomPlayer.skin}]`;
+    }
+    setInputValue(input, newName);
+    const oldText = btn.textContent;
+    btn.textContent = `🎉 ${randomPlayer.name || "Random"} vald!`;
+    btn.style.background = "rgba(50,150,50,0.8) !important";
+    btn.style.borderColor = "rgba(100,255,100,0.5) !important";
+    setTimeout(() => {
+      btn.textContent = oldText;
+      btn.style.background = "";
+      btn.style.borderColor = "";
+    }, 2000);
+    console.log(`🎲 Random: ${newName}`);
+  };
+}
+function setupAutoRandomOnDeath() {
+  const toggle = document.getElementById("auto-random-on-death");
+  if (!toggle) {
+    return;
+  }
+  toggle.checked = localStorage.getItem("autoRandomOnDeath") === "true";
+  toggle.addEventListener("change", () => {
+    localStorage.setItem("autoRandomOnDeath", toggle.checked);
+  });
+  let previousCells = 1;
+  const observer = new MutationObserver(() => {
+    if (!toggle.checked) {
+      return;
+    }
+    const cellsEl = document.getElementById("playerCells");
+    if (!cellsEl) {
+      return;
+    }
+    const currentCells = parseInt(cellsEl.innerText || "0", 10) || 0;
+    if (previousCells > 0 && currentCells === 0) {
+      randomizePlayerName();
+    }
+    previousCells = currentCells;
+  });
+  const target = document.getElementById("playerCells") || document.querySelector(".hud-panel") || document.body;
+  observer.observe(target, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true
+  });
+  setInterval(() => {
+    if (!toggle.checked) {
+      return;
+    }
+    const cellsEl = document.getElementById("playerCells");
+    if (cellsEl) {
+      const currentCells = parseInt(cellsEl.innerText || "0", 10) || 0;
+      if (previousCells > 0 && currentCells === 0) {
+        randomizePlayerName();
+      }
+      previousCells = currentCells;
+    }
+  }, 1000);
+}
+function randomizePlayerName() {
+  const saved = loadSavedPlayers();
+  if (!saved || saved.length === 0) {
+    return;
+  }
+  const names = [...new Set(saved.map(p => p.name).filter(n => n && n.trim() !== ""))];
+  const skins = [...new Set(saved.map(p => p.skin).filter(s => s && s !== "none" && s.trim() !== ""))];
+  if (names.length === 0) {
+    return;
+  }
+  const randomName = names[Math.floor(Math.random() * names.length)];
+  const useSeparateSkinToggle = document.getElementById("random-separate-skin");
+  const useSkin = useSeparateSkinToggle ? useSeparateSkinToggle.checked : true;
+  let randomSkin = "";
+  if (useSkin && skins.length > 0 && Math.random() < 0.8) {
+    const chosenSkin = skins[Math.floor(Math.random() * skins.length)];
+    randomSkin = `[${chosenSkin.replace(/[\[\]]/g, "")}]`;
+  }
+  const finalName = (randomName + " " + randomSkin).trim();
+  const nameInput = getNameInput();
+  if (!nameInput) {
+    return;
+  }
+  setInputValue(nameInput, finalName);
+  console.log(`🎲 Auto-random: ${finalName}`);
+}
+function setupSavedPlayersFeature() {
+  const waitForContextMenu = setInterval(() => {
+    const contextMenu = document.querySelector("#context-menu");
+    if (contextMenu) {
+      clearInterval(waitForContextMenu);
+      const observer = new MutationObserver(() => {
+        const ul = contextMenu.querySelector("ul.context-list");
+        if (ul && !ul.querySelector("#x-copy-player-li")) {
+          const copyLi = document.createElement("li");
+          copyLi.id = "x-copy-player-li";
+          copyLi.textContent = "Copy";
+          copyLi.style.cursor = "pointer";
+          copyLi.onclick = () => {
+            const nameEl = document.querySelector("li#context-name");
+            let raw = "";
+            if (nameEl) {
+              raw = (nameEl.textContent || "").trim();
+            }
+            const {
+              name,
+              skin
+            } = parseTitleText(raw);
+            const list = loadSavedPlayers();
+            list.push({
+              name,
+              skin
+            });
+            saveSavedPlayers(list);
+            const customTab = document.querySelector(".settings-tab[data-tab=\"customfeatures\"]");
+            if (customTab && customTab.classList.contains("active")) {
+              renderSavedPlayers();
+            }
+          };
+          ul.appendChild(copyLi);
+        }
+      });
+      observer.observe(contextMenu, {
+        childList: true,
+        subtree: true
+      });
+    }
+  }, 500);
+}
+function setupRangeListeners() {
+  document.querySelectorAll("#unified-settings-panel input[type=\"range\"]").forEach(range => {
+    try {
+      const valueInput = document.querySelector(`input[data-range="${range.id}"]`);
+      if (valueInput) {
+        range.addEventListener("input", () => {
+          valueInput.value = range.value;
+        });
+        valueInput.addEventListener("input", () => {
+          const val = parseFloat(valueInput.value);
+          if (!isNaN(val)) {
+            range.value = val;
+            range.dispatchEvent(new Event("input", {
+              bubbles: true
+            }));
+          }
+        });
+        valueInput.value = range.value;
+      }
+    } catch (e) {}
+  });
+}
+function setupFontSelector() {
+  const fontSelect = document.getElementById("gameFont");
+  const fontPreview = document.getElementById("fontPreview");
+  if (!fontSelect || !fontPreview) {
+    return;
+  }
+  let savedFont = "default";
+  try {
+    savedFont = GM_getValue("gameFont", "default");
+  } catch (e) {
+    savedFont = localStorage.getItem("gameFont") || "default";
+  }
+  fontSelect.value = savedFont;
+  applyFont(savedFont);
+  fontSelect.addEventListener("change", () => {
+    const selectedFont = fontSelect.value;
+    try {
+      GM_setValue("gameFont", selectedFont);
+    } catch (e) {
+      localStorage.setItem("gameFont", selectedFont);
+    }
+    applyFont(selectedFont);
+    fontPreview.style.fontFamily = selectedFont === "default" ? "Arial, sans-serif" : selectedFont;
+  });
+  fontPreview.style.fontFamily = savedFont === "default" ? "Arial, sans-serif" : savedFont;
+}
+function applyFont(font) {
+  const fontFamily = font === "default" ? "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial, sans-serif" : font;
+  let style = document.getElementById("custom-game-font");
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "custom-game-font";
+    document.head.appendChild(style);
+  }
+  style.textContent = `
             body, body * {
                 font-family: ${fontFamily} !important;
             }
         `;
 }
-
 function setupColorPickers() {
-    setTimeout(() => {
-        const gameColorInputs = [...document.querySelectorAll('input[data-coloris]')].filter(inp =>
-            !inp.closest('#unified-settings-panel')
-        );
-
-        console.log(`Game color inputs found: ${gameColorInputs.length}`);
-
-        if (gameColorInputs.length === 0) {
-            console.warn('⚠️ NO GAME COLOR INPUTS FOUND! Retrying in 2 seconds...');
-            setTimeout(setupColorPickers, 2000);
-            return;
-        }
-
-        document.querySelectorAll('#unified-settings-panel [data-coloris]').forEach(ourInput => {
-            const gameInput = findGameElement(ourInput.id);
-
-            if (gameInput) {
-                let isUpdating = false;
-
-                const applyPersistentStyle = (color) => {
-                    if (isUpdating) return;
-                    isUpdating = true;
-
-                    let hexColor = color;
-                    if (color.startsWith('rgba') || color.startsWith('rgb')) {
-                        hexColor = rgbaToHex(color);
-                    }
-
-                    const style =
-                          `background: ${hexColor} !important; ` +
-                          `background-color: ${hexColor} !important; ` +
-                          `width: 80px !important; ` +
-                          `height: 40px !important; ` +
-                          `border-radius: 8px !important; ` +
-                          `border: 2px solid rgba(120,120,120,0.4) !important; ` +
-                          `cursor: pointer !important; ` +
-                          `padding: 5px !important; ` +
-                          `margin: 0 !important; ` +
-                          `font-size: 0px !important; ` + 
-                          `text-indent: -9999px !important; ` + 
-                          `color: transparent !important; ` + 
-                          `box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;`;
-
-                    ourInput.setAttribute('style', style);
-                    ourInput.value = hexColor;
-
-                    setTimeout(() => { isUpdating = false; }, 50);
-                };
-
-                const updateOurColor = (newColor) => {
-                    let hexColor = newColor;
-                    if (newColor.startsWith('rgba') || newColor.startsWith('rgb')) {
-                        hexColor = rgbaToHex(newColor);
-                    }
-                    ourInput.value = hexColor;
-                    applyPersistentStyle(hexColor);
-                    saveColorSettings();
-                };
-
-                if (gameInput.value) {
-                    updateOurColor(gameInput.value);
-                }
-
-                let lastValue = gameInput.value;
-
-                ['input', 'change'].forEach(eventType => {
-                    gameInput.addEventListener(eventType, () => {
-                        const newValue = gameInput.value;
-                        if (newValue && newValue !== lastValue) {
-                            console.log(`📡 Game ${eventType}: ${gameInput.id} = ${newValue}`);
-                            lastValue = newValue;
-                            updateOurColor(newValue);
-                        }
-                    });
-                });
-
-                ourInput.addEventListener('input', () => {
-                    const newValue = ourInput.value;
-                    if (newValue && /^#[0-9A-Fa-f]{6}$/i.test(newValue)) {
-                        console.log(`🎨 Our input changed: ${ourInput.id} = ${newValue}`);
-                        gameInput.value = newValue;
-                        gameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        gameInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        lastValue = newValue;
-                        applyPersistentStyle(newValue);
-                        saveColorSettings();
-                    }
-                });
-
-                const overlay = document.getElementById('unified-settings-overlay');
-                if (overlay) {
-                    const observer = new MutationObserver(() => {
-                        if (!overlay.classList.contains('show')) {
-                            saveColorSettings();
-                        }
-                    });
-                    observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
-                }
-
-                const styleMonitor = setInterval(() => {
-                    const overlay = document.getElementById('unified-settings-overlay');
-                    if (!overlay || !overlay.classList.contains('show')) {
-                        return;
-                    }
-
-                    if (ourInput.value && (ourInput.value.startsWith('#') || ourInput.value.startsWith('rgb'))) {
-                        applyPersistentStyle(ourInput.value);
-                    }
-                }, 100);
-
-            } else {
-                console.warn(`  ❌ No matching game input for ${ourInput.id}`);
-            }
-        });
-
-        loadSavedColors();
-    }, 500);
-}
-
-function rgbaToHex(rgba) {
-    if (rgba.startsWith('#')) return rgba;
-
-    const parts = rgba.match(/[\d.]+/g);
-    if (!parts || parts.length < 3) return rgba;
-
-    const r = parseInt(parts[0]);
-    const g = parseInt(parts[1]);
-    const b = parseInt(parts[2]);
-
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-}
-
-function setupChatToggle(hotkey) {
-    document.removeEventListener('keydown', window.__chatToggleHandler);
-
-    window.__chatToggleHandler = (e) => {
-        if (e.key.toLowerCase() === hotkey && document.activeElement.tagName !== "INPUT") {
-            const chatPanel = document.getElementById("chat-panel");
-            if (chatPanel) {
-                if (chatPanel.style.display === "none") {
-                    chatPanel.style.setProperty("display", "block", "important");
-                } else {
-                    chatPanel.style.setProperty("display", "none", "important");
-                }
-            }
-        }
-    };
-
-    document.addEventListener("keydown", window.__chatToggleHandler);
-}
-
-function syncHotkeysFromGame() {
-    const hotkeysTab = document.querySelector('#tab-hotkeys');
-    if (!hotkeysTab) return;
-
-    const gameHotkeysPanel = document.querySelector('#main-hotkeys') ||
-                             document.querySelector('[id*="hotkey"]') ||
-                             document.querySelector('.hotkeys-panel');
-
-    if (!gameHotkeysPanel) {
-        console.warn('⚠️ Game hotkeys panel not found');
-        return;
+  setTimeout(() => {
+    const gameColorInputs = [...document.querySelectorAll("input[data-coloris]")].filter(inp => !inp.closest("#unified-settings-panel"));
+    if (gameColorInputs.length === 0) {
+      console.warn("⚠️ NO GAME COLOR INPUTS FOUND! Retrying in 2 seconds...");
+      setTimeout(setupColorPickers, 2000);
+      return;
     }
-
-    const gameButtons = gameHotkeysPanel.querySelectorAll('.keybinds-btn, button[data-key]');
-
-    gameButtons.forEach(btn => {
-        const customBtn = hotkeysTab.querySelector(`[data-key="${btn.dataset.key}"]`);
-        if (customBtn) {
-            customBtn.textContent = btn.textContent;
-            customBtn.onclick = () => btn.click();
-
-        }
-
-    });
-}
-
-function syncHotkeysWithGame() {
-    let isCapturing = false;
-    let currentGameBtn = null;
-    let currentKeyId = null;
-
-    const escapeHandler = (e) => {
-        if (isCapturing && e.key === 'Escape') {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-
-            setTimeout(() => {
-                const keybinds = JSON.parse(localStorage.getItem('keybinds') || '{}');
-                keybinds[currentKeyId] = -1;
-                localStorage.setItem('keybinds', JSON.stringify(keybinds));
-
-                if (currentGameBtn) currentGameBtn.textContent = ' ';
-                const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${currentKeyId}"]`);
-                if (customBtn) customBtn.textContent = '-';
-
-                window.dispatchEvent(new Event('storage'));
-            }, 50);
-
-            isCapturing = false;
-            currentGameBtn = null;
-            currentKeyId = null;
-
-            return false;
-        }
-    };
-
-    document.addEventListener('keydown', escapeHandler, { capture: true, passive: false });
-    document.addEventListener('keypress', escapeHandler, { capture: true, passive: false });
-    document.addEventListener('keyup', escapeHandler, { capture: true, passive: false });
-
-    const stopHandler = (e) => {
-        if (isCapturing) {
-            setTimeout(() => {
-                isCapturing = false;
-                currentGameBtn = null;
-                currentKeyId = null;
-            }, 200);
-        }
-    };
-
-    document.addEventListener('keydown', stopHandler, true);
-    document.addEventListener('mousedown', stopHandler, true);
-
-    setInterval(() => {
-        const gameButtons = document.querySelectorAll('button.keybinds-btn[id]');
-        gameButtons.forEach(gameBtn => {
-            const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
-            if (customBtn && gameBtn.textContent !== customBtn.textContent) {
-                customBtn.textContent = gameBtn.textContent || '-';
-            }
-        });
-    }, 100);
-
-    const gameButtons = document.querySelectorAll('button.keybinds-btn[id]');
-    gameButtons.forEach(gameBtn => {
-        const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
-        if (customBtn) {
-            customBtn.onclick = () => {
-                gameBtn.click();
-                isCapturing = true;
-                currentGameBtn = gameBtn;
-                currentKeyId = gameBtn.id;
-            };
-        }
-    });
-
-}
-
-function syncWithGameSettings() {
-    try {
-        console.log('Starting sync with game settings...');
-
-        const mainOptions = findPotentialGamePanel();
-        if (!mainOptions) {
-            console.warn('Game settings panel not found, retrying...');
-            setTimeout(syncWithGameSettings, 1000);
-            return;
-        }
-
-        setTimeout(() => {
-            performSync();
-            syncHotkeysWithGame();
-        }, 500);
-    } catch (e) {
-        console.error('syncWithGameSettings error', e);
-    }
-}
-
-function findPotentialGamePanel() {
-    const possible = [
-        'main-options',
-        'main-themes',
-        'main-subpanel',
-        'main-hotkeys',
-        'main-panel',
-        'main-right',
-        'mainPanel'
-    ];
-    for (const id of possible) {
-        const el = document.getElementById(id);
-        if (el) return el;
-    }
-    const fallback = document.querySelector('.main-options, .main-panel-wrapper, .main-right, .main-left');
-    return fallback || null;
-}
-
-function findGameElement(id) {
-    if (!id) return null;
-    try {
-        let el = document.getElementById(id);
-        if (el && !el.closest('#unified-settings-panel')) return el;
-
-        el = document.querySelector(`#${CSS.escape(id)}`);
-        if (el && !el.closest('#unified-settings-panel')) return el;
-
-        el = document.querySelector(`[name="${id}"]`);
-        if (el && !el.closest('#unified-settings-panel')) return el;
-
-        el = document.querySelector(`[data-id="${id}"], [data-key="${id}"], [data-name="${id}"]`);
-        if (el && !el.closest('#unified-settings-panel')) return el;
-
-        const panels = ['main-options','main-themes','main-hotkeys','main-subpanel','mainPanel','main-right','main-left'];
-        for (const pid of panels) {
-            const panel = document.getElementById(pid) || document.querySelector(`#${pid}`);
-            if (!panel) continue;
-            let candidate = panel.querySelector(`#${CSS.escape(id)}`);
-            if (candidate) return candidate;
-            candidate = panel.querySelector(`[name="${id}"]`);
-            if (candidate) return candidate;
-            const partial = panel.querySelector(`[id*="${id}"], [name*="${id}"], [data-id*="${id}"]`);
-            if (partial) return partial;
-        }
-
-        const short = id.replace(/^k|^c|^s|^r|^i|^sp/, '');
-        const broad = [...document.querySelectorAll('*')].find(n => {
-            if (n.closest && n.closest('#unified-settings-panel')) return false;
-            const nid = n.id || '';
-            const nname = n.getAttribute && n.getAttribute('name') || '';
-            if (!nid && !nname) return false;
-            return nid.toLowerCase().includes(short.toLowerCase()) || (nname && nname.toLowerCase().includes(short.toLowerCase()));
-        });
-        if (broad) return broad;
-    } catch (e) {
-        
-    }
-    return null;
-}
-
-(function() {
-    'use strict';
-
-    let clockLine = null;
-    let sessionLine = null;
-    let clockInterval = null;
-    let sessionInterval = null;
-    let sessionStart = null;
-
-    const formatTime = (seconds) => {
-        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${h}:${m}:${s}`;
-    };
-
-    function createClock() {
-        if (clockLine) return;
-        const extraPanel = document.getElementById('extra-panel');
-        if (!extraPanel) return;
-
-        clockLine = document.createElement('p');
-        clockLine.className = 'liliwi-timer-line';
-        clockLine.style.display = 'block';
-        clockLine.innerHTML = `Time: <span id="liliwi-clock">00:00:00</span>`;
-
-
-        if (sessionLine && sessionLine.parentNode) {
-            extraPanel.insertBefore(clockLine, sessionLine);
-        } else {
-            extraPanel.appendChild(clockLine);
-        }
-
-        const updateClock = () => {
-            const now = new Date();
-            const span = document.getElementById('liliwi-clock');
-            if (span) span.textContent = now.toTimeString().slice(0, 8);
+    document.querySelectorAll("#unified-settings-panel [data-coloris]").forEach(ourInput => {
+      const gameInput = findGameElement(ourInput.id);
+      if (gameInput) {
+        const applyPreview = color => {
+          let hexColor = color;
+          if (color.startsWith("rgb")) {
+            hexColor = rgbaToHex(color);
+          }
+          const style = `
+                        background: ${hexColor} !important;
+                        background-color: ${hexColor} !important;
+                        width: 80px !important;
+                        height: 40px !important;
+                        border-radius: 8px !important;
+                        border: 2px solid rgba(120,120,120,0.4) !important;
+                        cursor: pointer !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        font-size: 0 !important;
+                        text-indent: -9999px !important;
+                        color: transparent !important;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+                    `;
+          ourInput.setAttribute("style", style);
+          ourInput.value = hexColor;
         };
-        updateClock();
-        clockInterval = setInterval(updateClock, 1000);
-    }
-
-    function createSession() {
-        if (sessionLine) return;
-        const extraPanel = document.getElementById('extra-panel');
-        if (!extraPanel) return;
-
-        sessionLine = document.createElement('p');
-        sessionLine.className = 'liliwi-timer-line';
-        sessionLine.style.display = 'block';
-        sessionLine.innerHTML = `Session: <span id="liliwi-session">00:00:00</span>`;
-
-        if (clockLine && clockLine.parentNode) {
-            clockLine.parentNode.insertBefore(sessionLine, clockLine.nextSibling);
-        } else {
-            extraPanel.appendChild(sessionLine);
+        if (gameInput.value) {
+          applyPreview(gameInput.value);
         }
-
-        sessionStart = Date.now();
-        sessionInterval = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
-            const span = document.getElementById('liliwi-session');
-            if (span) span.textContent = formatTime(elapsed);
-        }, 1000);
-    }
-
-    function removeClock() {
-        if (clockLine && clockLine.parentNode) {
-            clockLine.parentNode.removeChild(clockLine);
-        }
-        if (clockInterval) clearInterval(clockInterval);
-        clockLine = null;
-        clockInterval = null;
-    }
-
-    function removeSession() {
-        if (sessionLine && sessionLine.parentNode) {
-            sessionLine.parentNode.removeChild(sessionLine);
-        }
-        if (sessionInterval) clearInterval(sessionInterval);
-        sessionLine = null;
-        sessionInterval = null;
-    }
-
-    const waitForCheckboxes = setInterval(() => {
-        const clockCheckbox = document.getElementById('liliwi-show-clock');
-        const sessionCheckbox = document.getElementById('liliwi-show-session');
-
-        if (!clockCheckbox || !sessionCheckbox) return;
-
-        clearInterval(waitForCheckboxes);
-
-        if (localStorage.getItem('liliwi-show-clock') === 'false') clockCheckbox.checked = false;
-        if (localStorage.getItem('liliwi-show-session') === 'false') sessionCheckbox.checked = false;
-
-        clockCheckbox.addEventListener('change', (e) => {
-            localStorage.setItem('liliwi-show-clock', e.target.checked);
-            e.target.checked ? createClock() : removeClock();
+        ["input", "change"].forEach(eventType => {
+          gameInput.addEventListener(eventType, () => {
+            if (gameInput.value) {
+              applyPreview(gameInput.value);
+              saveColorSettings();
+            }
+          });
         });
-
-        sessionCheckbox.addEventListener('change', (e) => {
-            localStorage.setItem('liliwi-show-session', e.target.checked);
-            e.target.checked ? createSession() : removeSession();
+        ourInput.addEventListener("input", () => {
+          const newValue = ourInput.value;
+          if (newValue && /^#[0-9A-Fa-f]{6}$/i.test(newValue)) {
+            gameInput.value = newValue;
+            gameInput.dispatchEvent(new Event("input", {
+              bubbles: true
+            }));
+            gameInput.dispatchEvent(new Event("change", {
+              bubbles: true
+            }));
+            applyPreview(newValue);
+            saveColorSettings();
+          }
         });
-
-        if (clockCheckbox.checked) createClock();
-        if (sessionCheckbox.checked) createSession();
-
-    }, 300);
-
-    setTimeout(() => {
-        if (document.getElementById('extra-panel')) {
-            const clockCB = document.getElementById('liliwi-show-clock');
-            const sessionCB = document.getElementById('liliwi-show-session');
-            if (clockCB?.checked) createClock();
-            if (sessionCB?.checked) createSession();
-        }
-    }, 5000);
-})();
-
-function performSync() {
-    try {
-        let syncedCount = 0;
-
-        const panel = document.getElementById('unified-settings-panel');
-        if (!panel) return;
-
-        panel.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            try {
-                const gameCheckbox = findGameElement(checkbox.id);
-                if (gameCheckbox && (gameCheckbox.type === 'checkbox' || gameCheckbox.getAttribute('role') === 'checkbox')) {
-                    checkbox.checked = !!gameCheckbox.checked;
-                    syncedCount++;
-
-                    const newCheckbox = checkbox.cloneNode(true);
-                    checkbox.parentNode && checkbox.parentNode.replaceChild(newCheckbox, checkbox);
-
-                    newCheckbox.addEventListener('change', () => {
-                        try {
-                            gameCheckbox.checked = newCheckbox.checked;
-                            gameCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-                            gameCheckbox.dispatchEvent(new Event('click', { bubbles: true }));
-                            gameCheckbox.dispatchEvent(new Event('input', { bubbles: true }));
-                        } catch(e){}
-                    });
-                }
-            } catch(e){ }
-        });
-
-        panel.querySelectorAll('select').forEach(select => {
-            try {
-                const gameSelect = findGameElement(select.id);
-                if (gameSelect && gameSelect.tagName === 'SELECT') {
-                    select.innerHTML = gameSelect.innerHTML;
-                    select.value = gameSelect.value;
-                    syncedCount++;
-
-                    const newSelect = select.cloneNode(true);
-                    select.parentNode && select.parentNode.replaceChild(newSelect, select);
-                    newSelect.innerHTML = gameSelect.innerHTML;
-                    newSelect.value = gameSelect.value;
-
-                    newSelect.addEventListener('change', () => {
-                        try {
-                            gameSelect.value = newSelect.value;
-                            gameSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                            gameSelect.dispatchEvent(new Event('input', { bubbles: true }));
-                        } catch(e){}
-                    });
-                }
-            } catch(e){}
-        });
-
-        panel.querySelectorAll('input[type="text"]').forEach(input => {
-            try {
-                const gameInput = findGameElement(input.id);
-                if (gameInput) {
-                    input.value = gameInput.value || '';
-                    input.type = gameInput.type || 'text';
-                    syncedCount++;
-
-                    const newInput = input.cloneNode(true);
-                    input.parentNode && input.parentNode.replaceChild(newInput, input);
-                    newInput.value = gameInput.value || '';
-                    newInput.type = gameInput.type || 'text';
-
-                    newInput.addEventListener('input', () => {
-                        try {
-                            gameInput.value = newInput.value;
-                            gameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            gameInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        } catch(e){}
-                    });
-                }
-            } catch(e){}
-        });
-
-        panel.querySelectorAll('input[type="range"]').forEach(range => {
-            try {
-                const gameRange = findGameElement(range.id);
-                if (gameRange && gameRange.type === 'range') {
-                    range.value = gameRange.value;
-                    range.min = gameRange.min;
-                    range.max = gameRange.max;
-                    range.step = gameRange.step;
-                    syncedCount++;
-
-                    const newRange = range.cloneNode(true);
-                    range.parentNode && range.parentNode.replaceChild(newRange, range);
-                    newRange.value = gameRange.value;
-                    newRange.min = gameRange.min;
-                    newRange.max = gameRange.max;
-                    newRange.step = gameRange.step;
-
-                    const valueInput = document.querySelector(`input[data-range="${newRange.id}"]`);
-                    if (valueInput) {
-                        valueInput.value = newRange.value;
-                        valueInput.min = newRange.min;
-                        valueInput.max = newRange.max;
-                        valueInput.step = newRange.step;
-                    }
-
-                    newRange.addEventListener('input', () => {
-                        try {
-                            gameRange.value = newRange.value;
-                            if (valueInput) valueInput.value = newRange.value;
-                            gameRange.dispatchEvent(new Event('input', { bubbles: true }));
-                            gameRange.dispatchEvent(new Event('change', { bubbles: true }));
-                        } catch(e){}
-                    });
-                }
-            } catch(e){}
-        });
-
-        console.log(`✅ Synced ${syncedCount} settings with game controls`);
-    } catch (e) {
-        console.error('performSync error', e);
-    }
+      }
+    });
+    loadSavedColors();
+  }, 500);
 }
-
-function open() {
-    const overlay = document.getElementById('unified-settings-overlay');
-    if (overlay && !state.isOpen) {
-        state.isOpen = true;
-
-        requestAnimationFrame(() => {
-            overlay.classList.add('show');
-        });
-
-        syncWithGameSettings();
-        syncHotkeysWithGame();
-        setupColorPickers();
-        loadSavedColors(); 
+function setupThemeImportExport() {
+  const exportBtn = document.getElementById("export-theme-btn");
+  const importBtn = document.getElementById("import-theme-btn");
+  const fileInput = document.getElementById("import-theme-file");
+  const filenameSpan = document.getElementById("import-filename");
+  if (!exportBtn || !importBtn || !fileInput) {
+    return;
+  }
+  exportBtn.addEventListener("click", () => {
+    const themeData = {};
+    document.querySelectorAll("#tab-themes input, #tab-themes select").forEach(el => {
+      if (el.id) {
+        if (el.type === "checkbox") {
+          themeData[el.id] = el.checked;
+        } else {
+          themeData[el.id] = el.value;
+        }
+      }
+    });
+    document.querySelectorAll("#tab-themes input[type=\"range\"]").forEach(range => {
+      if (range.id) {
+        themeData[range.id] = range.value;
+      }
+    });
+    const json = JSON.stringify(themeData, null, 2);
+    const blob = new Blob([json], {
+      type: "application/json"
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "liliwi-theme-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
+    exportBtn.textContent = "Exported!";
+    setTimeout(() => {
+      exportBtn.textContent = "Export as JSON";
+    }, 2000);
+  });
+  importBtn.addEventListener("click", () => {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) {
+      filenameSpan.textContent = "No file selected";
+      return;
     }
+    filenameSpan.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const themeData = JSON.parse(ev.target.result);
+        Object.keys(themeData).forEach(id => {
+          const el = document.querySelector(`#tab-themes #${CSS.escape(id)}`);
+          if (!el) {
+            return;
+          }
+          if (el.type === "checkbox") {
+            el.checked = themeData[id];
+          } else {
+            el.value = themeData[id];
+          }
+          el.dispatchEvent(new Event("change", {
+            bubbles: true
+          }));
+          el.dispatchEvent(new Event("input", {
+            bubbles: true
+          }));
+          if (id === "gameFont") {
+            applyFont(themeData[id]);
+          }
+        });
+        document.querySelectorAll("#tab-themes input[type=\"range\"]").forEach(range => {
+          const valInput = document.querySelector(`#tab-themes input[data-range="${range.id}"]`);
+          if (valInput) {
+            valInput.value = range.value;
+          }
+        });
+        importBtn.textContent = "Imported!";
+        importBtn.style.background = "rgba(0,200,0,0.8)";
+        setTimeout(() => {
+          importBtn.textContent = "Choose File & Import";
+          importBtn.style.background = "rgba(0,150,0,0.7)";
+        }, 2000);
+        saveColorSettings();
+      } catch (err) {
+        alert("Invalid theme file! Make sure it's a valid JSON exported from this script.");
+        console.error("Import error:", err);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+function rgbaToHex(rgba) {
+  if (rgba.startsWith("#")) {
+    return rgba;
+  }
+  const parts = rgba.match(/[\d.]+/g);
+  if (!parts || parts.length < 3) {
+    return rgba;
+  }
+  const r = parseInt(parts[0]);
+  const g = parseInt(parts[1]);
+  const b = parseInt(parts[2]);
+  return "#" + (16777216 + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
+function setupChatToggle(hotkey) {
+  document.removeEventListener("keydown", window.__chatToggleHandler);
+  window.__chatToggleHandler = e => {
+    if (e.key.toLowerCase() === hotkey && document.activeElement.tagName !== "INPUT") {
+      const chatPanel = document.getElementById("chat-panel");
+      if (chatPanel) {
+        if (chatPanel.style.display === "none") {
+          chatPanel.style.setProperty("display", "block", "important");
+        } else {
+          chatPanel.style.setProperty("display", "none", "important");
+        }
+      }
+    }
+  };
+  document.addEventListener("keydown", window.__chatToggleHandler);
+}
+function syncHotkeysFromGame() {
+  const hotkeysTab = document.querySelector("#tab-hotkeys");
+  if (!hotkeysTab) {
+    return;
+  }
+  const gameHotkeysPanel = document.querySelector("#main-hotkeys") || document.querySelector("[id*=\"hotkey\"]") || document.querySelector(".hotkeys-panel");
+  if (!gameHotkeysPanel) {
+    console.warn("⚠️ Game hotkeys panel not found");
+    return;
+  }
+  const gameButtons = gameHotkeysPanel.querySelectorAll(".keybinds-btn, button[data-key]");
+  gameButtons.forEach(btn => {
+    const customBtn = hotkeysTab.querySelector(`[data-key="${btn.dataset.key}"]`);
+    if (customBtn) {
+      customBtn.textContent = btn.textContent;
+      customBtn.onclick = () => btn.click();
+    }
+  });
+}
+function syncHotkeysWithGame() {
+  let isCapturing = false;
+  let currentGameBtn = null;
+  let currentKeyId = null;
+  const escapeHandler = e => {
+    if (isCapturing && e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      setTimeout(() => {
+        const keybinds = JSON.parse(localStorage.getItem("keybinds") || "{}");
+        keybinds[currentKeyId] = -1;
+        localStorage.setItem("keybinds", JSON.stringify(keybinds));
+        if (currentGameBtn) {
+          currentGameBtn.textContent = " ";
+        }
+        const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${currentKeyId}"]`);
+        if (customBtn) {
+          customBtn.textContent = "-";
+        }
+        window.dispatchEvent(new Event("storage"));
+      }, 50);
+      isCapturing = false;
+      currentGameBtn = null;
+      currentKeyId = null;
+      return false;
+    }
+  };
+  document.addEventListener("keydown", escapeHandler, {
+    capture: true,
+    passive: false
+  });
+  document.addEventListener("keypress", escapeHandler, {
+    capture: true,
+    passive: false
+  });
+  document.addEventListener("keyup", escapeHandler, {
+    capture: true,
+    passive: false
+  });
+  const stopHandler = e => {
+    if (isCapturing) {
+      setTimeout(() => {
+        isCapturing = false;
+        currentGameBtn = null;
+        currentKeyId = null;
+      }, 200);
+    }
+  };
+  document.addEventListener("keydown", stopHandler, true);
+  document.addEventListener("mousedown", stopHandler, true);
+  setInterval(() => {
+    const gameButtons = document.querySelectorAll("button.keybinds-btn[id]");
+    gameButtons.forEach(gameBtn => {
+      const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
+      if (customBtn && gameBtn.textContent !== customBtn.textContent) {
+        customBtn.textContent = gameBtn.textContent || "-";
+      }
+    });
+  }, 100);
+  const gameButtons = document.querySelectorAll("button.keybinds-btn[id]");
+  gameButtons.forEach(gameBtn => {
+    const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
+    if (customBtn) {
+      customBtn.onclick = () => {
+        gameBtn.click();
+        isCapturing = true;
+        currentGameBtn = gameBtn;
+        currentKeyId = gameBtn.id;
+      };
+    }
+  });
+}
+function syncWithGameSettings() {
+  try {
+    console.log("Starting sync with game settings...");
+    const mainOptions = findPotentialGamePanel();
+    if (!mainOptions) {
+      console.warn("Game settings panel not found, retrying...");
+      setTimeout(syncWithGameSettings, 1000);
+      return;
+    }
+    setTimeout(() => {
+      performSync();
+      syncHotkeysWithGame();
+    }, 500);
+  } catch (e) {
+    console.error("syncWithGameSettings error", e);
+  }
+}
+function findPotentialGamePanel() {
+  const possible = ["main-options", "main-themes", "main-subpanel", "main-hotkeys", "main-panel", "main-right", "mainPanel"];
+  for (const id of possible) {
+    const el = document.getElementById(id);
+    if (el) {
+      return el;
+    }
+  }
+  const fallback = document.querySelector(".main-options, .main-panel-wrapper, .main-right, .main-left");
+  return fallback || null;
+}
+function findGameElement(id) {
+  if (!id) {
+    return null;
+  }
+  try {
+    let el = document.getElementById(id);
+    if (el && !el.closest("#unified-settings-panel")) {
+      return el;
+    }
+    el = document.querySelector(`#${CSS.escape(id)}`);
+    if (el && !el.closest("#unified-settings-panel")) {
+      return el;
+    }
+    el = document.querySelector(`[name="${id}"]`);
+    if (el && !el.closest("#unified-settings-panel")) {
+      return el;
+    }
+    el = document.querySelector(`[data-id="${id}"], [data-key="${id}"], [data-name="${id}"]`);
+    if (el && !el.closest("#unified-settings-panel")) {
+      return el;
+    }
+    const panels = ["main-options", "main-themes", "main-hotkeys", "main-subpanel", "mainPanel", "main-right", "main-left"];
+    for (const pid of panels) {
+      const panel = document.getElementById(pid) || document.querySelector(`#${pid}`);
+      if (!panel) {
+        continue;
+      }
+      let candidate = panel.querySelector(`#${CSS.escape(id)}`);
+      if (candidate) {
+        return candidate;
+      }
+      candidate = panel.querySelector(`[name="${id}"]`);
+      if (candidate) {
+        return candidate;
+      }
+      const partial = panel.querySelector(`[id*="${id}"], [name*="${id}"], [data-id*="${id}"]`);
+      if (partial) {
+        return partial;
+      }
+    }
+    const short = id.replace(/^k|^c|^s|^r|^i|^sp/, "");
+    const broad = [...document.querySelectorAll("*")].find(n => {
+      if (n.closest && n.closest("#unified-settings-panel")) {
+        return false;
+      }
+      const nid = n.id || "";
+      const nname = n.getAttribute && n.getAttribute("name") || "";
+      if (!nid && !nname) {
+        return false;
+      }
+      return nid.toLowerCase().includes(short.toLowerCase()) || nname && nname.toLowerCase().includes(short.toLowerCase());
+    });
+    if (broad) {
+      return broad;
+    }
+  } catch (e) {}
+  return null;
+}
+(function () {
+  'use strict';
+
+  let clockLine = null;
+  let sessionLine = null;
+  let clockInterval = null;
+  let sessionInterval = null;
+  let sessionStart = null;
+  const formatTime = seconds => {
+    const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
+    const m = Math.floor(seconds % 3600 / 60).toString().padStart(2, "0");
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
+  function createClock() {
+    if (clockLine) {
+      return;
+    }
+    const extraPanel = document.getElementById("extra-panel");
+    if (!extraPanel) {
+      return;
+    }
+    clockLine = document.createElement("p");
+    clockLine.className = "liliwi-timer-line";
+    clockLine.style.display = "block";
+    clockLine.innerHTML = `Time: <span id="liliwi-clock">00:00:00</span>`;
+    if (sessionLine && sessionLine.parentNode) {
+      extraPanel.insertBefore(clockLine, sessionLine);
+    } else {
+      extraPanel.appendChild(clockLine);
+    }
+    const updateClock = () => {
+      const now = new Date();
+      const span = document.getElementById("liliwi-clock");
+      if (span) {
+        span.textContent = now.toTimeString().slice(0, 8);
+      }
+    };
+    updateClock();
+    clockInterval = setInterval(updateClock, 1000);
+  }
+  function createSession() {
+    if (sessionLine) {
+      return;
+    }
+    const extraPanel = document.getElementById("extra-panel");
+    if (!extraPanel) {
+      return;
+    }
+    sessionLine = document.createElement("p");
+    sessionLine.className = "liliwi-timer-line";
+    sessionLine.style.display = "block";
+    sessionLine.innerHTML = `Session: <span id="liliwi-session">00:00:00</span>`;
+    if (clockLine && clockLine.parentNode) {
+      clockLine.parentNode.insertBefore(sessionLine, clockLine.nextSibling);
+    } else {
+      extraPanel.appendChild(sessionLine);
+    }
+    sessionStart = Date.now();
+    sessionInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+      const span = document.getElementById("liliwi-session");
+      if (span) {
+        span.textContent = formatTime(elapsed);
+      }
+    }, 1000);
+  }
+  function removeClock() {
+    if (clockLine && clockLine.parentNode) {
+      clockLine.parentNode.removeChild(clockLine);
+    }
+    if (clockInterval) {
+      clearInterval(clockInterval);
+    }
+    clockLine = null;
+    clockInterval = null;
+  }
+  function removeSession() {
+    if (sessionLine && sessionLine.parentNode) {
+      sessionLine.parentNode.removeChild(sessionLine);
+    }
+    if (sessionInterval) {
+      clearInterval(sessionInterval);
+    }
+    sessionLine = null;
+    sessionInterval = null;
+  }
+  const waitForCheckboxes = setInterval(() => {
+    const clockCheckbox = document.getElementById("liliwi-show-clock");
+    const sessionCheckbox = document.getElementById("liliwi-show-session");
+    if (!clockCheckbox || !sessionCheckbox) {
+      return;
+    }
+    clearInterval(waitForCheckboxes);
+    if (localStorage.getItem("liliwi-show-clock") === "false") {
+      clockCheckbox.checked = false;
+    }
+    if (localStorage.getItem("liliwi-show-session") === "false") {
+      sessionCheckbox.checked = false;
+    }
+    clockCheckbox.addEventListener("change", e => {
+      localStorage.setItem("liliwi-show-clock", e.target.checked);
+      if (e.target.checked) {
+        createClock();
+      } else {
+        removeClock();
+      }
+    });
+    sessionCheckbox.addEventListener("change", e => {
+      localStorage.setItem("liliwi-show-session", e.target.checked);
+      if (e.target.checked) {
+        createSession();
+      } else {
+        removeSession();
+      }
+    });
+    if (clockCheckbox.checked) {
+      createClock();
+    }
+    if (sessionCheckbox.checked) {
+      createSession();
+    }
+  }, 300);
+  setTimeout(() => {
+    if (document.getElementById("extra-panel")) {
+      const clockCB = document.getElementById("liliwi-show-clock");
+      const sessionCB = document.getElementById("liliwi-show-session");
+      if (clockCB?.checked) {
+        createClock();
+      }
+      if (sessionCB?.checked) {
+        createSession();
+      }
+    }
+  }, 5000);
+})();
+function performSync() {
+  try {
+    let syncedCount = 0;
+    const panel = document.getElementById("unified-settings-panel");
+    if (!panel) {
+      return;
+    }
+    panel.querySelectorAll("input[type=\"checkbox\"]").forEach(checkbox => {
+      try {
+        const gameCheckbox = findGameElement(checkbox.id);
+        if (gameCheckbox && (gameCheckbox.type === "checkbox" || gameCheckbox.getAttribute("role") === "checkbox")) {
+          checkbox.checked = !!gameCheckbox.checked;
+          syncedCount++;
+          const newCheckbox = checkbox.cloneNode(true);
+          if (checkbox.parentNode) {
+            checkbox.parentNode.replaceChild(newCheckbox, checkbox);
+          }
+          newCheckbox.addEventListener("change", () => {
+            try {
+              gameCheckbox.checked = newCheckbox.checked;
+              gameCheckbox.dispatchEvent(new Event("change", {
+                bubbles: true
+              }));
+              gameCheckbox.dispatchEvent(new Event("click", {
+                bubbles: true
+              }));
+              gameCheckbox.dispatchEvent(new Event("input", {
+                bubbles: true
+              }));
+            } catch (e) {}
+          });
+        }
+      } catch (e) {}
+    });
+    panel.querySelectorAll("select").forEach(select => {
+      try {
+        const gameSelect = findGameElement(select.id);
+        if (gameSelect && gameSelect.tagName === "SELECT") {
+          select.innerHTML = gameSelect.innerHTML;
+          select.value = gameSelect.value;
+          syncedCount++;
+          const newSelect = select.cloneNode(true);
+          if (select.parentNode) {
+            select.parentNode.replaceChild(newSelect, select);
+          }
+          newSelect.innerHTML = gameSelect.innerHTML;
+          newSelect.value = gameSelect.value;
+          newSelect.addEventListener("change", () => {
+            try {
+              gameSelect.value = newSelect.value;
+              gameSelect.dispatchEvent(new Event("change", {
+                bubbles: true
+              }));
+              gameSelect.dispatchEvent(new Event("input", {
+                bubbles: true
+              }));
+            } catch (e) {}
+          });
+        }
+      } catch (e) {}
+    });
+    panel.querySelectorAll("input[type=\"text\"]").forEach(input => {
+      try {
+        const gameInput = findGameElement(input.id);
+        if (gameInput) {
+          input.value = gameInput.value || "";
+          input.type = gameInput.type || "text";
+          syncedCount++;
+          const newInput = input.cloneNode(true);
+          if (input.parentNode) {
+            input.parentNode.replaceChild(newInput, input);
+          }
+          newInput.value = gameInput.value || "";
+          newInput.type = gameInput.type || "text";
+          newInput.addEventListener("input", () => {
+            try {
+              gameInput.value = newInput.value;
+              gameInput.dispatchEvent(new Event("input", {
+                bubbles: true
+              }));
+              gameInput.dispatchEvent(new Event("change", {
+                bubbles: true
+              }));
+            } catch (e) {}
+          });
+        }
+      } catch (e) {}
+    });
+    panel.querySelectorAll("input[type=\"range\"]").forEach(range => {
+      try {
+        const gameRange = findGameElement(range.id);
+        if (gameRange && gameRange.type === "range") {
+          range.value = gameRange.value;
+          range.min = gameRange.min;
+          range.max = gameRange.max;
+          range.step = gameRange.step;
+          syncedCount++;
+          const newRange = range.cloneNode(true);
+          if (range.parentNode) {
+            range.parentNode.replaceChild(newRange, range);
+          }
+          newRange.value = gameRange.value;
+          newRange.min = gameRange.min;
+          newRange.max = gameRange.max;
+          newRange.step = gameRange.step;
+          const valueInput = document.querySelector(`input[data-range="${newRange.id}"]`);
+          if (valueInput) {
+            valueInput.value = newRange.value;
+            valueInput.min = newRange.min;
+            valueInput.max = newRange.max;
+            valueInput.step = newRange.step;
+          }
+          newRange.addEventListener("input", () => {
+            try {
+              gameRange.value = newRange.value;
+              if (valueInput) {
+                valueInput.value = newRange.value;
+              }
+              gameRange.dispatchEvent(new Event("input", {
+                bubbles: true
+              }));
+              gameRange.dispatchEvent(new Event("change", {
+                bubbles: true
+              }));
+            } catch (e) {}
+          });
+        }
+      } catch (e) {}
+    });
+  } catch (e) {
+    console.error("performSync error", e);
+  }
+}
+function open() {
+  const overlay = document.getElementById("unified-settings-overlay");
+  if (overlay && !state.isOpen) {
+    state.isOpen = true;
+    requestAnimationFrame(() => {
+      overlay.classList.add("show");
+    });
+    syncWithGameSettings();
+    syncHotkeysWithGame();
+    setupColorPickers();
+    loadSavedColors();
+  }
 }
 function close() {
-    const overlay = document.getElementById('unified-settings-overlay');
-    if (overlay && state.isOpen) {
-        saveColorSettings(); 
-        overlay.classList.remove('show');
-        state.isOpen = false;
-
-        if (window.Coloris) {
-            try { window.Coloris.close(); } catch(e) {}
-        }
+  const overlay = document.getElementById("unified-settings-overlay");
+  if (overlay && state.isOpen) {
+    saveColorSettings();
+    overlay.classList.remove("show");
+    state.isOpen = false;
+    if (window.Coloris) {
+      try {
+        window.Coloris.close();
+      } catch (e) {}
     }
+  }
 }
-
-
 (function animateContextMenu() {
-    'use strict';
+  'use strict';
 
-    const oldStyle = document.getElementById('context-menu-animation-style');
-    if (oldStyle) oldStyle.remove();
-
-    const style = document.createElement('style');
-    style.id = 'context-menu-animation-style';
-    style.textContent = `
+  const oldStyle = document.getElementById("context-menu-animation-style");
+  if (oldStyle) {
+    oldStyle.remove();
+  }
+  const style = document.createElement("style");
+  style.id = "context-menu-animation-style";
+  style.textContent = `
         #context-menu {
             opacity: 0;
             transform: scale(0.5);
@@ -3793,341 +3913,313 @@ function close() {
             }
         }
     `;
-    document.head.appendChild(style);
-
-    const POP_IN_EASING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
-    let lastPosition = { left: null, top: null };
-    let isCurrentlyVisible = false;
-
-    function liIndexOf(el) {
-        const li = el.closest('li');
-        if (!li || !li.parentElement) return -1;
-        const lis = Array.from(li.parentElement.querySelectorAll('li'));
-        return lis.indexOf(li);
+  document.head.appendChild(style);
+  const POP_IN_EASING = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+  let lastPosition = {
+    left: null,
+    top: null
+  };
+  let isCurrentlyVisible = false;
+  function liIndexOf(el) {
+    const li = el.closest("li");
+    if (!li || !li.parentElement) {
+      return -1;
     }
-
-    const buttonSelectors = {
-        copy: [
-            'button.copy', '.copy-btn', '[data-action="copy"]', '#copy', '[aria-label="copy"]'
-        ].join(','),
-        spectate: [
-            'button.spectate', '.spectate-btn', '[data-action="spectate"]', '#spectate', '[aria-label="spectate"]'
-        ].join(',')
+    const lis = Array.from(li.parentElement.querySelectorAll("li"));
+    return lis.indexOf(li);
+  }
+  const buttonSelectors = {
+    copy: ["button.copy", ".copy-btn", "[data-action=\"copy\"]", "#copy", "[aria-label=\"copy\"]"].join(","),
+    spectate: ["button.spectate", ".spectate-btn", "[data-action=\"spectate\"]", "#spectate", "[aria-label=\"spectate\"]"].join(",")
+  };
+  function applyPopInToButtons(menu) {
+    const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
+    const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
+    const targets = [...copyButtons, ...spectateButtons];
+    targets.forEach(target => {
+      const idx = liIndexOf(target);
+      const safeIdx = idx >= 0 ? idx : 6;
+      const delay = (safeIdx + 1) * 0.03;
+      target.style.animation = "none";
+      target.style.opacity = "0";
+      target.style.transform = "scale(0.8)";
+      target.offsetWidth;
+      target.style.animation = `popIn 0.2s ${POP_IN_EASING} ${delay}s forwards`;
+    });
+  }
+  const observer = new MutationObserver(() => {
+    const menu = document.getElementById("context-menu");
+    if (!menu) {
+      return;
+    }
+    const currentLeft = parseInt(menu.style.left) || 0;
+    const currentTop = parseInt(menu.style.top) || 0;
+    const isVisible = menu.style.display !== "none" && menu.style.visibility !== "hidden" && window.getComputedStyle(menu).display !== "none";
+    if (isVisible && isCurrentlyVisible && lastPosition.left !== null && lastPosition.top !== null && (Math.abs(lastPosition.left - currentLeft) > 5 || Math.abs(lastPosition.top - currentTop) > 5)) {
+      menu.classList.add("moving");
+      setTimeout(() => menu.classList.remove("moving"), 250);
+    }
+    if (isVisible && !isCurrentlyVisible) {
+      menu.classList.remove("moving");
+      menu.classList.add("show");
+      setTimeout(() => applyPopInToButtons(menu), 10);
+    }
+    if (!isVisible && isCurrentlyVisible) {
+      menu.classList.remove("show");
+      menu.classList.remove("moving");
+      lastPosition = {
+        left: null,
+        top: null
+      };
+      menu.style.left = "";
+      menu.style.top = "";
+      clearPopInFromButtons(menu);
+    }
+    lastPosition = {
+      left: currentLeft,
+      top: currentTop
     };
-
-
-    function applyPopInToButtons(menu) {
-        const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
-        const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
-
-        const targets = [...copyButtons, ...spectateButtons];
-
-        targets.forEach(target => {
-            const idx = liIndexOf(target);
-            const safeIdx = idx >= 0 ? idx : 6;
-            const delay = (safeIdx + 1) * 0.03;
-
-            target.style.animation = 'none';
-            target.style.opacity = '0';
-            target.style.transform = 'scale(0.8)';
-            void target.offsetWidth;
-            target.style.animation = `popIn 0.2s ${POP_IN_EASING} ${delay}s forwards`;
-        });
-    }
-
-    const observer = new MutationObserver(() => {
-        const menu = document.getElementById('context-menu');
-        if (!menu) return;
-
-        const currentLeft = parseInt(menu.style.left) || 0;
-        const currentTop = parseInt(menu.style.top) || 0;
-        const isVisible = menu.style.display !== 'none' &&
-              menu.style.visibility !== 'hidden' &&
-              window.getComputedStyle(menu).display !== 'none';
-
-        if (isVisible && isCurrentlyVisible &&
-            lastPosition.left !== null && lastPosition.top !== null &&
-            (Math.abs(lastPosition.left - currentLeft) > 5 ||
-             Math.abs(lastPosition.top - currentTop) > 5)) {
-            menu.classList.add('moving');
-            setTimeout(() => menu.classList.remove('moving'), 250);
-        }
-
-        if (isVisible && !isCurrentlyVisible) {
-            menu.classList.remove('moving');
-            menu.classList.add('show');
-            setTimeout(() => applyPopInToButtons(menu), 10);
-        }
-
-        if (!isVisible && isCurrentlyVisible) {
-            menu.classList.remove('show');
-            menu.classList.remove('moving');
-            lastPosition = { left: null, top: null };
-
-            menu.style.left = '';
-            menu.style.top = '';
-            clearPopInFromButtons(menu);
-        }
-
-        lastPosition = { left: currentLeft, top: currentTop };
-        isCurrentlyVisible = isVisible;
+    isCurrentlyVisible = isVisible;
+  });
+  function clearPopInFromButtons(menu) {
+    const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
+    const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
+    const targets = [...copyButtons, ...spectateButtons];
+    targets.forEach(t => {
+      t.style.animation = "none";
+      t.style.opacity = "";
+      t.style.transform = "";
+      t.offsetWidth;
     });
-
-    function clearPopInFromButtons(menu) {
-        const copyButtons = menu.querySelectorAll(buttonSelectors.copy);
-        const spectateButtons = menu.querySelectorAll(buttonSelectors.spectate);
-        const targets = [...copyButtons, ...spectateButtons];
-        targets.forEach(t => {
-            t.style.animation = 'none';
-            t.style.opacity = '';
-            t.style.transform = '';
-            void t.offsetWidth;
-        });
-    }
-
-    function watchContextMenu() {
-        const menu = document.getElementById('context-menu');
-        if (menu) {
-            observer.observe(menu, { attributes: true, attributeFilter: ['style'] });
-
-            const docObserver = new MutationObserver(() => {
-                const newMenu = document.getElementById('context-menu');
-                if (newMenu && !newMenu.dataset.watching) {
-                    newMenu.dataset.watching = 'true';
-                    observer.observe(newMenu, { attributes: true, attributeFilter: ['style'] });
-                }
-            });
-            docObserver.observe(document.body, { childList: true, subtree: true });
-
-            console.log('Context menu: copy & spectate start animations wired up.');
-        } else {
-            setTimeout(watchContextMenu, 500);
+  }
+  function watchContextMenu() {
+    const menu = document.getElementById("context-menu");
+    if (menu) {
+      observer.observe(menu, {
+        attributes: true,
+        attributeFilter: ["style"]
+      });
+      const docObserver = new MutationObserver(() => {
+        const newMenu = document.getElementById("context-menu");
+        if (newMenu && !newMenu.dataset.watching) {
+          newMenu.dataset.watching = "true";
+          observer.observe(newMenu, {
+            attributes: true,
+            attributeFilter: ["style"]
+          });
         }
+      });
+      docObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    } else {
+      setTimeout(watchContextMenu, 500);
     }
-
-    watchContextMenu();
+  }
+  watchContextMenu();
 })();
-
 function setupSearchFunctionality() {
-    const searchInput = document.getElementById('settings-search-input');
-    if (!searchInput) return;
-
-    const labelTexts = new Map();
-
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        const allGroups = document.querySelectorAll('.setting-group');
-        const allRows = document.querySelectorAll('.setting-row');
-
-        if (!query) {
-            allGroups.forEach(g => g.classList.remove('search-hidden'));
-            allRows.forEach(row => {
-                row.classList.remove('search-match', 'search-hidden');
-                const label = row.querySelector('.setting-label');
-                if (label && labelTexts.has(label)) {
-                    label.textContent = labelTexts.get(label);
-                }
-            });
-            return;
+  const searchInput = document.getElementById("settings-search-input");
+  if (!searchInput) {
+    return;
+  }
+  const labelTexts = new Map();
+  searchInput.addEventListener("input", e => {
+    const query = e.target.value.toLowerCase().trim();
+    const allGroups = document.querySelectorAll(".setting-group");
+    const allRows = document.querySelectorAll(".setting-row");
+    if (!query) {
+      allGroups.forEach(g => g.classList.remove("search-hidden"));
+      allRows.forEach(row => {
+        row.classList.remove("search-match", "search-hidden");
+        const label = row.querySelector(".setting-label");
+        if (label && labelTexts.has(label)) {
+          label.textContent = labelTexts.get(label);
         }
-
-        allGroups.forEach(group => {
-            let hasMatch = false;
-            const rows = group.querySelectorAll('.setting-row');
-
-            rows.forEach(row => {
-                const label = row.querySelector('.setting-label');
-                if (!label) return;
-
-                if (!labelTexts.has(label)) {
-                    labelTexts.set(label, label.textContent);
-                }
-
-                const originalText = labelTexts.get(label);
-
-                if (originalText.toLowerCase().includes(query)) {
-                    row.classList.add('search-match');
-                    row.classList.remove('search-hidden');
-                    hasMatch = true;
-
-                    const regex = new RegExp(`(${query})`, 'gi');
-                    label.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
-                } else {
-                    row.classList.remove('search-match');
-                    row.classList.add('search-hidden');
-                    label.textContent = originalText;
-                }
-            });
-
-            if (hasMatch) {
-                group.classList.remove('search-hidden');
-            } else {
-                group.classList.add('search-hidden');
-            }
-        });
+      });
+      return;
+    }
+    allGroups.forEach(group => {
+      let hasMatch = false;
+      const rows = group.querySelectorAll(".setting-row");
+      rows.forEach(row => {
+        const label = row.querySelector(".setting-label");
+        if (!label) {
+          return;
+        }
+        if (!labelTexts.has(label)) {
+          labelTexts.set(label, label.textContent);
+        }
+        const originalText = labelTexts.get(label);
+        if (originalText.toLowerCase().includes(query)) {
+          row.classList.add("search-match");
+          row.classList.remove("search-hidden");
+          hasMatch = true;
+          const regex = new RegExp(`(${query})`, "gi");
+          label.innerHTML = originalText.replace(regex, "<mark>$1</mark>");
+        } else {
+          row.classList.remove("search-match");
+          row.classList.add("search-hidden");
+          label.textContent = originalText;
+        }
+      });
+      if (hasMatch) {
+        group.classList.remove("search-hidden");
+      } else {
+        group.classList.add("search-hidden");
+      }
     });
-
+  });
 }
 function setupThemeButtons() {
-    const checkButtons = setInterval(() => {
-        const customBgBtn = document.getElementById('aCustomBackground');
-        const customSpikeBtn = document.getElementById('aCustomSpike');
-        const customMotherBtn = document.getElementById('aCustomMother');
-        const foodColorsBtn = document.getElementById('btn-food-colors');
-        const importBtn = document.getElementById('btn-theme-import');
-        const exportBtn = document.getElementById('btn-theme-export');
-
-        if (customBgBtn && customSpikeBtn && customMotherBtn && foodColorsBtn && importBtn && exportBtn) {
-            clearInterval(checkButtons);
-
-            customBgBtn.onclick = () => {
-                const gameBtn = document.getElementById('aCustomBackground');
-                if (gameBtn) gameBtn.click();
-            };
-
-            customSpikeBtn.onclick = () => {
-                const gameBtn = document.getElementById('aCustomSpike');
-                if (gameBtn) gameBtn.click();
-            };
-
-            customMotherBtn.onclick = () => {
-                const gameBtn = document.getElementById('aCustomMother');
-                if (gameBtn) gameBtn.click();
-            };
-
-            foodColorsBtn.onclick = () => {
-                const gameBtn = document.getElementById('btn-food-colors');
-                if (gameBtn) gameBtn.click();
-            };
-
-            importBtn.onclick = () => {
-                const gameBtn = document.getElementById('btn-theme-import');
-                if (gameBtn) gameBtn.click();
-            };
-
-            exportBtn.onclick = () => {
-                const gameBtn = document.getElementById('btn-theme-export');
-                if (gameBtn) gameBtn.click();
-            };
-
-            console.log('✅ Theme buttons linked successfully');
+  const checkButtons = setInterval(() => {
+    const customBgBtn = document.getElementById("aCustomBackground");
+    const customSpikeBtn = document.getElementById("aCustomSpike");
+    const customMotherBtn = document.getElementById("aCustomMother");
+    const foodColorsBtn = document.getElementById("btn-food-colors");
+    const importBtn = document.getElementById("btn-theme-import");
+    const exportBtn = document.getElementById("btn-theme-export");
+    if (customBgBtn && customSpikeBtn && customMotherBtn && foodColorsBtn && importBtn && exportBtn) {
+      clearInterval(checkButtons);
+      customBgBtn.onclick = () => {
+        const gameBtn = document.getElementById("aCustomBackground");
+        if (gameBtn) {
+          gameBtn.click();
         }
-    }, 100);
+      };
+      customSpikeBtn.onclick = () => {
+        const gameBtn = document.getElementById("aCustomSpike");
+        if (gameBtn) {
+          gameBtn.click();
+        }
+      };
+      customMotherBtn.onclick = () => {
+        const gameBtn = document.getElementById("aCustomMother");
+        if (gameBtn) {
+          gameBtn.click();
+        }
+      };
+      foodColorsBtn.onclick = () => {
+        const gameBtn = document.getElementById("btn-food-colors");
+        if (gameBtn) {
+          gameBtn.click();
+        }
+      };
+      importBtn.onclick = () => {
+        const gameBtn = document.getElementById("btn-theme-import");
+        if (gameBtn) {
+          gameBtn.click();
+        }
+      };
+      exportBtn.onclick = () => {
+        const gameBtn = document.getElementById("btn-theme-export");
+        if (gameBtn) {
+          gameBtn.click();
+        }
+      };
+    }
+  }, 100);
 }
-
 function init() {
-    if (state.initialized) return;
-    let attempts = 0;
-    const wait = setInterval(() => {
-        attempts++;
-        const container = document.querySelector('.main-input-btns') || document.querySelector('.main-input-buttons') || document.querySelector('.main-buttons') || document.querySelector('#mainPanel .main-input-btns');
-
-        if (container || attempts > 60) {
-            clearInterval(wait);
-            if (container) {
-                hideButtons();
-                createButton();
-                createPanel();
-                state.initialized = true;
-
-                let savedFont = 'default';
-                try { savedFont = GM_getValue('gameFont', 'default'); } catch(e) { savedFont = localStorage.getItem('gameFont') || 'default'; }
-                applyFont(savedFont);
-
-                setupRandomizer();
-                setupSearchFunctionality();
-                setupRangeListeners();
-                setupColorPickers();
-                setupFontSelector();
-                setupThemeButtons();
-                const savedChatKey = localStorage.getItem('chatToggleHotkey') || 'y';
-                const chatToggleBtn = document.getElementById('chat-toggle-key');
-                if (chatToggleBtn) {
-                    chatToggleBtn.textContent = savedChatKey.toUpperCase();
-                }
-                setupChatToggle(savedChatKey);
-
-                const savedTabKey = localStorage.getItem('tabInviteHotkey') || 'j';
-                const tabInviteBtn = document.getElementById('tab-invite-key');
-                if (tabInviteBtn) {
-                    tabInviteBtn.textContent = savedTabKey.toUpperCase();
-                }
-if (localStorage.getItem('autoRandomEnabled') === 'true') {
-    document.getElementById('cAutoRandomSkin')?.dispatchEvent(new Event('change'));
-}
-                console.log('✔ Unified Settings with custom UI loaded');
-            } else {
-                createPanel();
-                state.initialized = true;
-                console.warn('Could not find game button container; panel created but sync may be limited');
-            }
+  if (state.initialized) {
+    return;
+  }
+  let attempts = 0;
+  const wait = setInterval(() => {
+    attempts++;
+    const container = document.querySelector(".main-input-btns") || document.querySelector(".main-input-buttons") || document.querySelector(".main-buttons") || document.querySelector("#mainPanel .main-input-btns");
+    if (container || attempts > 60) {
+      clearInterval(wait);
+      if (container) {
+        hideButtons();
+        createButton();
+        createPanel();
+        state.initialized = true;
+        let savedFont = "default";
+        try {
+          savedFont = GM_getValue("gameFont", "default");
+        } catch (e) {
+          savedFont = localStorage.getItem("gameFont") || "default";
         }
-    }, 500);
+        applyFont(savedFont);
+        setupRandomizer();
+        setupSearchFunctionality();
+        setupRangeListeners();
+        setupColorPickers();
+        setupFontSelector();
+        setupThemeButtons();
+        const savedChatKey = localStorage.getItem("chatToggleHotkey") || "y";
+        const chatToggleBtn = document.getElementById("chat-toggle-key");
+        if (chatToggleBtn) {
+          chatToggleBtn.textContent = savedChatKey.toUpperCase();
+        }
+        setupChatToggle(savedChatKey);
+        const savedTabKey = localStorage.getItem("tabInviteHotkey") || "j";
+        const tabInviteBtn = document.getElementById("tab-invite-key");
+        if (tabInviteBtn) {
+          tabInviteBtn.textContent = savedTabKey.toUpperCase();
+        }
+        if (localStorage.getItem("autoRandomEnabled") === "true") {
+          document.getElementById("cAutoRandomSkin")?.dispatchEvent(new Event("change"));
+        }
+      } else {
+        createPanel();
+        state.initialized = true;
+        console.warn("Could not find game button container; panel created but sync may be limited");
+      }
+    }
+  }, 500);
 }
 init();
-
 (function addCustomBottomText() {
-    const checkLinks = setInterval(() => {
-        const bottomLinks = document.querySelector('div.main-bottom-links');
-
-        if (bottomLinks) {
-            clearInterval(checkLinks);
-
-            const customText = document.createElement('span');
-            customText.textContent = 'Made with ❤️ by liliwi';
-            customText.style.color = '#fff';
-            customText.style.marginTop = '4px';
-            customText.style.fontSize = '14px';
-            customText.style.fontWeight = '500';
-
-            bottomLinks.insertBefore(customText, bottomLinks.firstChild);
-
-           
-        }
-    }, 100);
-
-    setTimeout(() => clearInterval(checkLinks), 10000);
+  const checkLinks = setInterval(() => {
+    const bottomLinks = document.querySelector("div.main-bottom-links");
+    if (bottomLinks) {
+      clearInterval(checkLinks);
+      const customText = document.createElement("span");
+      customText.textContent = "Made with ❤️ by liliwi";
+      customText.style.color = "#fff";
+      customText.style.marginTop = "4px";
+      customText.style.fontSize = "14px";
+      customText.style.fontWeight = "500";
+      bottomLinks.insertBefore(customText, bottomLinks.firstChild);
+    }
+  }, 100);
+  setTimeout(() => clearInterval(checkLinks), 10000);
 })();
-
 (function changeYouTubeLink() {
-    const checkLinks = setInterval(() => {
-        const bottomLinks = document.querySelector('div.main-bottom-links');
-
-        if (bottomLinks) {
-            clearInterval(checkLinks);
-
-            const youtubeLink = bottomLinks.querySelector('a[href*="youtube"]');
-            if (youtubeLink) {
-                youtubeLink.href = 'https://www.youtube.com/@liliwigota1';
-            }
-        
-        }
-    }, 100);
-
-    setTimeout(() => clearInterval(checkLinks), 10000);
+  const checkLinks = setInterval(() => {
+    const bottomLinks = document.querySelector("div.main-bottom-links");
+    if (bottomLinks) {
+      clearInterval(checkLinks);
+      const youtubeLink = bottomLinks.querySelector("a[href*=\"youtube\"]");
+      if (youtubeLink) {
+        youtubeLink.href = "https://www.youtube.com/@liliwigota1";
+      }
+    }
+  }, 100);
+  setTimeout(() => clearInterval(checkLinks), 10000);
 })();
-
 if (!localStorage.getItem("changelogShown")) {
-    const overlay = document.createElement("div");
-    overlay.id = "changelogOverlay";
-    document.body.appendChild(overlay);
-
-    const modal = document.createElement("div");
-    modal.id = "changelogModal";
-    modal.innerHTML = `
-            <h2>📝 Changelog v3.1</h2>
+  const overlay = document.createElement("div");
+  overlay.id = "changelogOverlay";
+  document.body.appendChild(overlay);
+  const modal = document.createElement("div");
+  modal.id = "changelogModal";
+  modal.innerHTML = `
+            <h2>📝 Changelog v3.2</h2>
             <ul>
-                <li>Added Time and session time</li>
-                <li>Added an option to add ur own players into the saved players</li>
-                <li>improvements have come</li>
-                <li>You will now need camlan to use this script!</li>
+                <li>Fixed Themes not saving</li>
+                <li>Added import / export themes</li>
+                <li>Added an alert to people using this script on play.gota.io</li>
+                <li>You need camlan to use this script!</li>
                 </ul>
             <button id="closeChangelog">Close</button>
         `;
-    document.body.appendChild(modal);
-
-    const style = document.createElement("style");
-    style.textContent = `
+  document.body.appendChild(modal);
+  const style = document.createElement("style");
+  style.textContent = `
             #changelogOverlay {
                 display: block;
                 position: fixed;
@@ -4174,18 +4266,17 @@ if (!localStorage.getItem("changelogShown")) {
         display: none !important;
 
         `;
-    document.head.appendChild(style);
-
-    document.getElementById("closeChangelog").addEventListener("click", () => {
-        modal.remove();
-        overlay.remove();
-        localStorage.setItem("changelogShown", "true");
-    });
+  document.head.appendChild(style);
+  document.getElementById("closeChangelog").addEventListener("click", () => {
+    modal.remove();
+    overlay.remove();
+    localStorage.setItem("changelogShown", "true");
+  });
 }
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    GM_addStyle(`
+  GM_addStyle(`
         .main-top,
         div.main-top,
         div[class="main-top"] {
@@ -4382,7 +4473,7 @@ if (!localStorage.getItem("changelogShown")) {
             color: #fff !important;
             opacity: 0.9 !important;
         }
-        
+
         #main-account > div:last-child,
         #main-account .account-buttons-wrapper {
             display: flex !important;
@@ -4395,7 +4486,7 @@ if (!localStorage.getItem("changelogShown")) {
             margin-top: 0 !important;
             padding-top: 0 !important;
         }
-        
+
         #main-account button,
         #main-account .gota-btn {
             background: rgba(40, 40, 40, 0.6) !important;
@@ -4413,7 +4504,7 @@ if (!localStorage.getItem("changelogShown")) {
             height: 32px !important;
             margin: 0 !important;
         }
-        
+
         #main-account button:hover,
         #main-account .gota-btn:hover {
             background: rgba(60, 60, 60, 0.8) !important;
@@ -4426,24 +4517,24 @@ if (!localStorage.getItem("changelogShown")) {
         #main-account.logged-out {
             gap: 6px !important;
         }
-        
+
         #main-account.logged-out .account-buttons-wrapper {
             gap: 14px !important;
         }
-        
+
         #main-account.logged-out button,
         #main-account.logged-out .gota-btn {
             padding: 5px 10px !important;
             font-size: 12px !important;
             height: 30px !important;
         }
-        
+
         #main-account span,
         #main-account p,
         #main-account div {
             color: #fff !important;
         }
-        
+
         @media (max-width: 768px) {
             #main-account {
                 flex-direction: column !important;
@@ -4454,160 +4545,127 @@ if (!localStorage.getItem("changelogShown")) {
             }
         }
     `);
-    
-    function hideLoaders() {
-        const loaders = [
-            document.getElementById('account-loader'),
-            document.querySelector('.loader'),
-            document.querySelector('#account-loader'),
-            ...document.querySelectorAll('[class*="loader"]')
-        ];
-        loaders.forEach(loader => {
-            if (loader) {
-                loader.style.display = 'none';
-                loader.style.visibility = 'hidden';
-                loader.style.opacity = '0';
-                loader.style.pointerEvents = 'none';
-                loader.style.position = 'absolute';
-                loader.style.left = '-9999px';
-            }
-        });
+  function hideLoaders() {
+    const loaders = [document.getElementById("account-loader"), document.querySelector(".loader"), document.querySelector("#account-loader"), ...document.querySelectorAll("[class*=\"loader\"]")];
+    loaders.forEach(loader => {
+      if (loader) {
+        loader.style.display = "none";
+        loader.style.visibility = "hidden";
+        loader.style.opacity = "0";
+        loader.style.pointerEvents = "none";
+        loader.style.position = "absolute";
+        loader.style.left = "-9999px";
+      }
+    });
+  }
+  function moveAccountMenu() {
+    const accountMenu = document.getElementById("main-account") || document.querySelector("#main-account") || document.querySelector("div#main-account");
+    if (!accountMenu) {
+      return false;
     }
-    
-    function moveAccountMenu() {
-        const accountMenu = document.getElementById('main-account') ||
-                          document.querySelector('#main-account') ||
-                          document.querySelector('div#main-account');
-        if (!accountMenu) {
-            return false;
-        }
-        const guestDiv = document.getElementById('guest');
-        const isLoggedIn = !guestDiv || guestDiv.style.display === 'none';
-
-        if (!isLoggedIn) {
-            accountMenu.classList.add('logged-out');
-        } else {
-            accountMenu.classList.remove('logged-out');
-        }
-        const loginButton = Array.from(accountMenu.querySelectorAll('button')).find(btn =>
-            btn.textContent.trim().toLowerCase().includes('login') ||
-            btn.textContent.trim().toLowerCase().includes('log in') ||
-            btn.id === 'btn-login'
-        );
-        if (loginButton) {
-            if (isLoggedIn) {
-                loginButton.style.display = 'none';
-            } else {
-                loginButton.style.display = 'block';
-            }
-        }
-        const buttons = accountMenu.querySelectorAll('button, .gota-btn');
-        const userInfo = accountMenu.querySelector('#userinfo');
-        if (buttons.length > 0) {
-            let buttonWrapper = accountMenu.querySelector('.account-buttons-wrapper');
-            if (!buttonWrapper) {
-                buttonWrapper = document.createElement('div');
-                buttonWrapper.className = 'account-buttons-wrapper';
-                buttonWrapper.style.cssText = `
+    const guestDiv = document.getElementById("guest");
+    const isLoggedIn = !guestDiv || guestDiv.style.display === "none";
+    if (!isLoggedIn) {
+      accountMenu.classList.add("logged-out");
+    } else {
+      accountMenu.classList.remove("logged-out");
+    }
+    const loginButton = Array.from(accountMenu.querySelectorAll("button")).find(btn => btn.textContent.trim().toLowerCase().includes("login") || btn.textContent.trim().toLowerCase().includes("log in") || btn.id === "btn-login");
+    if (loginButton) {
+      if (isLoggedIn) {
+        loginButton.style.display = "none";
+      } else {
+        loginButton.style.display = "block";
+      }
+    }
+    const buttons = accountMenu.querySelectorAll("button, .gota-btn");
+    const userInfo = accountMenu.querySelector("#userinfo");
+    if (buttons.length > 0) {
+      let buttonWrapper = accountMenu.querySelector(".account-buttons-wrapper");
+      if (!buttonWrapper) {
+        buttonWrapper = document.createElement("div");
+        buttonWrapper.className = "account-buttons-wrapper";
+        buttonWrapper.style.cssText = `
                     flex-direction: row !important;
                     gap: 15px !important;
                     width: 100% !important;
                 `;
-                buttons.forEach(btn => {
-                    if (btn.style.display !== 'none') {
-                        buttonWrapper.appendChild(btn);
-                    }
-                });
-                accountMenu.appendChild(buttonWrapper);
-            }
-        }
-        
-        if (userInfo && isLoggedIn) {
-            userInfo.style.cssText = `
+        buttons.forEach(btn => {
+          if (btn.style.display !== "none") {
+            buttonWrapper.appendChild(btn);
+          }
+        });
+        accountMenu.appendChild(buttonWrapper);
+      }
+    }
+    if (userInfo && isLoggedIn) {
+      userInfo.style.cssText = `
                 flex-direction: row !important;
                 align-items: center !important;
                 gap: 12px !important;
                 width: 100% !important;
             `;
-        }
-        const mainContent = document.querySelector('.main-content.main-divider.main-panel') ||
-                          document.querySelector('.main-content') ||
-                          document.querySelector('.main-panel');
-        if (!mainContent) {
-            return false;
-        }
-
-        if (mainContent.contains(accountMenu) && mainContent.firstChild === accountMenu) {
-            return true;
-        }
-
-        mainContent.insertBefore(accountMenu, mainContent.firstChild);
-
-        console.log('Account menu moved to main panel');
-        return true;
     }
+    const mainContent = document.querySelector(".main-content.main-divider.main-panel") || document.querySelector(".main-content") || document.querySelector(".main-panel");
+    if (!mainContent) {
+      return false;
+    }
+    if (mainContent.contains(accountMenu) && mainContent.firstChild === accountMenu) {
+      return true;
+    }
+    mainContent.insertBefore(accountMenu, mainContent.firstChild);
+    return true;
+  }
+  hideLoaders();
+  let attempts = 0;
+  const maxAttempts = 20;
+  const moveInterval = setInterval(() => {
+    attempts++;
     hideLoaders();
-    let attempts = 0;
-    const maxAttempts = 20;
-    const moveInterval = setInterval(() => {
-        attempts++;
-        hideLoaders();
-        const success = moveAccountMenu();
-
-        if (success || attempts >= maxAttempts) {
-            clearInterval(moveInterval);
-            if (!success) {
-                console.log('Could not find account menu after', maxAttempts, 'attempts');
-            }
-        }
-    }, 500);
-    const observer = new MutationObserver(() => {
-        hideLoaders();
-        moveAccountMenu();
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    const success = moveAccountMenu();
+    if (success || attempts >= maxAttempts) {
+      clearInterval(moveInterval);
+      if (!success) {}
+    }
+  }, 500);
+  const observer = new MutationObserver(() => {
+    hideLoaders();
+    moveAccountMenu();
+  });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 })();
 function setupClearAllButton() {
-    const checkButton = setInterval(() => {
-        const clearBtn = document.getElementById('clear-all-saved-players');
-        if (clearBtn) {
-            clearInterval(checkButton);
-
-            clearBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to clear all saved players?')) {
-                    const LSKEY = 'savedPlayers';
-                    localStorage.setItem(LSKEY, JSON.stringify([]));
-
-                    GM_setValue('savedPlayers', JSON.stringify([]));
-
-                    const listContainer = document.getElementById('saved-players-list');
-                    if (listContainer) {
-                        listContainer.innerHTML = '<p style="color: #888; font-size: 13px; text-align: center; padding: 20px;">No saved players yet.</p>';
-                    }
-
-                    if (typeof renderSavedPlayers === 'function') {
-                        renderSavedPlayers();
-                    }
-                    clearBtn.textContent = 'Cleared!';
-                    clearBtn.style.background = 'rgba(50,120,50,0.5)';
-                    clearBtn.style.borderColor = 'rgba(100,255,100,0.3)';
-                    clearBtn.style.color = '#b3ffb3';
-
-                    setTimeout(() => {
-                        clearBtn.textContent = 'Clear All';
-                        clearBtn.style.background = 'rgba(120,50,50,0.7)';
-                        clearBtn.style.borderColor = 'rgba(255,100,100,0.3)';
-                        clearBtn.style.color = '#ffb3b3';
-                    }, 2000);
-
-                    console.log('All saved players cleared');
-                }
-            });
+  const checkButton = setInterval(() => {
+    const clearBtn = document.getElementById("clear-all-saved-players");
+    if (clearBtn) {
+      clearInterval(checkButton);
+      clearBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to clear all saved players?")) {
+          const LSKEY = "savedPlayers";
+          localStorage.setItem(LSKEY, JSON.stringify([]));
+          GM_setValue("savedPlayers", JSON.stringify([]));
+          const listContainer = document.getElementById("saved-players-list");
+          if (listContainer) {
+            listContainer.innerHTML = "<p style=\"color: #888; font-size: 13px; text-align: center; padding: 20px;\">No saved players yet.</p>";
+          }
+          if (typeof renderSavedPlayers === "function") {
+            renderSavedPlayers();
+          }
+          clearBtn.textContent = "Cleared!";
+          clearBtn.style.background = "rgba(50,120,50,0.5)";
+          clearBtn.style.borderColor = "rgba(100,255,100,0.3)";
+          clearBtn.style.color = "#b3ffb3";
+          setTimeout(() => {
+            clearBtn.textContent = "Clear All";
+            clearBtn.style.background = "rgba(120,50,50,0.7)";
+            clearBtn.style.borderColor = "rgba(255,100,100,0.3)";
+            clearBtn.style.color = "#ffb3b3";
+          }, 2000);
         }
-    }, 100);
+      });
+    }
+  }, 100);
 }
-
