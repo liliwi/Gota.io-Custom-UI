@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.2
+// @version      3.3
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -178,6 +178,9 @@ div#main-scrimmage.main-panel.interface-color {
     -webkit-backdrop-filter: blur(10px) !important;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
 }
+
+.main-bottom { display: none !important; }
+.policyLinks { display: none !important; }
 
 div#party-panel.ui-pane.interface-color.hud-panel {
     padding-bottom: 10px;
@@ -690,19 +693,7 @@ button.gota-btn.bottom-btn:hover,
     border-radius: 20px;
     transition: width 0.6s ease-in-out;
 }
-.material-icons {
-    font-family: 'Material Icons' !important;
-    font-weight: normal;
-    font-style: normal;
-    font-size: 24px;
-    display: inline-block;
-    line-height: 1;
-    text-transform: none;
-    letter-spacing: normal;
-    word-wrap: normal;
-    white-space: nowrap;
-    direction: ltr;
-}
+
 
 #account-actions .gota-btn {
     width: 50px !important;
@@ -2046,7 +2037,6 @@ setInterval(ensureButton, 1000);
     donutBtn.addEventListener("click", () => {
       const menu = document.querySelector(".donut-features-table");
       if (!menu) {
-        console.warn("⚠️ Donut menu not found in DOM yet");
         return;
       }
       menu.style.display = menu.style.display === "none" || !menu.style.display ? "block" : "none";
@@ -2242,7 +2232,6 @@ function createPanel() {
   });
   setupRangeListeners();
   setupColorPickers();
-  setupFontSelector();
   setupSavedPlayersFeature();
   setupUpdateButton();
   setupThemeImportExport();
@@ -2601,32 +2590,7 @@ function getThemesHTML() {
         </div>
     </div>
 </div>
-            <div class="setting-group">
-                <h3>Game Font</h3>
-                <div class="setting-row">
-                    <span class="setting-label">Select Font</span>
-                    <div class="setting-control">
-                        <select id="gameFont">
-                            <option value="default">Default (Arial)</option>
-                            <option value="'Courier New', monospace">Courier New</option>
-                            <option value="Georgia, serif">Georgia</option>
-                            <option value="'Times New Roman', serif">Times New Roman</option>
-                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                            <option value="Verdana, sans-serif">Verdana</option>
-                            <option value="Tahoma, sans-serif">Tahoma</option>
-                            <option value="'Consolas', monospace">Consolas</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="setting-row">
-                    <span class="setting-label">Preview</span>
-                    <div class="setting-control">
-                        <div id="fontPreview" style="padding: 15px; background: rgba(40,40,40,0.5); border-radius: 8px; color: #fff; font-size: 18px;">
-                            The quick brown fox jumps over the lazy dog
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
 
         `;
@@ -3012,7 +2976,6 @@ function setupRandomizer() {
   btn.onclick = () => {
     const saved = loadSavedPlayers();
     if (!saved.length) {
-      alert("❌ Inga sparade spelare!\nLägg till via Quick Add eller högerklick \"Copy\" på spelare.");
       return;
     }
     const randomIdx = Math.floor(Math.random() * saved.length);
@@ -3036,7 +2999,6 @@ function setupRandomizer() {
       btn.style.background = "";
       btn.style.borderColor = "";
     }, 2000);
-    console.log(`🎲 Random: ${newName}`);
   };
 }
 function setupAutoRandomOnDeath() {
@@ -3175,51 +3137,11 @@ function setupRangeListeners() {
     } catch (e) {}
   });
 }
-function setupFontSelector() {
-  const fontSelect = document.getElementById("gameFont");
-  const fontPreview = document.getElementById("fontPreview");
-  if (!fontSelect || !fontPreview) {
-    return;
-  }
-  let savedFont = "default";
-  try {
-    savedFont = GM_getValue("gameFont", "default");
-  } catch (e) {
-    savedFont = localStorage.getItem("gameFont") || "default";
-  }
-  fontSelect.value = savedFont;
-  applyFont(savedFont);
-  fontSelect.addEventListener("change", () => {
-    const selectedFont = fontSelect.value;
-    try {
-      GM_setValue("gameFont", selectedFont);
-    } catch (e) {
-      localStorage.setItem("gameFont", selectedFont);
-    }
-    applyFont(selectedFont);
-    fontPreview.style.fontFamily = selectedFont === "default" ? "Arial, sans-serif" : selectedFont;
-  });
-  fontPreview.style.fontFamily = savedFont === "default" ? "Arial, sans-serif" : savedFont;
-}
-function applyFont(font) {
-  const fontFamily = font === "default" ? "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial, sans-serif" : font;
-  let style = document.getElementById("custom-game-font");
-  if (!style) {
-    style = document.createElement("style");
-    style.id = "custom-game-font";
-    document.head.appendChild(style);
-  }
-  style.textContent = `
-            body, body * {
-                font-family: ${fontFamily} !important;
-            }
-        `;
-}
+
 function setupColorPickers() {
   setTimeout(() => {
     const gameColorInputs = [...document.querySelectorAll("input[data-coloris]")].filter(inp => !inp.closest("#unified-settings-panel"));
     if (gameColorInputs.length === 0) {
-      console.warn("⚠️ NO GAME COLOR INPUTS FOUND! Retrying in 2 seconds...");
       setTimeout(setupColorPickers, 2000);
       return;
     }
@@ -3348,9 +3270,7 @@ function setupThemeImportExport() {
           el.dispatchEvent(new Event("input", {
             bubbles: true
           }));
-          if (id === "gameFont") {
-            applyFont(themeData[id]);
-          }
+
         });
         document.querySelectorAll("#tab-themes input[type=\"range\"]").forEach(range => {
           const valInput = document.querySelector(`#tab-themes input[data-range="${range.id}"]`);
@@ -3409,7 +3329,6 @@ function syncHotkeysFromGame() {
   }
   const gameHotkeysPanel = document.querySelector("#main-hotkeys") || document.querySelector("[id*=\"hotkey\"]") || document.querySelector(".hotkeys-panel");
   if (!gameHotkeysPanel) {
-    console.warn("⚠️ Game hotkeys panel not found");
     return;
   }
   const gameButtons = gameHotkeysPanel.querySelectorAll(".keybinds-btn, button[data-key]");
@@ -4136,18 +4055,13 @@ function init() {
         createButton();
         createPanel();
         state.initialized = true;
-        let savedFont = "default";
-        try {
-          savedFont = GM_getValue("gameFont", "default");
-        } catch (e) {
-          savedFont = localStorage.getItem("gameFont") || "default";
-        }
-        applyFont(savedFont);
+
+
         setupRandomizer();
         setupSearchFunctionality();
         setupRangeListeners();
         setupColorPickers();
-        setupFontSelector();
+
         setupThemeButtons();
         const savedChatKey = localStorage.getItem("chatToggleHotkey") || "y";
         const chatToggleBtn = document.getElementById("chat-toggle-key");
@@ -4208,11 +4122,10 @@ if (!localStorage.getItem("changelogShown")) {
   const modal = document.createElement("div");
   modal.id = "changelogModal";
   modal.innerHTML = `
-            <h2>📝 Changelog v3.2</h2>
+            <h2>📝 Changelog v3.3</h2>
             <ul>
-                <li>Fixed Themes not saving</li>
-                <li>Added import / export themes</li>
-                <li>Added an alert to people using this script on play.gota.io</li>
+                <li>Patched for newest camlan update</li>
+                <li>Removed fonts for now</li>
                 <li>You need camlan to use this script!</li>
                 </ul>
             <button id="closeChangelog">Close</button>
@@ -4669,3 +4582,5 @@ function setupClearAllButton() {
     }
   }, 100);
 }
+
+
