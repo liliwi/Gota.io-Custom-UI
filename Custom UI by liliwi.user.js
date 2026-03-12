@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.3
+// @version      3.31
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -2416,6 +2416,7 @@ function getOptionsHTML() {
                 <div class="setting-row"><span class="setting-label">Hide Chat</span><div class="setting-control"><input type="checkbox" id="cHideChat"></div></div>
                 <div class="setting-row"><span class="setting-label">Resizable Chat</span><div class="setting-control"><input type="checkbox" id="cResizableChat"></div></div>
                 <div class="setting-row"><span class="setting-label">Show Chat IDs</span><div class="setting-control"><input type="checkbox" id="cShowChatIds"></div></div>
+                <div class="setting-row"><span class="setting-label">Chat Notifications</span><div class="setting-control"><input type="checkbox" id="cChatNotify"></div></div>
             </div>
 
             <div class="setting-group">
@@ -4126,6 +4127,7 @@ if (!localStorage.getItem("changelogShown")) {
             <ul>
                 <li>Patched for newest camlan update</li>
                 <li>Removed fonts for now</li>
+                <li>Added all the new things from camlan</li>
                 <li>You need camlan to use this script!</li>
                 </ul>
             <button id="closeChangelog">Close</button>
