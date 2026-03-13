@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.32
+// @version      3.33
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -2784,7 +2784,7 @@ function getCustomFeaturesHTML() {
 
             <div class="setting-row">
                 <span class="setting-label"></span>
-                <div class="setting-control" style="display:flex; gap:10px;">
+                <div class="setting-control" style="display:auto; gap:10px;">
                     <button id="save-name-btn" class="x-small-btn" style="min-width:90px;">Save Name</button>
                     <button id="save-skin-btn" class="x-small-btn" style="min-width:90px;">Save Skin</button>
                     <button id="save-both-btn" class="x-small-btn" style="min-width:90px;">Save Both</button>
@@ -3007,76 +3007,57 @@ function setupRandomizer() {
   };
 }
 function setupAutoRandomOnDeath() {
-  const toggle = document.getElementById("auto-random-on-death");
-  if (!toggle) {
-    return;
-  }
-  toggle.checked = localStorage.getItem("autoRandomOnDeath") === "true";
-  toggle.addEventListener("change", () => {
-    localStorage.setItem("autoRandomOnDeath", toggle.checked);
-  });
-  let previousCells = 1;
-  const observer = new MutationObserver(() => {
-    if (!toggle.checked) {
-      return;
+    const toggle = document.getElementById("auto-random-on-death");
+    if (!toggle) {
+        setTimeout(setupAutoRandomOnDeath, 500);
+        return;
     }
-    const cellsEl = document.getElementById("playerCells");
-    if (!cellsEl) {
-      return;
-    }
-    const currentCells = parseInt(cellsEl.innerText || "0", 10) || 0;
-    if (previousCells > 0 && currentCells === 0) {
-      randomizePlayerName();
-    }
-    previousCells = currentCells;
-  });
-  const target = document.getElementById("playerCells") || document.querySelector(".hud-panel") || document.body;
-  observer.observe(target, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true
-  });
-  setInterval(() => {
-    if (!toggle.checked) {
-      return;
-    }
-    const cellsEl = document.getElementById("playerCells");
-    if (cellsEl) {
-      const currentCells = parseInt(cellsEl.innerText || "0", 10) || 0;
-      if (previousCells > 0 && currentCells === 0) {
-        randomizePlayerName();
-      }
-      previousCells = currentCells;
-    }
-  }, 1000);
+
+    toggle.checked = localStorage.getItem("autoRandomOnDeath") === "true";
+    toggle.addEventListener("change", () => {
+        localStorage.setItem("autoRandomOnDeath", toggle.checked);
+    });
+
+    let wasAlive = false;
+    let cooldown = false;
+
+    setInterval(() => {
+        if (!toggle.checked) return;
+
+        const cellsEl = document.getElementById("playerCells");
+        if (!cellsEl) return;
+
+        const currentCells = parseInt(cellsEl.innerText || "0", 10) || 0;
+        const isAlive = currentCells > 0;
+
+        if (wasAlive && !isAlive && !cooldown) {
+            cooldown = true;
+            randomizePlayerName();
+            setTimeout(() => { cooldown = false; }, 2000);
+        }
+
+        wasAlive = isAlive;
+    }, 50);
 }
+
 function randomizePlayerName() {
-  const saved = loadSavedPlayers();
-  if (!saved || saved.length === 0) {
-    return;
-  }
-  const names = [...new Set(saved.map(p => p.name).filter(n => n && n.trim() !== ""))];
-  const skins = [...new Set(saved.map(p => p.skin).filter(s => s && s !== "none" && s.trim() !== ""))];
-  if (names.length === 0) {
-    return;
-  }
-  const randomName = names[Math.floor(Math.random() * names.length)];
-  const useSeparateSkinToggle = document.getElementById("random-separate-skin");
-  const useSkin = useSeparateSkinToggle ? useSeparateSkinToggle.checked : true;
-  let randomSkin = "";
-  if (useSkin && skins.length > 0 && Math.random() < 0.8) {
-    const chosenSkin = skins[Math.floor(Math.random() * skins.length)];
-    randomSkin = `[${chosenSkin.replace(/[\[\]]/g, "")}]`;
-  }
-  const finalName = (randomName + " " + randomSkin).trim();
-  const nameInput = getNameInput();
-  if (!nameInput) {
-    return;
-  }
-  setInputValue(nameInput, finalName);
-  console.log(`🎲 Auto-random: ${finalName}`);
+    const saved = loadSavedPlayers();
+    if (!saved || saved.length === 0) return;
+
+    const pick = saved[Math.floor(Math.random() * saved.length)];
+
+    const nameInput = getNameInput();
+    if (!nameInput) return;
+
+    let finalName = pick.name || "";
+    if (pick.skin && pick.skin !== "none") {
+        finalName += ` [${pick.skin.replace(/[\[\]]/g, "")}]`;
+    }
+
+    setInputValue(nameInput, finalName.trim());
+    console.log(`🎲 Auto-random on death: ${finalName.trim()}`);
 }
+
 function setupSavedPlayersFeature() {
   const waitForContextMenu = setInterval(() => {
     const contextMenu = document.querySelector("#context-menu");
@@ -4131,7 +4112,7 @@ if (!localStorage.getItem("changelogShown")) {
             <ul>
                 <li>Patched for newest camlan update</li>
                 <li>Removed fonts for now</li>
-                <li>Added a updater that checks once a day</li>
+                <li>Tried making change name on death more efficient</li>
                 <li>You need camlan to use this script!</li>
                 </ul>
             <button id="closeChangelog">Close</button>
@@ -4590,11 +4571,10 @@ function setupClearAllButton() {
 }
 
 
-const SCRIPT_VERSION = "3.32";
+const SCRIPT_VERSION = "3.33";
 const UPDATE_URL = "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
 function checkForUpdate() {
-    console.log("[liliwi] Checking for update...");
     GM_xmlhttpRequest({
         method: "GET",
         url: UPDATE_URL,
@@ -4604,24 +4584,19 @@ function checkForUpdate() {
         },
         timeout: 12000,
         onload: function(response) {
-            console.log("[liliwi] Update check status:", response.status);
             if (response.status !== 200) return;
 
-            const text = response.responseText;
-            const versionMatch = text.match(/@version\s+([^\s\r\n]+)/i);
+            const versionMatch = response.responseText.match(/@version\s+([^\s\r\n]+)/i);
             const remoteVersion = versionMatch ? versionMatch[1].trim() : null;
 
-            console.log("[liliwi] Remote version:", remoteVersion, "| Local:", SCRIPT_VERSION);
+            console.log("[liliwi] Local:", SCRIPT_VERSION, "| Remote:", remoteVersion);
 
-            if (!remoteVersion || remoteVersion === SCRIPT_VERSION) return;
+            if (!remoteVersion || remoteVersion === SCRIPT_VERSION) {
+                console.log("[liliwi] Already up to date!");
+                return;
+            }
 
-            const msg =
-                "Update available!\n\n" +
-                "Current: v" + SCRIPT_VERSION + "\n" +
-                "Latest:  v" + remoteVersion + "\n\n" +
-                "Click OK to open the script page.";
-
-            if (confirm(msg)) {
+            if (confirm("Update available!\n\nCurrent: v" + SCRIPT_VERSION + "\nLatest:  v" + remoteVersion + "\n\nClick OK to open the script page.")) {
                 window.open(UPDATE_URL, "_blank");
             }
         },
@@ -4630,17 +4605,7 @@ function checkForUpdate() {
     });
 }
 
-setTimeout(function() {
-    const today = new Date().toDateString();
-    const lastCheck = localStorage.getItem("liliwi_update_last");
+setTimeout(checkForUpdate, 5000);
 
-    console.log("[liliwi] Last update check:", lastCheck, "| Today:", today);
 
-    if (lastCheck === today) {
-        console.log("[liliwi] Already checked today, skipping.");
-        return;
-    }
 
-    localStorage.setItem("liliwi_update_last", today);
-    checkForUpdate();
-}, 5000);
