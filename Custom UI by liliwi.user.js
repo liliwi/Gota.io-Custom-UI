@@ -1,22 +1,26 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.31
+// @version      3.32
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
 // @match        https://gota.io/camlan/*
 // @match        https://gota.io/web/*
 // @match        https://play.gota.io/*
+// @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @connect      raw.githubusercontent.com
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // ==/UserScript==
 
 (function () {
   'use strict';
+
+
 
   const style = document.createElement("style");
   style.textContent = `
@@ -4127,7 +4131,7 @@ if (!localStorage.getItem("changelogShown")) {
             <ul>
                 <li>Patched for newest camlan update</li>
                 <li>Removed fonts for now</li>
-                <li>Added all the new things from camlan</li>
+                <li>Added a updater that checks once a day</li>
                 <li>You need camlan to use this script!</li>
                 </ul>
             <button id="closeChangelog">Close</button>
@@ -4586,3 +4590,57 @@ function setupClearAllButton() {
 }
 
 
+const SCRIPT_VERSION = "3.32";
+const UPDATE_URL = "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
+
+function checkForUpdate() {
+    console.log("[liliwi] Checking for update...");
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: UPDATE_URL,
+        headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        },
+        timeout: 12000,
+        onload: function(response) {
+            console.log("[liliwi] Update check status:", response.status);
+            if (response.status !== 200) return;
+
+            const text = response.responseText;
+            const versionMatch = text.match(/@version\s+([^\s\r\n]+)/i);
+            const remoteVersion = versionMatch ? versionMatch[1].trim() : null;
+
+            console.log("[liliwi] Remote version:", remoteVersion, "| Local:", SCRIPT_VERSION);
+
+            if (!remoteVersion || remoteVersion === SCRIPT_VERSION) return;
+
+            const msg =
+                "Update available!\n\n" +
+                "Current: v" + SCRIPT_VERSION + "\n" +
+                "Latest:  v" + remoteVersion + "\n\n" +
+                "Click OK to open the script page.";
+
+            if (confirm(msg)) {
+                window.open(UPDATE_URL, "_blank");
+            }
+        },
+        onerror:   function(e) { console.error("[liliwi] Update check failed:", e); },
+        ontimeout: function()  { console.error("[liliwi] Update check timed out"); }
+    });
+}
+
+setTimeout(function() {
+    const today = new Date().toDateString();
+    const lastCheck = localStorage.getItem("liliwi_update_last");
+
+    console.log("[liliwi] Last update check:", lastCheck, "| Today:", today);
+
+    if (lastCheck === today) {
+        console.log("[liliwi] Already checked today, skipping.");
+        return;
+    }
+
+    localStorage.setItem("liliwi_update_last", today);
+    checkForUpdate();
+}, 5000);
