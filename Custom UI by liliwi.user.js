@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.40
+// @version      3.41
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -230,19 +230,7 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transform: translateX(4px) scale(1.02) !important;
 }
 
-#status-panel {
-    position: static !important;
-    display: none !important;
-    align-items: center !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 0 0 8px !important;
-    margin: 0 !important;
-    transform: none !important;
-    top: unset !important;
-    left: unset !important;
-}
+
 
 /* Friends panel buttons */
 #main-friends button,
@@ -4630,7 +4618,7 @@ function setupClearAllButton() {
 }
 
 
-const SCRIPT_VERSION = "3.40";
+const SCRIPT_VERSION = "3.41";
 const UPDATE_URL = "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
 function checkForUpdate() {
