@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.41
+// @version      3.42
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -3050,12 +3050,10 @@ function getCustomFeaturesHTML() {
         <!-- HOTKEYS GROUP -->
         <div class="setting-group">
             <h3>Hotkeys</h3>
-            <div class="setting-row">
-                <span class="setting-label">Chat Toggle Hotkey</span>
-                <div class="setting-control">
-                    <button class="keybinds-btn" id="chat-toggle-key" data-custom="chatToggle">Y</button>
-                </div>
-            </div>
+
+
+
+
             <div class="setting-row">
                 <span class="setting-label">Tab Invite Hotkey</span>
                 <div class="setting-control">
@@ -4618,7 +4616,7 @@ function setupClearAllButton() {
 }
 
 
-const SCRIPT_VERSION = "3.41";
+const SCRIPT_VERSION = "3.42";
 const UPDATE_URL = "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
 function checkForUpdate() {
@@ -4679,10 +4677,8 @@ function init() {
                 setupRangeListeners();
                 setupColorPickers();
                 setupThemeButtons();
-                const savedChatKey = localStorage.getItem("chatToggleHotkey") || "y";
-                const chatToggleBtn = document.getElementById("chat-toggle-key");
-                if (chatToggleBtn) chatToggleBtn.textContent = savedChatKey.toUpperCase();
-                setupChatToggle(savedChatKey);
+             
+    
                 const savedTabKey = localStorage.getItem("tabInviteHotkey") || "j";
                 const tabInviteBtn = document.getElementById("tab-invite-key");
                 if (tabInviteBtn) tabInviteBtn.textContent = savedTabKey.toUpperCase();
