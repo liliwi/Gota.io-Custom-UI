@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.5
+// @version      3.51
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -1491,7 +1491,7 @@ body > #clr-picker {
     font-weight: 500 !important;
 }
 
-/* ===== CHECKBOX (TOGGLE STYLE) ===== */
+/* ===== CHECKBOX (but toggled) ===== */
 .setting-control input[type="checkbox"] {
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -1532,7 +1532,7 @@ body > #clr-picker {
     border-color: rgba(140,140,140,0.5) !important;
 }
 
-/* ===== OTHER INPUTS ===== */
+/* ===== OTHER shitS ===== */
 .setting-control select,
 .setting-control input[type="text"] {
     background: rgba(40,40,40,0.8) !important;
@@ -1593,7 +1593,7 @@ display: none;
     border-color: rgba(160,160,160,0.6) !important;
 }
 
-/* ===== KEYBIND BUTTONS ===== */
+/* ===== keybinds type shit ===== */
 .keybinds-btn {
     background: rgba(60,60,60,0.8) !important;
     border: 2px solid rgba(120,120,120,0.3) !important;
@@ -1628,7 +1628,7 @@ display: none;
     }
 }
 
-/* ===== COLOR PICKER ===== */
+/* ===== colooor pickR ===== */
 .setting-control input[data-coloris],
 #unified-settings-panel input[data-coloris] {
     width: 80px !important;
@@ -1666,7 +1666,7 @@ display: none;
     border-color: rgba(160,160,160,0.7) !important;
 }
 
-/* ===== UTILITY BUTTONS ===== */
+/* ===== util you know ===== */
 .x-small-btn {
     width: auto !important;
     min-width: 65px !important;
@@ -4353,6 +4353,14 @@ function close() {
         window.Coloris.close();
       } catch (e) {}
     }
+   document.querySelectorAll(".server-row").forEach(row => {
+      row.style.pointerEvents = "none";
+    });
+    setTimeout(() => {
+      document.querySelectorAll(".server-row").forEach(row => {
+        row.style.pointerEvents = "";
+      });
+    }, 280);
   }
 }
 (function animateContextMenu() {
@@ -4666,72 +4674,209 @@ function setupThemeButtons() {
   }, 100);
   setTimeout(() => clearInterval(checkLinks), 10000);
 })();
-if (!localStorage.getItem("changelogShown")) {
+if (!localStorage.getItem("changelogShown_3.51")) {
   const overlay = document.createElement("div");
   overlay.id = "changelogOverlay";
   document.body.appendChild(overlay);
+
   const modal = document.createElement("div");
   modal.id = "changelogModal";
   modal.innerHTML = `
-            <h2>📝 Changelog v3.4</h2>
-            <ul>
-                <li>Fully fixed Random name on death</li>
-                <li>Fixed hotkeys on tab join key</li>
-                <li>You need camlan to use this script!</li>
-                </ul>
-            <button id="closeChangelog">Close</button>
-        `;
+    <div id="changelog-header">
+      <span id="changelog-version">v3.51</span>
+      <span id="changelog-title">Changelog</span>
+      <button id="closeChangelog">×</button>
+    </div>
+    <div id="changelog-body">
+      <div class="changelog-item">
+        <span class="changelog-tag fix">Fix</span>
+        <span class="changelog-text">Fully fixed Random name on death</span>
+      </div>
+      <div class="changelog-item">
+        <span class="changelog-tag fix">Fix</span>
+        <span class="changelog-text">Fixed hotkeys on tab join key</span>
+      </div>
+          <div class="changelog-item">
+        <span class="changelog-tag fix">Fix</span>
+        <span class="changelog-text">Fixed some bugs</span>
+      </div>
+          <div class="changelog-item">
+        <span class="changelog-tag fix">Recode</span>
+        <span class="changelog-text">Remade the changelog</span>
+      </div>
+      <div class="changelog-item">
+        <span class="changelog-tag info">Info</span>
+        <span class="changelog-text">You need camlan to use this script!</span>
+      </div>
+    </div>
+    <div id="changelog-footer">
+      <span id="changelog-credit">Made with ❤️ by liliwi</span>
+      <button id="closeChangelogBtn">Got it</button>
+    </div>
+  `;
   document.body.appendChild(modal);
+
   const style = document.createElement("style");
   style.textContent = `
-            #changelogOverlay {
-                display: block;
-                position: fixed;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                background: rgba(0,0,0,0.5);
-                z-index: 9998;
-            }
-            #changelogModal {
-                display: block;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(22,22,22,0.95);
-                color: white;
-                padding: 20px 30px;
-                border-radius: 12px;
-                border: 2px solid #fff;
-                max-width: 400px;
-                z-index: 9999;
-                box-shadow: 0 0 20px rgba(0,0,0,0.7);
-                text-align: center;
-                font-family: sans-serif;
-                animation: fadeIn 0.3s ease;
-            }
-            #changelogModal h2 { margin-top: 0; margin-bottom: 10px; }
-            #changelogModal ul { text-align: left; padding-left: 20px; }
-            #changelogModal button {
-                margin-top: 15px;
-                padding: 8px 15px;
-                border: none;
-                border-radius: 5px;
-                background: #00bfff;
-                color: black;
-                cursor: pointer;
-                font-weight: bold;
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translate(-50%, -48%); }
-                to { opacity: 1; transform: translate(-50%, -50%); }
-        `;
+    #changelogOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 99997;
+      animation: clFadeIn 0.25s ease;
+    }
+    #changelogModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      width: 380px;
+      z-index: 99998;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      overflow: hidden;
+      animation: clPopIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes clFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes clPopIn {
+      from { opacity: 0; transform: translate(-50%, -48%) scale(0.92); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    #changelog-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      background: rgba(30,30,30,0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    #changelog-version {
+      background: rgba(90,90,90,0.5);
+      border: 1px solid rgba(140,140,140,0.3);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+    #changelog-title {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+      letter-spacing: 0.3px;
+    }
+    #closeChangelog {
+      background: rgba(50,50,50,0.7);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+    #closeChangelog:hover {
+      background: rgba(70,70,70,0.9);
+      transform: scale(1.08);
+    }
+    #changelog-body {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .changelog-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(28,28,28,0.6);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .changelog-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .changelog-tag.fix {
+      background: rgba(50,120,200,0.25);
+      border: 1px solid rgba(80,150,255,0.3);
+      color: #7ab8ff;
+    }
+    .changelog-tag.new {
+      background: rgba(50,180,80,0.25);
+      border: 1px solid rgba(80,220,100,0.3);
+      color: #7affaa;
+    }
+    .changelog-tag.info {
+      background: rgba(150,100,0,0.25);
+      border: 1px solid rgba(220,160,0,0.3);
+      color: #ffd97a;
+    }
+    .changelog-text {
+      color: #ddd;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    #changelog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(18,18,18,0.8);
+    }
+    #changelog-credit {
+      color: rgba(255,255,255,0.35);
+      font-size: 12px;
+    }
+    #closeChangelogBtn {
+      background: rgba(60,60,60,0.7);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+    #closeChangelogBtn:hover {
+      background: rgba(80,80,80,0.85);
+      border-color: rgba(255,255,255,0.2);
+      transform: scale(1.03);
+    }
+  `;
   document.head.appendChild(style);
-  document.getElementById("closeChangelog").addEventListener("click", () => {
+
+  const close = () => {
     modal.remove();
     overlay.remove();
-    localStorage.setItem("changelogShown", "true");
-  });
+    localStorage.setItem("changelogShown_3.51", "true");
+  };
+
+  document.getElementById("closeChangelog").addEventListener("click", close);
+  document.getElementById("closeChangelogBtn").addEventListener("click", close);
 }
 (function () {
   "use strict";
@@ -4940,7 +5085,28 @@ function setupClearAllButton() {
   }, 100);
 }
 
-const SCRIPT_VERSION = "3.5";
+const mainMenuObserver = new MutationObserver(() => {
+  const main = document.querySelector(".main");
+  if (!main) return;
+
+  const opacity = parseFloat(main.style.opacity);
+  const isFullyVisible = isNaN(opacity) || opacity >= 1;
+
+  document.querySelectorAll(".server-row").forEach(row => {
+    row.style.pointerEvents = isFullyVisible ? "" : "none";
+  });
+});
+
+const waitForMain = setInterval(() => {
+  const main = document.querySelector(".main");
+  if (main) {
+    clearInterval(waitForMain);
+    mainMenuObserver.observe(main, { attributes: true, attributeFilter: ["style"] });
+  }
+}, 500);
+
+
+const SCRIPT_VERSION = "3.51";
 const UPDATE_URL =
   "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
