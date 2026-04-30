@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.52
+// @version      3.53
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -3895,7 +3895,6 @@ function syncHotkeysWithGame() {
 
 function syncWithGameSettings() {
   try {
-    console.log("Starting sync with game settings...");
     const mainOptions = findPotentialGamePanel();
     if (!mainOptions) {
       console.warn("Game settings panel not found, retrying...");
@@ -4176,21 +4175,9 @@ function performSync() {
           newCheckbox.addEventListener("change", () => {
             try {
               gameCheckbox.checked = newCheckbox.checked;
-              gameCheckbox.dispatchEvent(
-                new Event("change", {
-                  bubbles: true,
-                }),
-              );
-              gameCheckbox.dispatchEvent(
-                new Event("click", {
-                  bubbles: true,
-                }),
-              );
-              gameCheckbox.dispatchEvent(
-                new Event("input", {
-                  bubbles: true,
-                }),
-              );
+              gameCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+              gameCheckbox.dispatchEvent(new Event("click", { bubbles: true }));
+              gameCheckbox.dispatchEvent(new Event("input", { bubbles: true }));
             } catch (e) {}
           });
         }
@@ -4212,16 +4199,8 @@ function performSync() {
           newSelect.addEventListener("change", () => {
             try {
               gameSelect.value = newSelect.value;
-              gameSelect.dispatchEvent(
-                new Event("change", {
-                  bubbles: true,
-                }),
-              );
-              gameSelect.dispatchEvent(
-                new Event("input", {
-                  bubbles: true,
-                }),
-              );
+              gameSelect.dispatchEvent(new Event("change", { bubbles: true }));
+              gameSelect.dispatchEvent(new Event("input", { bubbles: true }));
             } catch (e) {}
           });
         }
@@ -4243,16 +4222,8 @@ function performSync() {
           newInput.addEventListener("input", () => {
             try {
               gameInput.value = newInput.value;
-              gameInput.dispatchEvent(
-                new Event("input", {
-                  bubbles: true,
-                }),
-              );
-              gameInput.dispatchEvent(
-                new Event("change", {
-                  bubbles: true,
-                }),
-              );
+              gameInput.dispatchEvent(new Event("input", { bubbles: true }));
+              gameInput.dispatchEvent(new Event("change", { bubbles: true }));
             } catch (e) {}
           });
         }
@@ -4275,14 +4246,22 @@ function performSync() {
           newRange.min = gameRange.min;
           newRange.max = gameRange.max;
           newRange.step = gameRange.step;
-          const valueInput = document.querySelector(
-            `input[data-range="${newRange.id}"]`,
-          );
+          const valueInput = document.querySelector(`input[data-range="${newRange.id}"]`);
           if (valueInput) {
             valueInput.value = newRange.value;
             valueInput.min = newRange.min;
             valueInput.max = newRange.max;
             valueInput.step = newRange.step;
+            valueInput.addEventListener("input", () => {
+              const val = parseFloat(valueInput.value);
+              if (!isNaN(val)) {
+                newRange.value = val;
+                gameRange.value = val;
+                gameRange.dispatchEvent(new Event("input", { bubbles: true }));
+                gameRange.dispatchEvent(new Event("change", { bubbles: true }));
+                newRange.dispatchEvent(new Event("input", { bubbles: true }));
+              }
+            });
           }
           newRange.addEventListener("input", () => {
             try {
@@ -4290,16 +4269,8 @@ function performSync() {
               if (valueInput) {
                 valueInput.value = newRange.value;
               }
-              gameRange.dispatchEvent(
-                new Event("input", {
-                  bubbles: true,
-                }),
-              );
-              gameRange.dispatchEvent(
-                new Event("change", {
-                  bubbles: true,
-                }),
-              );
+              gameRange.dispatchEvent(new Event("input", { bubbles: true }));
+              gameRange.dispatchEvent(new Event("change", { bubbles: true }));
             } catch (e) {}
           });
         }
@@ -4656,7 +4627,7 @@ function setupThemeButtons() {
   }, 100);
   setTimeout(() => clearInterval(checkLinks), 10000);
 })();
-if (!localStorage.getItem("changelogShown_3.51")) {
+if (!localStorage.getItem("changelogShown_3.53")) {
   const overlay = document.createElement("div");
   overlay.id = "changelogOverlay";
   document.body.appendChild(overlay);
@@ -4665,26 +4636,14 @@ if (!localStorage.getItem("changelogShown_3.51")) {
   modal.id = "changelogModal";
   modal.innerHTML = `
     <div id="changelog-header">
-      <span id="changelog-version">v3.51</span>
+      <span id="changelog-version">v3.53</span>
       <span id="changelog-title">Changelog</span>
       <button id="closeChangelog">×</button>
     </div>
     <div id="changelog-body">
-      <div class="changelog-item">
-        <span class="changelog-tag fix">Fix</span>
-        <span class="changelog-text">Fully fixed Random name on death</span>
-      </div>
-      <div class="changelog-item">
-        <span class="changelog-tag fix">Fix</span>
-        <span class="changelog-text">Fixed hotkeys on tab join key</span>
-      </div>
-          <div class="changelog-item">
-        <span class="changelog-tag fix">Fix</span>
-        <span class="changelog-text">Fixed some bugs</span>
-      </div>
           <div class="changelog-item">
         <span class="changelog-tag fix">Recode</span>
-        <span class="changelog-text">Remade the changelog</span>
+        <span class="changelog-text">Remade performsync for sliders and input values</span>
       </div>
       <div class="changelog-item">
         <span class="changelog-tag info">Info</span>
@@ -5088,7 +5047,7 @@ const waitForMain = setInterval(() => {
 }, 500);
 
 
-const SCRIPT_VERSION = "3.52";
+const SCRIPT_VERSION = "3.53";
 const UPDATE_URL =
   "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
