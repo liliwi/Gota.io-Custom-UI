@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.51
+// @version      3.52
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -3785,25 +3785,7 @@ function rgbaToHex(rgba) {
   );
 }
 
-function setupChatToggle(hotkey) {
-  document.removeEventListener("keydown", window.__chatToggleHandler);
-  window.__chatToggleHandler = (e) => {
-    if (
-      e.key.toLowerCase() === hotkey &&
-      document.activeElement.tagName !== "INPUT"
-    ) {
-      const chatPanel = document.getElementById("chat-panel");
-      if (chatPanel) {
-        if (chatPanel.style.display === "none") {
-          chatPanel.style.setProperty("display", "block", "important");
-        } else {
-          chatPanel.style.setProperty("display", "none", "important");
-        }
-      }
-    }
-  };
-  document.addEventListener("keydown", window.__chatToggleHandler);
-}
+
 
 function syncHotkeysFromGame() {
   const hotkeysTab = document.querySelector("#tab-hotkeys");
@@ -5106,7 +5088,7 @@ const waitForMain = setInterval(() => {
 }, 500);
 
 
-const SCRIPT_VERSION = "3.51";
+const SCRIPT_VERSION = "3.52";
 const UPDATE_URL =
   "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
