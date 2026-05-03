@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.6
+// @version      3.61
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -2648,6 +2648,8 @@ function createPanel() {
 
                 if (tab.dataset.tab === "customfeatures") renderSavedPlayers();
                 if (tab.dataset.tab === "presets") renderPresetsList();
+                renderPresetsList();
+                wirePresetsTab();
 
                 requestAnimationFrame(() => {
 
@@ -5180,7 +5182,7 @@ function getPresetsTabHTML() {
           <span class="setting-label">Preset name</span>
           <div class="setting-control" style="display:flex;gap:8px;flex:1">
             <input type="text" id="preset-name-input" placeholder="My preset..." style="flex:1;min-width:0;margin-left:10px">
-            <button id="preset-save-btn" class="x-small-btn" style="background:rgba(50,120,50,0.7);border-color:rgba(100,200,100,0.4);color:#b3ffb3;min-width:110px">Save current</button>
+<button id="preset-save-btn" class="x-small-btn" style="background:rgba(50,120,50,0.7);border-color:rgba(100,200,100,0.4);color:#b3ffb3;min-width:110px;height:38px !important;box-sizing:border-box;">Save current</button>
           </div>
         </div>
         <div class="setting-row" style="margin-top:8px">
@@ -5339,14 +5341,13 @@ function injectPresetsTab() {
 
 function wirePresetsTab() {
     const saveBtn = document.getElementById("preset-save-btn");
-    const nameInput = document.getElementById("preset-name-input");
     const exportAllBtn = document.getElementById("preset-export-all-btn");
     const importBtn = document.getElementById("preset-import-btn");
     const importFile = document.getElementById("preset-import-file");
 
     saveBtn?.addEventListener("click", () => {
-        const name = (nameInput?.value || "")
-            .trim();
+        const nameInput = document.getElementById("preset-name-input");
+        const name = (nameInput?.value || "").trim();
         if (!name) {
             alert("Please enter a preset name.");
             return;
@@ -5369,24 +5370,24 @@ function wirePresetsTab() {
 
     exportAllBtn?.addEventListener("click", () => {
         const presets = loadPresets();
-        const blob = new Blob([JSON.stringify(presets, null, 2)], {
-            type: "application/json"
-        });
+        const blob = new Blob([JSON.stringify(presets, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "Presets-" + new Date()
-            .toISOString()
-            .slice(0, 10) + ".json";
+        a.download = "Presets-" + new Date().toISOString().slice(0, 10) + ".json";
         a.click();
         URL.revokeObjectURL(url);
     });
 
-    importBtn?.addEventListener("click", () => importFile?.click());
+    importBtn?.addEventListener("click", () => {
+        const file = document.getElementById("preset-import-file");
+        file?.click();
+    });
 
     importFile?.addEventListener("change", e => {
         const file = e.target.files[0];
         if (!file) return;
+        const btn = document.getElementById("preset-import-btn");
         const reader = new FileReader();
         reader.onload = ev => {
             try {
@@ -5394,20 +5395,19 @@ function wirePresetsTab() {
                 if (typeof imported !== "object" || Array.isArray(imported)) throw new Error("Bad format");
                 const existing = loadPresets();
                 let overwriteCount = 0;
-                Object.keys(imported)
-                    .forEach(k => {
-                        if (existing[k]) overwriteCount++;
-                    });
+                Object.keys(imported).forEach(k => { if (existing[k]) overwriteCount++; });
                 if (overwriteCount && !confirm(`This will overwrite ${overwriteCount} existing preset(s). Continue?`)) return;
                 Object.assign(existing, imported);
                 savePresets(existing);
                 renderPresetsList();
-                importBtn.textContent = "Imported!";
-                importBtn.style.background = "rgba(0,140,0,0.7)";
-                setTimeout(() => {
-                    importBtn.textContent = "Import file";
-                    importBtn.style.background = "rgba(30,60,120,0.7)";
-                }, 2000);
+                if (btn) {
+                    btn.textContent = "Imported!";
+                    btn.style.background = "rgba(0,140,0,0.7)";
+                    setTimeout(() => {
+                        btn.textContent = "Import file";
+                        btn.style.background = "rgba(30,60,120,0.7)";
+                    }, 2000);
+                }
             } catch {
                 alert("Invalid presets file. Make sure it was exported from this script.");
             }
@@ -5427,7 +5427,7 @@ const waitForPanel = setInterval(() => {
 
 
 
-if (!localStorage.getItem("changelogShown_3.6")) {
+if (!localStorage.getItem("changelogShown_3.61")) {
     const overlay = document.createElement("div");
     overlay.id = "changelogOverlay";
     document.body.appendChild(overlay);
@@ -5436,7 +5436,7 @@ if (!localStorage.getItem("changelogShown_3.6")) {
     modal.id = "changelogModal";
     modal.innerHTML = `
 <div id="changelog-header">
-      <span id="changelog-version">v3.6</span>
+      <span id="changelog-version">v3.61</span>
       <span id="changelog-title">Changelog</span>
       <button id="closeChangelog">×</button>
     </div>
@@ -5454,6 +5454,10 @@ if (!localStorage.getItem("changelogShown_3.6")) {
         <span class="changelog-text">You need camlan to use this script!</span>
       </div>
     </div>
+     <div class="changelog-item">
+        <span class="changelog-tag fix">fix</span>
+        <span class="changelog-text">uhm you know i fucked up so i fixed it</span>
+      </div>
     <div id="changelog-footer">
       <span id="changelog-credit">Made with ❤️ by liliwi</span>
       <button id="closeChangelogBtn">Got it</button>
@@ -5624,7 +5628,7 @@ if (!localStorage.getItem("changelogShown_3.6")) {
         setTimeout(() => {
             modal.remove();
             overlay.remove();
-            localStorage.setItem("changelogShown_3.6", "true");
+            localStorage.setItem("changelogShown_3.61", "true");
         }, 300);
     };
     document.getElementById("closeChangelog")
@@ -5635,7 +5639,7 @@ if (!localStorage.getItem("changelogShown_3.6")) {
 
 
 
-const SCRIPT_VERSION = "3.6";
+const SCRIPT_VERSION = "3.61";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
