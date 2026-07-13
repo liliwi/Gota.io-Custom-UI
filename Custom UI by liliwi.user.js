@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      v4
+// @version      v4.01
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -721,10 +721,10 @@ css#main-social {
     left: 10px !important;
     width: 26px !important;
     height: 26px !important;
-    border-radius: 7px !important;
-    background: rgba(255,255,255,0.06) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    color: rgba(255,255,255,0.5) !important;
+    border-radius: 8px !important;
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: rgba(255,255,255,0.7) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -734,7 +734,8 @@ css#main-social {
 }
 
 #social-back-button:hover {
-    background: rgba(255,255,255,0.1) !important;
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
     color: #fff !important;
 }
 
@@ -748,12 +749,17 @@ css#main-social {
     display: none !important;
 }
 
-/* friend count row */
+/* friend count row — equal 44px side padding keeps the text truly
+   centered despite the back button occupying the top-left corner */
 #social-friends-info {
-    padding: 10px 12px 8px 44px !important;
+    padding: 8px 0px !important;
     display: flex !important;
     flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
     gap: 2px !important;
+    min-height: 30px !important;
     border-bottom: 1px solid rgba(255,255,255,0.05) !important;
     flex-shrink: 0 !important;
     background: transparent !important;
@@ -1015,10 +1021,10 @@ margin: 0px !important;
     justify-content: center !important;
     height: 26px !important;
     padding: 0 10px !important;
-    background: rgba(88,101,242,0.18) !important;
-    border: 1px solid rgba(88,101,242,0.3) !important;
-    border-radius: 6px !important;
-    color: rgba(170,180,255,0.9) !important;
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -1027,7 +1033,8 @@ margin: 0px !important;
 }
 
 .discord-login-button:hover {
-    background: rgba(88,101,242,0.35) !important;
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
     color: #fff !important;
 }
 
@@ -3079,6 +3086,7 @@ panel.innerHTML = `
     <div class="settings-tab-section-label">Custom</div>
     <div class="settings-tab" data-tab="customfeatures">Features</div>
     <div class="settings-tab" data-tab="presets">Presets</div>
+    <div class="settings-tab-section-label">More</div>
 </div>
         <div class="settings-content">
             <div class="tab-content active" id="tab-options">${getOptionsHTML()}</div>
@@ -6155,7 +6163,7 @@ if (!localStorage.getItem("changelogShown_3.61")) {
 
 
 
-const SCRIPT_VERSION = "4";
+const SCRIPT_VERSION = "4.01";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
@@ -6185,9 +6193,9 @@ function checkForUpdate() {
 
             if (
                 confirm(
-                    "Update available!\n\nCurrent: v" +
+                    "Update available!\n\nCurrent: " +
                     SCRIPT_VERSION +
-                    "\nLatest:  v" +
+                    "\nLatest:  " +
                     remoteVersion +
                     "\n\nClick OK to open the script page.",
                 )
