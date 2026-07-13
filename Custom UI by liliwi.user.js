@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      3.61
+// @version      v4
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -10,8 +10,8 @@
 // @match        https://play.gota.io/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
-// @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_setValue
 // @connect      raw.githubusercontent.com
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
@@ -188,6 +188,15 @@ div#main-scrimmage.main-panel.interface-color {
     box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
 }
 
+/* rounded corners on menu panels only, so they match the social panels
+   (in-game HUD panels like chat/leaderboard/minimap stay untouched) */
+.main-panel,
+div#main-panel-wrapper,
+div#main-right.main-divider.main-panel,
+div#main-scrimmage.main-panel.interface-color {
+    border-radius: 12px !important;
+}
+
 .main-bottom { display: none !important; }
 .policyLinks { display: none !important; }
 
@@ -209,12 +218,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     -webkit-backdrop-filter: blur(12px) !important;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
     transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
-}
-
-#main-friends:hover,
-.main-left.main-divider.main-panel:hover {
-    border-color: rgba(255,255,255,0.16) !important;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
 }
 
 /* Friends list items */
@@ -614,19 +617,33 @@ div#party-panel.ui-pane.interface-color.hud-panel {
 
 div#main-right.main-divider.main-panel,
 div#main-scrimmage.main-panel.interface-color {
-    height: 500px !important;
+    height: 410px !important;
 }
 
 div#main-scrimmage.main-panel.interface-color {
     height: 470px !important;
 }
+css#main-social {
+    display: none !important;
+}
 
-.main[style*="display: none"],
-.main[style*="display:none"],
+#main-social[style*="display: flex"],
+#main-social[style*="display:flex"],
+#main-social[style*="display: block"],
+#main-social[style*="display:block"] {
+    display: flex !important;
+}
+
+#main-social[style*="display: none"],
+#main-social[style*="display:none"] {
+    display: none !important;
+}
+.main[style*="display: none"]:not(#main-social),
+.main[style*="display:none"]:not(#main-social),
 #main-panel-wrapper[style*="display: none"],
 #main-panel-wrapper[style*="display:none"],
-.main-content[style*="display: none"],
-.main-content[style*="display:none"] {
+.main > .main-content[style*="display: none"],
+.main > .main-content[style*="display:none"] {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -635,7 +652,7 @@ div#main-scrimmage.main-panel.interface-color {
     position: fixed !important;
     top: 6% !important;
     left: 50% !important;
-    transform: translateX(-65%) !important;  /* shift left from center */
+    transform: translateX(-50%) !important;
     width: fit-content !important;
     height: 470px !important;
     padding: 10px !important;
@@ -645,16 +662,426 @@ div#main-scrimmage.main-panel.interface-color {
     gap: 10px !important;
 }
 
+/* the game's leftover left column only holds the hidden #main-rb but still
+   occupies ~370px, pushing the visible menu right of center — collapse it.
+   :not(.main-panel) so the styled friends panel variant is never touched */
+.main .main-left.main-divider:not(.main-panel) {
+    display: none !important;
+}
+
 .main-panel-wrapper {
     margin-top: 110px !important;
     margin-left: 0 !important;
 }
 
 #main-social {
-    margin-left: 0 !important;
-    width: auto !important;
-    display: none !important;  /* hide it by default, game shows it when needed */
+    position: fixed !important;
+    /* main menu content sits at 6% + 10px panel padding + 110px wrapper
+       margin, so social uses the same offset to line up when switching */
+    top: calc(6% + 120px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 696px !important;   /* 439 + 10 + 247 */
+    height: 410px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    z-index: 2 !important;
 }
+
+/* ===== FRIENDS PANEL (left) ===== */
+#main-friends {
+    width: 439px !important;
+    min-width: 439px !important;
+    max-width: 439px !important;
+    height: 410px !important;
+    background: rgba(20,20,20,0.95) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+/* back button */
+#social-back-button {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 7px !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: rgba(255,255,255,0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    z-index: 1 !important;
+}
+
+#social-back-button:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+}
+
+#social-back-button .material-symbols-outlined {
+    font-size: 18px !important;
+    line-height: 1 !important;
+}
+
+/* hide "Friends" title */
+#main-friends .title-text.menu-title {
+    display: none !important;
+}
+
+/* friend count row */
+#social-friends-info {
+    padding: 10px 12px 8px 44px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    flex-shrink: 0 !important;
+    background: transparent !important;
+}
+
+#social-friends-info > span {
+    font-size: 11px !important;
+    color: rgba(255,255,255,0.3) !important;
+    font-weight: 400 !important;
+}
+
+#social-friends-info span span {
+    color: rgba(255,255,255,0.6) !important;
+    font-weight: 600 !important;
+}
+
+/* scrollable list */
+#social-friends {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 8px !important;
+    background: transparent !important;
+    margin: 0 !important;
+}
+
+#social-friends::-webkit-scrollbar { width: 4px !important; }
+#social-friends::-webkit-scrollbar-track {
+    background: rgba(20,20,20,0.5) !important;
+    border-radius: 2px !important;
+}
+#social-friends::-webkit-scrollbar-thumb {
+    background: rgba(100,100,100,0.4) !important;
+    border-radius: 2px !important;
+}
+#social-friends::-webkit-scrollbar-thumb:hover {
+    background: rgba(120,120,120,0.55) !important;
+}
+
+#social-friends .user-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+}
+#social-friends .user-list>li {
+width: 380px !important;
+}
+
+/* friend row */
+#social-friends .user-embed {
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.2s !important;
+    cursor: default !important;
+}
+
+#social-friends .user-embed:hover {
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+
+#social-friends .user-embed img {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    flex-shrink: 0 !important;
+    object-fit: cover !important;
+}
+
+#social-friends .user-embed .info {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+#social-friends .user-embed .username {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+#social-friends .user-embed .status {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+#social-friends .user-embed .status.offline {
+    color: rgba(255,255,255,0.25) !important;
+}
+
+#social-friends .user-embed .status.online {
+    color: rgba(100,220,100,0.75) !important;
+}
+
+#social-friends .user-embed .actions {
+    display: flex !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+    height: 30px !important;
+}
+
+#social-friends .user-embed .actions .material-symbols-outlined {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 6px !important;
+    background: rgba(180,50,50,0.25) !important;
+    border: 1px solid rgba(200,70,70,0.2) !important;
+    color: rgba(255,100,100,0.55) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 15px !important;
+    transition: all 0.2s !important;
+}
+
+#social-friends .user-embed .actions .material-symbols-outlined:hover {
+    background: rgba(200,60,60,0.4) !important;
+    color: #ffaaaa !important;
+}
+
+/* footer */
+#social-actions {
+    padding: 8px 10px !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    background: transparent !important;
+}
+
+#social-uid-container {
+    font-size: 9px !important;
+    color: rgba(255,255,255,0.2) !important;
+    word-break: break-all !important;
+    line-height: 1.4 !important;
+}
+
+#social-uid {
+    color: rgba(255,255,255,0.35) !important;
+}
+#social-actions button {
+margin: 0px !important;
+}
+#btn-add-friend {
+    width: 100% !important;
+    height: 32px !important;
+    background: rgba(28, 28, 28, 0.7) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+#btn-add-friend:hover {
+    background: rgba(45, 45, 45, 0.85) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: #fff !important;
+}
+
+/* ===== RIGHT COLUMN ===== */
+#main-social .main-content.main-divider {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    flex: 1 !important;
+    height: 410px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+}
+
+/* ===== DISCORD PANEL ===== */
+#main-discord {
+    background: rgba(20,20,20,0.95) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+    padding: 12px 14px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    width: 247px !important;
+    min-width: 0 !important;
+}
+
+#main-discord .title-text.menu-title {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    color: rgba(255,255,255,0.4) !important;
+    padding-bottom: 7px !important;
+    margin-bottom: 8px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    background: transparent !important;
+    display: block !important;
+}
+
+#main-discord .main-mini-container {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    background: transparent !important;
+}
+
+#main-discord p {
+    font-size: 11px !important;
+    color: rgba(255,255,255,0.35) !important;
+    line-height: 1.5 !important;
+    margin: 0 0 6px 0 !important;
+}
+
+#main-discord .stealth-link {
+    color: rgba(120,160,255,0.8) !important;
+    text-decoration: none !important;
+}
+
+#discordLinkStatus {
+    font-size: 11px !important;
+    color: rgba(100,210,100,0.7) !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+}
+
+.discord-login-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    padding: 0 !important;
+    margin-top: auto !important;
+}
+
+.discord-login-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 26px !important;
+    padding: 0 10px !important;
+    background: rgba(88,101,242,0.18) !important;
+    border: 1px solid rgba(88,101,242,0.3) !important;
+    border-radius: 6px !important;
+    color: rgba(170,180,255,0.9) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    text-decoration: none !important;
+}
+
+.discord-login-button:hover {
+    background: rgba(88,101,242,0.35) !important;
+    color: #fff !important;
+}
+
+/* ===== TOKENS PANEL ===== */
+#main-tokens {
+    background: rgba(20,20,20,0.95) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+    padding: 12px 14px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    width: 247px !important;
+    min-width: 0 !important;
+}
+
+#main-tokens .title-text.menu-title {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    color: rgba(255,255,255,0.4) !important;
+    padding-bottom: 7px !important;
+    margin-bottom: 8px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    background: transparent !important;
+    display: block !important;
+}
+
+#main-tokens .main-mini-container {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    background: transparent !important;
+}
+
+#main-tokens p {
+    font-size: 11px !important;
+    color: rgba(255,255,255,0.35) !important;
+    line-height: 1.5 !important;
+    margin: 0 0 6px 0 !important;
+}
+
+#token-amount {
+    font-size: 11px !important;
+    color: rgba(255,255,255,0.3) !important;
+    display: block !important;
+    margin-top: auto !important;
+}
+
 
 #main-social.active,
 #main-social[style*="display: block"],
@@ -665,7 +1092,7 @@ div#main-scrimmage.main-panel.interface-color {
     position: fixed !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    top: 6% !important;
+    top: calc(6% + 120px) !important;
 }
 
 div.options-container {
@@ -683,8 +1110,12 @@ tbody#servers-body-eu {
 }
 
 div#server-content {
-    height: 429px !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
 
 /* ===== INPUTS & BUTTONS ===== */
 #name-box {
@@ -813,73 +1244,42 @@ div#social-friends.menu-sub-bg {
 /* ===== SERVER TABS ===== */
 li#server-tab-eu.server-tab,
 li#server-tab-na.server-tab {
-    background: linear-gradient(135deg, rgba(45, 45, 48, 0.75), rgba(35, 35, 40, 0.65)) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    color: #b8b8b8 !important;
+    background: rgba(40, 40, 43, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
     width: auto !important;
     min-width: 90px !important;
-    padding: 6px 12px !important;
+    padding: 6px 14px !important;
     margin: 0 4px !important;
     display: inline-block !important;
     text-align: center !important;
-    border-radius: 8px !important;
+    border-radius: 20px !important;
     cursor: pointer !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    position: relative !important;
-    overflow: hidden !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
     font-weight: 500 !important;
     letter-spacing: 0.3px !important;
 }
 
-li#server-tab-eu.server-tab::before,
-li#server-tab-na.server-tab::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: -100% !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent) !important;
-    transition: left 0.5s ease !important;
-}
 
 li#server-tab-eu.server-tab:hover,
 li#server-tab-na.server-tab:hover {
-    background: linear-gradient(135deg, rgba(60, 60, 65, 0.85), rgba(50, 50, 58, 0.75)) !important;
-    border-color: rgba(255,255,255,0.18) !important;
+    background: rgba(60, 60, 65, 0.9) !important;
     color: #ffffff !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12) !important;
 }
 
-li#server-tab-eu.server-tab:hover::before,
-li#server-tab-na.server-tab:hover::before {
-    left: 100% !important;
-}
+
+
 
 li.server-active {
-    background: linear-gradient(135deg, rgba(90,90,255,0.4), rgba(70,70,235,0.35)) !important;
-    border-color: rgba(120,120,255,0.6) !important;
+    background: rgba(90, 90, 100, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
     color: #ffffff !important;
-    box-shadow: 0 6px 20px rgba(80,80,255,0.3), 0 0 20px rgba(80,80,255,0.15), inset 0 1px 0 rgba(255,255,255,0.15) !important;
     font-weight: 600 !important;
+    box-shadow: none !important;
 }
 
 li.server-active::after {
-    content: '' !important;
-    position: absolute !important;
-    bottom: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 70% !important;
-    height: 2px !important;
-    background: linear-gradient(90deg, transparent, rgba(150,150,255,0.8), transparent) !important;
-    border-radius: 2px !important;
+    display: none !important;
 }
-
 ul#server-tabs {
     display: flex !important;
     justify-content: center !important;
@@ -1046,7 +1446,8 @@ li#server-tab-ap.server-tab,
 #btn-options.gota-btn.bottom-btn,
 #btn-hotkeys.gota-btn.bottom-btn,
 #btn-themes.gota-btn.bottom-btn,
-#btn-cellpanel.gota-btn.bottom-btn {
+#btn-cellpanel.gota-btn.bottom-btn,
+div.title-text.menu-title {
     display: none !important;
 }
 
@@ -1055,9 +1456,13 @@ div#popup-profile.popup-panel,
 button#profile-close-btn.gota-btn {
     background: rgba(20,20,20) !important;
 }
+#server-tab-container {
+ margin-top: 10px !important;
+ margin-bottom: 0px !important;
+ }
 
 div.main-bottom-links {
-    padding-top: 125px !important;
+     padding-top: 80px !important;
 }
 
 .x-show {
@@ -1197,35 +1602,41 @@ vertical-align: top;
 
 /* ===== UNIFIED SETTINGS BUTTON ===== */
 #unified-settings-btn {
-    width: 270px !important;
-    height: 40px !important;
-    border-radius: 10px !important;
-    background: linear-gradient(135deg, rgba(60,60,60,0.3) 0%, rgba(50,50,50,0.3) 100%) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 2px solid rgba(140,140,140,0.3) !important;
-    color: #fff !important;
+  position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: rgba(28,28,28,0.85) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: rgba(255,255,255,0.6) !important;
     font-size: 15px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.5px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    margin: 0 auto !important;
     cursor: pointer !important;
+    z-index: 9999 !important;
+    padding: 0 !important;
+    margin: 0 !important;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
 }
+
 
 #unified-settings-btn:hover {
-    background: linear-gradient(135deg, rgba(80,80,80,0.4) 0%, rgba(70,70,70,0.4) 100%) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(255,255,255,0.15) !important;
-    border-color: rgba(160,160,160,0.5) !important;
+    background: rgba(50,50,50,0.95) !important;
+    border-color: rgba(255,255,255,0.22) !important;
+    color: #fff !important;
+    transform: rotate(60deg) !important;
 }
 
+
 #unified-settings-btn:active {
-    transform: translateY(0px) !important;
+    transform: rotate(90deg) scale(0.92) !important;
 }
+
 
 /* ===== SETTINGS PANEL OVERLAY ===== */
 #unified-settings-overlay {
@@ -1275,8 +1686,15 @@ body > #clr-picker {
     transform: scale(0.9) translateY(30px) !important;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
     box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
-
+.settings-body {
+    display: flex !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
+}
 #unified-settings-overlay.show #unified-settings-panel {
     opacity: 1 !important;
     transform: scale(1) translateY(0) !important;
@@ -1354,16 +1772,21 @@ body > #clr-picker {
 /* ===== TABS ===== */
 .settings-tabs {
     display: flex !important;
-    gap: 8px !important;
-    padding: 12px 20px !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    padding: 8px 0 !important;
     background: rgba(18,18,18,0.8) !important;
-    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
-    overflow-x: auto !important;
-    justify-content: center !important;
+    border-right: 1px solid rgba(255,255,255,0.07) !important;
+    border-bottom: none !important;
+    width: 150px !important;
+    flex-shrink: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
+
 .settings-tabs::-webkit-scrollbar {
-    height: 6px !important;
+    width: 4px !important;
 }
 
 .settings-tabs::-webkit-scrollbar-track {
@@ -1372,41 +1795,55 @@ body > #clr-picker {
 }
 
 .settings-tabs::-webkit-scrollbar-thumb {
-    background: rgba(100,100,100,0.5) !important;
-    border-radius: 3px !important;
+    background: rgba(100,100,100,0.4) !important;
+    border-radius: 2px !important;
 }
 
 .settings-tab {
-    padding: 8px 16px !important;
-    background: rgba(40,40,40,0.6) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important;
-    color: #999 !important;
+    padding: 8px 14px !important;
+    background: transparent !important;
+    border: none !important;
+    border-left: 2.5px solid transparent !important;
+    border-radius: 0 !important;
+    color: rgba(255,255,255,0.5) !important;
     cursor: pointer !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.18s !important;
     white-space: nowrap !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-align: left !important;
 }
 
 .settings-tab:hover {
-    background: rgba(55,55,55,0.7) !important;
-    color: #fff !important;
-    border-color: rgba(255,255,255,0.12) !important;
+    background: rgba(255,255,255,0.05) !important;
+    color: rgba(255,255,255,0.85) !important;
 }
 
+
 .settings-tab.active {
-    background: rgba(90,90,90,0.5) !important;
-    border-color: rgba(140,140,140,0.4) !important;
+    background: rgba(90,90,90,0.25) !important;
+    border-left-color: rgba(180,180,180,0.7) !important;
     color: #fff !important;
+}
+.settings-tab-section-label {
+    font-size: 10px !important;
+    color: rgba(255,255,255,0.3) !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    padding: 10px 14px 4px !important;
+    font-weight: 500 !important;
+    pointer-events: none !important;
+    user-select: none !important;
 }
 
 /* ===== CONTENT ===== */
 .settings-content {
     padding: 16px 20px !important;
-    max-height: calc(85vh - 160px) !important;
+    flex: 1 !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
     background: rgba(15,15,15,0.5) !important;
+    min-width: 0 !important;
 }
 
 .settings-content::-webkit-scrollbar {
@@ -1458,6 +1895,15 @@ body > #clr-picker {
 
 .setting-group:hover {
     border-color: rgba(255,255,255,0.12) !important;
+}
+#unified-settings-btn {
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+#unified-settings-btn.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.85) !important;
 }
 
 .setting-group h3 {
@@ -1809,8 +2255,9 @@ display: none;
 
         .main-content.main-divider.main-panel,
         .main-content.main-panel {
-            min-width: 350px !important;
-            height: 500px !important;
+          position: relative !important;
+    min-width: 350px !important;
+    height: 410px !important;
         }
 
         .main-mid.menu-sub-bg {
@@ -1837,7 +2284,6 @@ display: none;
         .main-input-btns button,
         .main-input-btns .gota-btn,
         .main-input-btns .gota-menu-btn,
-        #unified-settings-btn,
         #btn-servers {
             width: 100% !important;
             max-width: 100% !important;
@@ -2486,6 +2932,8 @@ const state = {
     isOpen: false,
     initialized: false,
     listeningForKey: false,
+    syntheticEscape: false,
+
 };
 
 function saveColorSettings() {
@@ -2568,17 +3016,32 @@ function hideButtons() {
 }
 
 function createButton() {
-    const container = document.querySelector(".main-input-btns");
-    if (!container || document.getElementById("unified-settings-btn")) {
-        return;
-    }
+    if (document.getElementById("unified-settings-btn")) return;
+
+    const mainPanel =
+        document.querySelector(".main-content.main-divider.main-panel") ||
+        document.querySelector(".main-content.main-panel");
+    if (!mainPanel) return;
+
     const btn = document.createElement("button");
     btn.id = "unified-settings-btn";
-    btn.innerHTML = "Settings";
+    btn.innerHTML = "⚙";
     btn.onclick = open;
-    container.appendChild(btn);
-}
+    mainPanel.appendChild(btn);
 
+    const observer = new MutationObserver(() => {
+        const hidden =
+            mainPanel.style.display === "none" ||
+            mainPanel.style.opacity === "0" ||
+            mainPanel.style.visibility === "hidden";
+        btn.classList.toggle("hidden", hidden);
+    });
+
+    observer.observe(mainPanel, {
+        attributes: true,
+        attributeFilter: ["style", "class"]
+    });
+}
 function createPanel() {
     if (document.getElementById("unified-settings-overlay")) {
         return;
@@ -2590,7 +3053,7 @@ function createPanel() {
     document.addEventListener(
         "keydown",
         (e) => {
-            if (e.key === "Escape" && state.isOpen && !state.listeningForKey) {
+            if (e.key === "Escape" && state.isOpen && !state.listeningForKey && !state.syntheticEscape) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -2600,23 +3063,31 @@ function createPanel() {
         },
         true,
     );
-    panel.innerHTML = `
+panel.innerHTML = `
     <div class="settings-header">
         <h2>Settings</h2>
         <input type="text" id="settings-search-input" placeholder="Search settings..." />
         <button class="settings-close-btn" id="close-settings-btn">×</button>
     </div>
-    <div class="settings-tabs">
-        ${CONFIG.tabs.map((tab, i) => `<div class="settings-tab ${i === 0 ? "active" : ""}" data-tab="${tab.id}">${tab.label}</div>`).join("")}
-        <div class="settings-tab" data-tab="presets">Presets</div>
-    </div>
-    <div class="settings-content">
-        <div class="tab-content active" id="tab-options">${getOptionsHTML()}</div>
-        <div class="tab-content" id="tab-hotkeys">${getHotkeysHTML()}</div>
-        <div class="tab-content" id="tab-themes">${getThemesHTML()}</div>
-        <div class="tab-content" id="tab-cellpanel">${getCellPanelHTML()}</div>
-        <div class="tab-content" id="tab-customfeatures">${getCustomFeaturesHTML()}</div>
-        <div class="tab-content" id="tab-presets">${getPresetsTabHTML()}</div>
+    <div class="settings-body">
+     <div class="settings-tabs">
+    <div class="settings-tab-section-label">Game</div>
+    <div class="settings-tab active" data-tab="options">Options</div>
+    <div class="settings-tab" data-tab="hotkeys">Hotkeys</div>
+    <div class="settings-tab" data-tab="themes">Themes</div>
+    <div class="settings-tab" data-tab="cellpanel">Cell panel</div>
+    <div class="settings-tab-section-label">Custom</div>
+    <div class="settings-tab" data-tab="customfeatures">Features</div>
+    <div class="settings-tab" data-tab="presets">Presets</div>
+</div>
+        <div class="settings-content">
+            <div class="tab-content active" id="tab-options">${getOptionsHTML()}</div>
+            <div class="tab-content" id="tab-hotkeys">${getHotkeysHTML()}</div>
+            <div class="tab-content" id="tab-themes">${getThemesHTML()}</div>
+            <div class="tab-content" id="tab-cellpanel">${getCellPanelHTML()}</div>
+            <div class="tab-content" id="tab-customfeatures">${getCustomFeaturesHTML()}</div>
+            <div class="tab-content" id="tab-presets">${getPresetsTabHTML()}</div>
+        </div>
     </div>
 `;
     overlay.appendChild(panel);
@@ -2866,8 +3337,8 @@ function getOptionsHTML() {
             <div class="setting-group">
                 <h3>Score Panel Options</h3>
                 <div class="setting-row"><span class="setting-label">Score Panel</span><div class="setting-control"><select id="sScorePanel"><option value="0">Hidden</option><option value="1">Horizontal</option><option value="2">Vertical</option></select></div></div>
-                <div class="setting-row"><span class="setting-label">Colored Ping</span><div class="setting-control"><input type="checkbox" id="cColoredPing"></div></div>
-                <div class="setting-row"><span class="setting-label">Colored Cell Count</span><div class="setting-control"><input type="checkbox" id="cColoredCellCount"></div></div>
+                <div class="setting-row"><span class="setting-label">Hide Colored Ping</span><div class="setting-control"><input type="checkbox" id="cColoredPing"></div></div>
+                <div class="setting-row"><span class="setting-label">Hide Colored Cell Count</span><div class="setting-control"><input type="checkbox" id="cColoredCellCount"></div></div>
                 <div class="setting-row"><span class="setting-label">Hide Party Panel</span><div class="setting-control"><input type="checkbox" id="cHidePartyPanel"></div></div>
             </div>
 
@@ -3179,29 +3650,6 @@ function getCustomFeaturesHTML() {
             </div>
             <p style="color: #aaa; font-size: 12px; margin-top: 10px;">Automatically invites and accepts party invites from another tab.</p>
         </div>
-      <div class="setting-group">
-            <h3>UI Features</h3>
-
-            <div class="setting-row">
-                <span class="setting-label">Show Clock</span>
-                <div class="setting-control">
-                <span style="color: white; margin-left: 8px;">Display real-time clock in extra panel</span>
-
-                    <input type="checkbox" id="Show-clock" checked>
-                    </label>
-                </div>
-            </div>
-
-            <div class="setting-row">
-                <span class="setting-label">Show Session Timer</span>
-                <div class="setting-control">
-                              <span style="color: white; margin-left: 8px;">Display time since tab opened (persists across servers)</span>
-                    <input type="checkbox" id="Show-session" checked>
-                    </label>
-                </div>
-            </div>
-        </div>
-
 
         <!-- PLAYER MANAGEMENT GROUP -->
         <div class="setting-group">
@@ -3859,87 +4307,225 @@ function syncHotkeysFromGame() {
         }
     });
 }
-
 function syncHotkeysWithGame() {
     let isCapturing = false;
     let currentGameBtn = null;
     let currentKeyId = null;
-    const escapeHandler = (e) => {
-        if (isCapturing && e.key === "Escape") {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            setTimeout(() => {
-                const keybinds = JSON.parse(localStorage.getItem("keybinds") || "{}");
-                keybinds[currentKeyId] = -1;
-                localStorage.setItem("keybinds", JSON.stringify(keybinds));
-                if (currentGameBtn) {
-                    currentGameBtn.textContent = " ";
-                }
-                const customBtn = document.querySelector(
-                    `#tab-hotkeys button[data-key="${currentKeyId}"]`,
-                );
-                if (customBtn) {
-                    customBtn.textContent = "-";
-                }
-                window.dispatchEvent(new Event("storage"));
-            }, 50);
-            isCapturing = false;
-            currentGameBtn = null;
-            currentKeyId = null;
-            return false;
+    let currentCustomBtn = null;
+    let currentOriginalText = null;
+
+
+    const pulseStyle = document.createElement('style');
+    pulseStyle.textContent = `
+        @keyframes listeningPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(200,200,200,0.0); }
+            50% { opacity: 0.75; box-shadow: 0 0 0 4px rgba(200,200,200,0.15); }
         }
-    };
-    document.addEventListener("keydown", escapeHandler, {
-        capture: true,
-        passive: false,
-    });
-    document.addEventListener("keypress", escapeHandler, {
-        capture: true,
-        passive: false,
-    });
-    document.addEventListener("keyup", escapeHandler, {
-        capture: true,
-        passive: false,
-    });
-    const stopHandler = (e) => {
-        if (isCapturing) {
+        button.keybinds-btn.listening {
+            animation: listeningPulse 0.8s ease-in-out infinite !important;
+            border-color: rgba(200,200,200,0.6) !important;
+            background: rgba(80,80,80,0.8) !important;
+        }
+    `;
+    document.head.appendChild(pulseStyle);
+
+function startCapturing(gameBtn, customBtn) {
+    isCapturing = true;
+    currentGameBtn = gameBtn;
+    currentKeyId = gameBtn.id;
+    currentCustomBtn = customBtn;
+    currentOriginalText = customBtn.textContent;
+    customBtn.textContent = '...';
+    customBtn.classList.add('listening');
+    state.listeningForKey = true;
+    console.log('classes when recording starts:', gameBtn.className);
+    // Poll to watch class changes
+    const classWatcher = setInterval(() => {
+        console.log('current classes:', gameBtn.className);
+    }, 100);
+    setTimeout(() => clearInterval(classWatcher), 5000);
+}
+function stopCapturing() {
+    const btn = currentCustomBtn;
+    const gameBtn = currentGameBtn;
+    isCapturing = false;
+    currentGameBtn = null;
+    currentKeyId = null;
+    currentCustomBtn = null;
+    currentOriginalText = null;
+    state.listeningForKey = false;
+    if (btn) {
+        btn.classList.remove('listening');
+        btn.textContent = gameBtn?.textContent || '-';
+    }
+}
+
+ function clearKeybind() {
+    const gameBtn = currentGameBtn;
+    const customBtn = currentCustomBtn;
+
+    isCapturing = false;
+    currentGameBtn = null;
+    currentKeyId = null;
+    currentCustomBtn = null;
+    currentOriginalText = null;
+
+    if (customBtn) {
+        customBtn.classList.remove('listening');
+        customBtn.textContent = '-';
+    }
+
+    setTimeout(() => { state.listeningForKey = false; }, 0);
+
+    if (gameBtn) {
+        const keybinds = JSON.parse(localStorage.getItem('keybinds') || '{}');
+        keybinds[gameBtn.id] = -1;
+        localStorage.setItem('keybinds', JSON.stringify(keybinds));
+        window.dispatchEvent(new Event('storage'));
+
+        // Dismiss the game's listen-mode the same way escapeHandler does,
+        // using state.syntheticEscape so the panel-close handler is blocked.
+        setTimeout(() => {
+            gameBtn.click();
             setTimeout(() => {
+                state.syntheticEscape = true;
+                document.dispatchEvent(new KeyboardEvent('keydown', {
+                    key: 'Escape', code: 'Escape',
+                    keyCode: 27, which: 27,
+                    bubbles: true, cancelable: true
+                }));
+                state.syntheticEscape = false;
+                gameBtn.textContent = '-';
+            }, 50);
+        }, 50);
+    }
+}
+
+const escapeHandler = e => {
+    if (!isCapturing) return;
+   if (state.syntheticEscape) return;
+
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        clearKeybind();
+        return false;
+    }
+
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        const gameBtn = currentGameBtn;
+        const customBtn = currentCustomBtn;
+
+        isCapturing = false;
+        currentGameBtn = null;
+        currentKeyId = null;
+        currentCustomBtn = null;
+
+      if (customBtn) {
+    customBtn.classList.remove('listening');
+    customBtn.textContent = currentOriginalText || '-';
+}
+currentOriginalText = null;
+
+setTimeout(() => { state.listeningForKey = false; }, 0);
+
+        if (gameBtn) {
+            setTimeout(() => {
+                gameBtn.click();
+                setTimeout(() => {
+                   state.syntheticEscape = true;
+                    document.dispatchEvent(new KeyboardEvent('keydown', {
+                        key: 'Escape', code: 'Escape',
+                        keyCode: 27, which: 27,
+                        bubbles: true, cancelable: true
+                    }));
+                    state.syntheticEscape = false;
+                    gameBtn.textContent = '-';
+                }, 50);
+            }, 50);
+        }
+
+        return false;
+    }
+};
+const stopHandler = e => {
+    if (!isCapturing) return;
+    if (e.key === 'Escape' || e.key === 'Delete' || e.key === 'Backspace') return;
+
+    const btn = currentCustomBtn;
+    const gameBtn = currentGameBtn;
+
+    isCapturing = false;
+    currentGameBtn = null;
+    currentKeyId = null;
+    currentCustomBtn = null;
+    state.listeningForKey = false;
+
+    if (!btn) return;
+
+    let attempts = 0;
+    const poll = setInterval(() => {
+        attempts++;
+        const newText = gameBtn?.textContent?.trim();
+        if ((newText && newText !== '...') || attempts > 20) {
+            clearInterval(poll);
+            btn.classList.remove('listening');
+            btn.textContent = newText || '-';
+        }
+    }, 50);
+};
+
+document.addEventListener('keydown', stopHandler, true);
+document.addEventListener('keydown', escapeHandler, true);
+
+setInterval(() => {
+        document.querySelectorAll('button.keybinds-btn[id]').forEach(gameBtn => {
+            const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
+            if (customBtn && !customBtn.classList.contains('listening') && gameBtn.textContent !== customBtn.textContent) {
+                customBtn.textContent = gameBtn.textContent || '-';
+            }
+        });
+    }, 100);
+
+    document.addEventListener('keydown', e => {
+        if (!isCapturing) return;
+        if (e.key === 'Escape' || e.key === 'Delete' || e.key === 'Backspace') return;
+        // A real key was pressed, poll until game finishes then stop
+        const btn = currentCustomBtn;
+        const gameBtn = currentGameBtn;
+        let attempts = 0;
+        const poll = setInterval(() => {
+            attempts++;
+            const isDone = !gameBtn.classList.contains('keybinds-btn-selected');
+            if (isDone || attempts > 40) {
+                clearInterval(poll);
+                btn.classList.remove('listening');
+                btn.textContent = gameBtn.textContent?.trim() || '-';
                 isCapturing = false;
                 currentGameBtn = null;
                 currentKeyId = null;
-            }, 200);
-        }
-    };
-    document.addEventListener("keydown", stopHandler, true);
-    document.addEventListener("mousedown", stopHandler, true);
-    setInterval(() => {
-        const gameButtons = document.querySelectorAll("button.keybinds-btn[id]");
-        gameButtons.forEach((gameBtn) => {
-            const customBtn = document.querySelector(
-                `#tab-hotkeys button[data-key="${gameBtn.id}"]`,
-            );
-            if (customBtn && gameBtn.textContent !== customBtn.textContent) {
-                customBtn.textContent = gameBtn.textContent || "-";
+                currentCustomBtn = null;
+                state.listeningForKey = false;
             }
-        });
-    }, 500);
-    const gameButtons = document.querySelectorAll("button.keybinds-btn[id]");
-    gameButtons.forEach((gameBtn) => {
-        const customBtn = document.querySelector(
-            `#tab-hotkeys button[data-key="${gameBtn.id}"]`,
-        );
+        }, 50);
+    }, true);
+
+    document.querySelectorAll('button.keybinds-btn[id]').forEach(gameBtn => {
+        const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
         if (customBtn) {
             customBtn.onclick = () => {
+                if (isCapturing) stopCapturing();
                 gameBtn.click();
-                isCapturing = true;
-                currentGameBtn = gameBtn;
-                currentKeyId = gameBtn.id;
+                startCapturing(gameBtn, customBtn);
             };
         }
     });
 }
-
 function syncWithGameSettings() {
     try {
         const mainOptions = findPotentialGamePanel();
@@ -4055,153 +4641,6 @@ function findGameElement(id) {
     } catch (e) {}
     return null;
 }
-(function() {
-    "use strict";
-
-    let clockLine = null;
-    let sessionLine = null;
-    let clockInterval = null;
-    let sessionInterval = null;
-    let sessionStart = null;
-    const formatTime = (seconds) => {
-        const h = Math.floor(seconds / 3600)
-            .toString()
-            .padStart(2, "0");
-        const m = Math.floor((seconds % 3600) / 60)
-            .toString()
-            .padStart(2, "0");
-        const s = (seconds % 60)
-            .toString()
-            .padStart(2, "0");
-        return `${h}:${m}:${s}`;
-    };
-
-    function createClock() {
-        if (clockLine) {
-            return;
-        }
-        const extraPanel = document.getElementById("extra-panel");
-        if (!extraPanel) {
-            return;
-        }
-        clockLine = document.createElement("p");
-        clockLine.className = "Timer-line";
-        clockLine.style.display = "block";
-        clockLine.innerHTML = `Time: <span id="Clock">00:00:00</span>`;
-        if (sessionLine && sessionLine.parentNode) {
-            extraPanel.insertBefore(clockLine, sessionLine);
-        } else {
-            extraPanel.appendChild(clockLine);
-        }
-        const updateClock = () => {
-            const now = new Date();
-            const span = document.getElementById("Clock");
-            if (span) {
-                span.textContent = now.toTimeString()
-                    .slice(0, 8);
-            }
-        };
-        updateClock();
-        clockInterval = setInterval(updateClock, 1000);
-    }
-
-    function createSession() {
-        if (sessionLine) {
-            return;
-        }
-        const extraPanel = document.getElementById("extra-panel");
-        if (!extraPanel) {
-            return;
-        }
-        sessionLine = document.createElement("p");
-        sessionLine.className = "Timer-line";
-        sessionLine.style.display = "block";
-        sessionLine.innerHTML = `Session: <span id="Session">00:00:00</span>`;
-        if (clockLine && clockLine.parentNode) {
-            clockLine.parentNode.insertBefore(sessionLine, clockLine.nextSibling);
-        } else {
-            extraPanel.appendChild(sessionLine);
-        }
-        sessionStart = Date.now();
-        sessionInterval = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
-            const span = document.getElementById("Session");
-            if (span) {
-                span.textContent = formatTime(elapsed);
-            }
-        }, 1000);
-    }
-
-    function removeClock() {
-        if (clockLine && clockLine.parentNode) {
-            clockLine.parentNode.removeChild(clockLine);
-        }
-        if (clockInterval) {
-            clearInterval(clockInterval);
-        }
-        clockLine = null;
-        clockInterval = null;
-    }
-
-    function removeSession() {
-        if (sessionLine && sessionLine.parentNode) {
-            sessionLine.parentNode.removeChild(sessionLine);
-        }
-        if (sessionInterval) {
-            clearInterval(sessionInterval);
-        }
-        sessionLine = null;
-        sessionInterval = null;
-    }
-    const waitForCheckboxes = setInterval(() => {
-        const clockCheckbox = document.getElementById("Show-clock");
-        const sessionCheckbox = document.getElementById("Show-session");
-        if (!clockCheckbox || !sessionCheckbox) {
-            return;
-        }
-        clearInterval(waitForCheckboxes);
-        if (localStorage.getItem("Show-clock") === "false") {
-            clockCheckbox.checked = false;
-        }
-        if (localStorage.getItem("Show-session") === "false") {
-            sessionCheckbox.checked = false;
-        }
-        clockCheckbox.addEventListener("change", (e) => {
-            localStorage.setItem("Show-clock", e.target.checked);
-            if (e.target.checked) {
-                createClock();
-            } else {
-                removeClock();
-            }
-        });
-        sessionCheckbox.addEventListener("change", (e) => {
-            localStorage.setItem("Show-session", e.target.checked);
-            if (e.target.checked) {
-                createSession();
-            } else {
-                removeSession();
-            }
-        });
-        if (clockCheckbox.checked) {
-            createClock();
-        }
-        if (sessionCheckbox.checked) {
-            createSession();
-        }
-    }, 300);
-    setTimeout(() => {
-        if (document.getElementById("extra-panel")) {
-            const clockCB = document.getElementById("Show-clock");
-            const sessionCB = document.getElementById("Show-session");
-            if (clockCB?.checked) {
-                createClock();
-            }
-            if (sessionCB?.checked) {
-                createSession();
-            }
-        }
-    }, 5000);
-})();
 
 function performSync() {
     try {
@@ -4842,53 +5281,32 @@ function setupTabInviteKey() {
     const saved = localStorage.getItem('tabInviteHotkey') || 'j';
     btn.textContent = saved.toUpperCase();
     window.__TAB_INVITE_HOTKEY = saved;
+    console.log('[TabInviteKey] button wired, current hotkey:', saved);
 
     btn.addEventListener('click', () => {
-        if (state.listeningForKey) return;
+        if (state.listeningForKey) {
+            console.log('[TabInviteKey] already recording, click ignored');
+            return;
+        }
         state.listeningForKey = true;
         btn.textContent = '...';
         btn.classList.add('listening');
+        console.log('[TabInviteKey] recording started - press a key (Escape = cancel)');
 
+        // Only blocks keyup/keypress; keydown is handled (and blocked) by
+        // `handler` below, which must be registered BEFORE anything else that
+        // calls stopImmediatePropagation() on window keydown capture, or the
+        // key press never reaches it and recording never stops.
         const blocker = (e) => {
+            console.log('[TabInviteKey] blocked', e.type, 'key:', e.key);
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
             return false;
         };
 
-        window.addEventListener('keydown', blocker, {
-            capture: true
-        });
-        window.addEventListener('keyup', blocker, {
-            capture: true
-        });
-        window.addEventListener('keypress', blocker, {
-            capture: true
-        });
-        document.addEventListener('keydown', blocker, {
-            capture: true
-        });
-
-        const handler = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-
-            const key = e.key === ' ' ? 'space' : e.key.toLowerCase();
-            if (e.key !== 'Escape') {
-                localStorage.setItem('tabInviteHotkey', key);
-                window.__TAB_INVITE_HOTKEY = key;
-                btn.textContent = (e.key === ' ' ? 'Space' : e.key)
-                    .toUpperCase();
-            } else {
-                btn.textContent = (localStorage.getItem('tabInviteHotkey') || 'j')
-                    .toUpperCase();
-            }
-
-            btn.classList.remove('listening');
-            state.listeningForKey = false;
-
-            window.removeEventListener('keydown', blocker, {
+        const cleanup = () => {
+            window.removeEventListener('keydown', handler, {
                 capture: true
             });
             window.removeEventListener('keyup', blocker, {
@@ -4897,15 +5315,39 @@ function setupTabInviteKey() {
             window.removeEventListener('keypress', blocker, {
                 capture: true
             });
-            document.removeEventListener('keydown', blocker, {
-                capture: true
-            });
-            window.removeEventListener('keydown', handler, {
-                capture: true
-            });
+            btn.classList.remove('listening');
+            state.listeningForKey = false;
+            console.log('[TabInviteKey] recording stopped, listeners removed. listeningForKey =', state.listeningForKey);
+        };
+
+        const handler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            console.log('[TabInviteKey] keydown captured:', e.key);
+
+            if (e.key === 'Escape') {
+                const kept = localStorage.getItem('tabInviteHotkey') || 'j';
+                btn.textContent = kept.toUpperCase();
+                console.log('[TabInviteKey] cancelled, keeping hotkey:', kept);
+            } else {
+                const key = e.key === ' ' ? 'space' : e.key.toLowerCase();
+                localStorage.setItem('tabInviteHotkey', key);
+                window.__TAB_INVITE_HOTKEY = key;
+                btn.textContent = (e.key === ' ' ? 'Space' : e.key)
+                    .toUpperCase();
+                console.log('[TabInviteKey] new hotkey saved:', key);
+            }
+            cleanup();
         };
 
         window.addEventListener('keydown', handler, {
+            capture: true
+        });
+        window.addEventListener('keyup', blocker, {
+            capture: true
+        });
+        window.addEventListener('keypress', blocker, {
             capture: true
         });
     });
@@ -5012,6 +5454,46 @@ function setActivePreset(name) {
     try {
         localStorage.setItem(ACTIVE_PRESET_KEY, name);
     } catch {}
+}
+
+const PRESET_CELLPANEL_KEY = "presetIncludeCellPanel";
+
+// Cell Panel inputs are the sp*-prefixed ids (spSkinName, spEffect,
+// spNameFont, spNameColor, spChatColor, spCellColor, spLowerName)
+// plus cUseCellColor. sp[A-Z] so ids like sScorePanel never match.
+function isCellPanelSetting(id) {
+    return id === "cUseCellColor" || /^sp[A-Z]/.test(id);
+}
+
+function includeCellPanelInPresets() {
+    return localStorage.getItem(PRESET_CELLPANEL_KEY) !== "false";
+}
+
+function stripCellPanelSettings(data) {
+    const cleaned = {};
+    const removed = [];
+    Object.keys(data)
+        .forEach(id => {
+            if (id !== "__colors" && isCellPanelSetting(id)) {
+                removed.push(id);
+                return;
+            }
+            cleaned[id] = data[id];
+        });
+    if (cleaned.__colors) {
+        const colors = {};
+        Object.keys(cleaned.__colors)
+            .forEach(id => {
+                if (isCellPanelSetting(id)) {
+                    removed.push("__colors." + id);
+                    return;
+                }
+                colors[id] = cleaned.__colors[id];
+            });
+        cleaned.__colors = colors;
+    }
+    console.log("[Presets] cell panel settings excluded:", removed);
+    return cleaned;
 }
 
 function captureAllSettings() {
@@ -5186,6 +5668,15 @@ function getPresetsTabHTML() {
           </div>
         </div>
         <div class="setting-row" style="margin-top:8px">
+          <span class="setting-label">Include Cell Panel settings</span>
+          <div class="setting-control">
+            <input type="checkbox" id="preset-include-cellpanel">
+          </div>
+        </div>
+        <p style="color:rgba(255,255,255,0.35);font-size:11px;margin:4px 0 0;line-height:1.4">
+          Off = presets skip skin, ejected mass skin, name font, name/chat/cell colors and Lower Name — both when saving and when loading.
+        </p>
+        <div class="setting-row" style="margin-top:8px">
           <span class="setting-label">Bulk actions</span>
           <div class="setting-control" style="display:flex;gap:8px">
             <button id="preset-export-all-btn" class="x-small-btn" style="background:rgba(80,60,0,0.7);border-color:rgba(200,150,0,0.4);color:#ffd97a">Export all</button>
@@ -5240,7 +5731,12 @@ function renderPresetsList() {
                 const name = btn.dataset.name;
                 const presets = loadPresets();
                 if (!presets[name]) return;
-                applySettings(presets[name]);
+                let data = presets[name];
+                if (!includeCellPanelInPresets()) {
+                    data = stripCellPanelSettings(data);
+                }
+                console.log(`[Presets] loading "${name}" (cell panel: ${includeCellPanelInPresets() ? "included" : "excluded"})`);
+                applySettings(data);
                 setActivePreset(name);
                 renderPresetsList();
                 btn.textContent = "Loaded!";
@@ -5340,10 +5836,25 @@ function injectPresetsTab() {
 }
 
 function wirePresetsTab() {
+    const group = document.getElementById("presets-group");
+    // guard: this runs on every tab switch, so without it every button
+    // gets a duplicate click listener each time
+    if (!group || group.dataset.wired) return;
+    group.dataset.wired = "1";
+
     const saveBtn = document.getElementById("preset-save-btn");
     const exportAllBtn = document.getElementById("preset-export-all-btn");
     const importBtn = document.getElementById("preset-import-btn");
     const importFile = document.getElementById("preset-import-file");
+    const cellToggle = document.getElementById("preset-include-cellpanel");
+
+    if (cellToggle) {
+        cellToggle.checked = includeCellPanelInPresets();
+        cellToggle.addEventListener("change", () => {
+            localStorage.setItem(PRESET_CELLPANEL_KEY, cellToggle.checked);
+            console.log("[Presets] include cell panel in presets:", cellToggle.checked);
+        });
+    }
 
     saveBtn?.addEventListener("click", () => {
         const nameInput = document.getElementById("preset-name-input");
@@ -5354,7 +5865,12 @@ function wirePresetsTab() {
         }
         const presets = loadPresets();
         if (presets[name] && !confirm(`Overwrite preset "${name}"?`)) return;
-        presets[name] = captureAllSettings();
+        let data = captureAllSettings();
+        if (!includeCellPanelInPresets()) {
+            data = stripCellPanelSettings(data);
+        }
+        console.log(`[Presets] saved "${name}" with ${Object.keys(data).length} settings (cell panel: ${includeCellPanelInPresets() ? "included" : "excluded"})`);
+        presets[name] = data;
         presets[name].__savedAt = Date.now();
         savePresets(presets);
         setActivePreset(name);
@@ -5639,7 +6155,7 @@ if (!localStorage.getItem("changelogShown_3.61")) {
 
 
 
-const SCRIPT_VERSION = "3.61";
+const SCRIPT_VERSION = "4";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
@@ -5712,11 +6228,6 @@ function init() {
                 setupRangeListeners();
                 setupColorPickers();
                 setupThemeButtons();
-                const savedChatKey = localStorage.getItem("chatToggleHotkey") || "y";
-                const chatToggleBtn = document.getElementById("chat-toggle-key");
-                if (chatToggleBtn)
-                    chatToggleBtn.textContent = savedChatKey.toUpperCase();
-                setupChatToggle(savedChatKey);
                 setupTabInviteKey();
             } else {
                 createPanel();
