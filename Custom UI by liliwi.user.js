@@ -6163,7 +6163,7 @@ if (!localStorage.getItem("changelogShown_3.61")) {
 
 
 
-const SCRIPT_VERSION = "4.01";
+const SCRIPT_VERSION = "v4.01";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
