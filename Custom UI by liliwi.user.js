@@ -4328,7 +4328,7 @@ function syncHotkeysFromGame() {
         }
     });
 }
-function syncHotkeysWithGame() {.
+function syncHotkeysWithGame() {
     if (syncHotkeysWithGame._rewire) {
         syncHotkeysWithGame._rewire();
         return;
