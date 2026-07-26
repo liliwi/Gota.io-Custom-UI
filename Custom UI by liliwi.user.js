@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      v4.01
+// @version      4.10
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -11,7 +11,6 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @grant        GM_getValue
-// @grant        GM_setValue
 // @connect      raw.githubusercontent.com
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
@@ -186,15 +185,6 @@ div#main-scrimmage.main-panel.interface-color {
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
-}
-
-/* rounded corners on menu panels only, so they match the social panels
-   (in-game HUD panels like chat/leaderboard/minimap stay untouched) */
-.main-panel,
-div#main-panel-wrapper,
-div#main-right.main-divider.main-panel,
-div#main-scrimmage.main-panel.interface-color {
-    border-radius: 12px !important;
 }
 
 .main-bottom { display: none !important; }
@@ -620,6 +610,10 @@ div#main-scrimmage.main-panel.interface-color {
     height: 410px !important;
 }
 
+#main-scrimmage {
+height: 400px !important;
+}
+
 div#main-scrimmage.main-panel.interface-color {
     height: 470px !important;
 }
@@ -652,7 +646,7 @@ css#main-social {
     position: fixed !important;
     top: 6% !important;
     left: 50% !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-65%) !important;  /* shift left from center */
     width: fit-content !important;
     height: 470px !important;
     padding: 10px !important;
@@ -662,13 +656,6 @@ css#main-social {
     gap: 10px !important;
 }
 
-/* the game's leftover left column only holds the hidden #main-rb but still
-   occupies ~370px, pushing the visible menu right of center — collapse it.
-   :not(.main-panel) so the styled friends panel variant is never touched */
-.main .main-left.main-divider:not(.main-panel) {
-    display: none !important;
-}
-
 .main-panel-wrapper {
     margin-top: 110px !important;
     margin-left: 0 !important;
@@ -676,9 +663,7 @@ css#main-social {
 
 #main-social {
     position: fixed !important;
-    /* main menu content sits at 6% + 10px panel padding + 110px wrapper
-       margin, so social uses the same offset to line up when switching */
-    top: calc(6% + 120px) !important;
+    top: 6% !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: 696px !important;   /* 439 + 10 + 247 */
@@ -692,6 +677,7 @@ css#main-social {
     box-shadow: none !important;
     padding: 0 !important;
     z-index: 2 !important;
+    margin-top:
 }
 
 /* ===== FRIENDS PANEL (left) ===== */
@@ -701,7 +687,7 @@ css#main-social {
     max-width: 439px !important;
     height: 410px !important;
     background: rgba(20,20,20,0.95) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     border-radius: 12px !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
@@ -721,10 +707,10 @@ css#main-social {
     left: 10px !important;
     width: 26px !important;
     height: 26px !important;
-    border-radius: 8px !important;
-    background: rgba(28, 28, 28, 0.7) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    color: rgba(255,255,255,0.7) !important;
+    border-radius: 7px !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: rgba(255,255,255,0.5) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -734,8 +720,7 @@ css#main-social {
 }
 
 #social-back-button:hover {
-    background: rgba(45, 45, 45, 0.85) !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.1) !important;
     color: #fff !important;
 }
 
@@ -749,17 +734,12 @@ css#main-social {
     display: none !important;
 }
 
-/* friend count row — equal 44px side padding keeps the text truly
-   centered despite the back button occupying the top-left corner */
+/* friend count row */
 #social-friends-info {
-    padding: 8px 0px !important;
+    padding: 10px 12px 8px 44px !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    text-align: center !important;
     gap: 2px !important;
-    min-height: 30px !important;
     border-bottom: 1px solid rgba(255,255,255,0.05) !important;
     flex-shrink: 0 !important;
     background: transparent !important;
@@ -812,8 +792,8 @@ width: 380px !important;
 
 /* friend row */
 #social-friends .user-embed {
-    background: rgba(28, 28, 28, 0.7) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
     border-radius: 8px !important;
     padding: 8px 10px !important;
     display: flex !important;
@@ -824,8 +804,8 @@ width: 380px !important;
 }
 
 #social-friends .user-embed:hover {
-    background: rgba(45, 45, 45, 0.85) !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.07) !important;
+    border-color: rgba(255,255,255,0.09) !important;
 }
 
 #social-friends .user-embed img {
@@ -920,10 +900,10 @@ margin: 0px !important;
 #btn-add-friend {
     width: 100% !important;
     height: 32px !important;
-    background: rgba(28, 28, 28, 0.7) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important;
-    color: #fff !important;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 7px !important;
+    color: rgba(255,255,255,0.7) !important;
     font-size: 12px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -931,8 +911,7 @@ margin: 0px !important;
 }
 
 #btn-add-friend:hover {
-    background: rgba(45, 45, 45, 0.85) !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.09) !important;
     color: #fff !important;
 }
 
@@ -954,7 +933,7 @@ margin: 0px !important;
 /* ===== DISCORD PANEL ===== */
 #main-discord {
     background: rgba(20,20,20,0.95) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     border-radius: 12px !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
@@ -1021,10 +1000,10 @@ margin: 0px !important;
     justify-content: center !important;
     height: 26px !important;
     padding: 0 10px !important;
-    background: rgba(28, 28, 28, 0.7) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important;
-    color: #fff !important;
+    background: rgba(88,101,242,0.18) !important;
+    border: 1px solid rgba(88,101,242,0.3) !important;
+    border-radius: 6px !important;
+    color: rgba(170,180,255,0.9) !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -1033,15 +1012,14 @@ margin: 0px !important;
 }
 
 .discord-login-button:hover {
-    background: rgba(45, 45, 45, 0.85) !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background: rgba(88,101,242,0.35) !important;
     color: #fff !important;
 }
 
 /* ===== TOKENS PANEL ===== */
 #main-tokens {
     background: rgba(20,20,20,0.95) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     border-radius: 12px !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
@@ -1099,7 +1077,7 @@ margin: 0px !important;
     position: fixed !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    top: calc(6% + 120px) !important;
+    top: 6% !important;
 }
 
 div.options-container {
@@ -2205,6 +2183,18 @@ display: none;
 
 .setting-row.search-hidden,
 .setting-group.search-hidden {
+    display: none !important;
+}
+
+/* While a search query is active, results come from EVERY tab: all tab-contents
+   are shown and anything that isn't a setting-group (tab-specific headers,
+   preset lists, etc.) is hidden so only matching rows remain. */
+.settings-content.searching .tab-content {
+    display: block !important;
+    animation: none !important;
+}
+
+.settings-content.searching .tab-content > *:not(.setting-group) {
     display: none !important;
 }
 
@@ -3658,6 +3648,29 @@ function getCustomFeaturesHTML() {
             </div>
             <p style="color: #aaa; font-size: 12px; margin-top: 10px;">Automatically invites and accepts party invites from another tab.</p>
         </div>
+      <div class="setting-group">
+            <h3>UI Features</h3>
+
+            <div class="setting-row">
+                <span class="setting-label">Show Clock</span>
+                <div class="setting-control">
+                <span style="color: white; margin-left: 8px;">Display real-time clock in extra panel</span>
+
+                    <input type="checkbox" id="Show-clock" checked>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <span class="setting-label">Show Session Timer</span>
+                <div class="setting-control">
+                              <span style="color: white; margin-left: 8px;">Display time since tab opened (persists across servers)</span>
+                    <input type="checkbox" id="Show-session" checked>
+                    </label>
+                </div>
+            </div>
+        </div>
+
 
         <!-- PLAYER MANAGEMENT GROUP -->
         <div class="setting-group">
@@ -4315,13 +4328,122 @@ function syncHotkeysFromGame() {
         }
     });
 }
-function syncHotkeysWithGame() {
-    let isCapturing = false;
-    let currentGameBtn = null;
-    let currentKeyId = null;
-    let currentCustomBtn = null;
-    let currentOriginalText = null;
+function syncHotkeysWithGame() {.
+    if (syncHotkeysWithGame._rewire) {
+        syncHotkeysWithGame._rewire();
+        return;
+    }
 
+    let capture = null; // { gameBtn, customBtn, originalText }
+    let suppressClickFor = null;
+
+    const block = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+    };
+
+    const removeListeners = () => {
+        window.removeEventListener('keydown', onKeyDown, true);
+        window.removeEventListener('keyup', block, true);
+        window.removeEventListener('keypress', block, true);
+        window.removeEventListener('mousedown', onMouseDown, true);
+    };
+
+    // Must run BEFORE the replay dispatch, or lockers would eat the
+    // synthetic event.
+    const endCapture = () => {
+        const c = capture;
+        capture = null;
+        removeListeners();
+        return c;
+    };
+
+    const finishUI = (c, finalText) => {
+        c.customBtn.classList.remove('listening');
+        c.customBtn.textContent = finalText != null ? finalText : c.originalText;
+        // Cleared a tick later so the panel's own Escape-close handler can't
+        // also react to the key that ended the capture.
+        setTimeout(() => { state.listeningForKey = false; }, 0);
+    };
+
+    const keyEvent = (code) => {
+        const ev = new KeyboardEvent('keydown', { bubbles: true, cancelable: true });
+        Object.defineProperty(ev, 'which', { value: code });
+        Object.defineProperty(ev, 'keyCode', { value: code });
+        return ev;
+    };
+    const mouseEvent = (button) => new MouseEvent('mousedown', { bubbles: true, cancelable: true, button });
+
+    const replayIntoGame = (gameBtn, ev) => {
+        gameBtn.click(); // game: select + enter listen mode
+        window.dispatchEvent(ev); // game: bind + exit listen mode, synchronously
+        return (gameBtn.textContent || '').trim() || '-';
+    };
+
+    // The game only writes its keybinds to localStorage in its pagehide
+    // handler, which doesn't reliably run when the app window closes — so a
+    // rebind used to survive only until restart. Persist each bind ourselves,
+    // in the exact shape the game's boot loader reads back (id -> keycode,
+    // mouse buttons are 1-3, unbound is -1).
+    const persistBind = (id, code) => {
+        try {
+            const keybinds = JSON.parse(localStorage.getItem('keybinds') || '{}');
+            keybinds[id] = code;
+            localStorage.setItem('keybinds', JSON.stringify(keybinds));
+        } catch (err) {}
+    };
+
+    const onKeyDown = (e) => {
+        if (!capture) return;
+        block(e);
+        if (e.key === 'Escape') {
+            finishUI(endCapture(), null);
+            return;
+        }
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            const c = endCapture();
+            persistBind(c.gameBtn.id, -1);
+            finishUI(c, replayIntoGame(c.gameBtn, keyEvent(27)));
+            return;
+        }
+        const code = e.which || e.keyCode;
+        if (!code || code <= 5) return; // codes the game ignores; keep listening
+        const c = endCapture();
+        persistBind(c.gameBtn.id, code);
+        finishUI(c, replayIntoGame(c.gameBtn, keyEvent(code)));
+    };
+
+    const onMouseDown = (e) => {
+        if (!capture) return;
+        if (e.target === capture.customBtn) {
+            // Clicking the armed row again = bind that mouse button.
+            block(e);
+            const c = endCapture();
+            suppressClickFor = c.customBtn; // the trailing click must not re-arm
+            persistBind(c.gameBtn.id, e.button + 1); // game stores button+1
+            finishUI(c, replayIntoGame(c.gameBtn, mouseEvent(e.button)));
+            return;
+        }
+        // Any other click cancels; it is NOT blocked, so it then does its
+        // normal job (close the panel, switch tab, arm another row, …).
+        finishUI(endCapture(), null);
+    };
+
+    const startCapture = (gameBtn, customBtn) => {
+        capture = { gameBtn, customBtn, originalText: customBtn.textContent };
+        customBtn.textContent = '...';
+        customBtn.classList.add('listening');
+        // Drop focus so binding Space/Enter can't synthesize a click on the
+        // focused button.
+        customBtn.blur();
+        state.listeningForKey = true;
+        window.addEventListener('keydown', onKeyDown, true);
+        window.addEventListener('keyup', block, true);
+        window.addEventListener('keypress', block, true);
+        window.addEventListener('mousedown', onMouseDown, true);
+    };
 
     const pulseStyle = document.createElement('style');
     pulseStyle.textContent = `
@@ -4337,160 +4459,6 @@ function syncHotkeysWithGame() {
     `;
     document.head.appendChild(pulseStyle);
 
-function startCapturing(gameBtn, customBtn) {
-    isCapturing = true;
-    currentGameBtn = gameBtn;
-    currentKeyId = gameBtn.id;
-    currentCustomBtn = customBtn;
-    currentOriginalText = customBtn.textContent;
-    customBtn.textContent = '...';
-    customBtn.classList.add('listening');
-    state.listeningForKey = true;
-    console.log('classes when recording starts:', gameBtn.className);
-    // Poll to watch class changes
-    const classWatcher = setInterval(() => {
-        console.log('current classes:', gameBtn.className);
-    }, 100);
-    setTimeout(() => clearInterval(classWatcher), 5000);
-}
-function stopCapturing() {
-    const btn = currentCustomBtn;
-    const gameBtn = currentGameBtn;
-    isCapturing = false;
-    currentGameBtn = null;
-    currentKeyId = null;
-    currentCustomBtn = null;
-    currentOriginalText = null;
-    state.listeningForKey = false;
-    if (btn) {
-        btn.classList.remove('listening');
-        btn.textContent = gameBtn?.textContent || '-';
-    }
-}
-
- function clearKeybind() {
-    const gameBtn = currentGameBtn;
-    const customBtn = currentCustomBtn;
-
-    isCapturing = false;
-    currentGameBtn = null;
-    currentKeyId = null;
-    currentCustomBtn = null;
-    currentOriginalText = null;
-
-    if (customBtn) {
-        customBtn.classList.remove('listening');
-        customBtn.textContent = '-';
-    }
-
-    setTimeout(() => { state.listeningForKey = false; }, 0);
-
-    if (gameBtn) {
-        const keybinds = JSON.parse(localStorage.getItem('keybinds') || '{}');
-        keybinds[gameBtn.id] = -1;
-        localStorage.setItem('keybinds', JSON.stringify(keybinds));
-        window.dispatchEvent(new Event('storage'));
-
-        // Dismiss the game's listen-mode the same way escapeHandler does,
-        // using state.syntheticEscape so the panel-close handler is blocked.
-        setTimeout(() => {
-            gameBtn.click();
-            setTimeout(() => {
-                state.syntheticEscape = true;
-                document.dispatchEvent(new KeyboardEvent('keydown', {
-                    key: 'Escape', code: 'Escape',
-                    keyCode: 27, which: 27,
-                    bubbles: true, cancelable: true
-                }));
-                state.syntheticEscape = false;
-                gameBtn.textContent = '-';
-            }, 50);
-        }, 50);
-    }
-}
-
-const escapeHandler = e => {
-    if (!isCapturing) return;
-   if (state.syntheticEscape) return;
-
-    if (e.key === 'Delete' || e.key === 'Backspace') {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        clearKeybind();
-        return false;
-    }
-
-    if (e.key === 'Escape') {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-
-        const gameBtn = currentGameBtn;
-        const customBtn = currentCustomBtn;
-
-        isCapturing = false;
-        currentGameBtn = null;
-        currentKeyId = null;
-        currentCustomBtn = null;
-
-      if (customBtn) {
-    customBtn.classList.remove('listening');
-    customBtn.textContent = currentOriginalText || '-';
-}
-currentOriginalText = null;
-
-setTimeout(() => { state.listeningForKey = false; }, 0);
-
-        if (gameBtn) {
-            setTimeout(() => {
-                gameBtn.click();
-                setTimeout(() => {
-                   state.syntheticEscape = true;
-                    document.dispatchEvent(new KeyboardEvent('keydown', {
-                        key: 'Escape', code: 'Escape',
-                        keyCode: 27, which: 27,
-                        bubbles: true, cancelable: true
-                    }));
-                    state.syntheticEscape = false;
-                    gameBtn.textContent = '-';
-                }, 50);
-            }, 50);
-        }
-
-        return false;
-    }
-};
-const stopHandler = e => {
-    if (!isCapturing) return;
-    if (e.key === 'Escape' || e.key === 'Delete' || e.key === 'Backspace') return;
-
-    const btn = currentCustomBtn;
-    const gameBtn = currentGameBtn;
-
-    isCapturing = false;
-    currentGameBtn = null;
-    currentKeyId = null;
-    currentCustomBtn = null;
-    state.listeningForKey = false;
-
-    if (!btn) return;
-
-    let attempts = 0;
-    const poll = setInterval(() => {
-        attempts++;
-        const newText = gameBtn?.textContent?.trim();
-        if ((newText && newText !== '...') || attempts > 20) {
-            clearInterval(poll);
-            btn.classList.remove('listening');
-            btn.textContent = newText || '-';
-        }
-    }, 50);
-};
-
-document.addEventListener('keydown', stopHandler, true);
-document.addEventListener('keydown', escapeHandler, true);
-
 setInterval(() => {
         document.querySelectorAll('button.keybinds-btn[id]').forEach(gameBtn => {
             const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
@@ -4500,39 +4468,27 @@ setInterval(() => {
         });
     }, 100);
 
-    document.addEventListener('keydown', e => {
-        if (!isCapturing) return;
-        if (e.key === 'Escape' || e.key === 'Delete' || e.key === 'Backspace') return;
-        // A real key was pressed, poll until game finishes then stop
-        const btn = currentCustomBtn;
-        const gameBtn = currentGameBtn;
-        let attempts = 0;
-        const poll = setInterval(() => {
-            attempts++;
-            const isDone = !gameBtn.classList.contains('keybinds-btn-selected');
-            if (isDone || attempts > 40) {
-                clearInterval(poll);
-                btn.classList.remove('listening');
-                btn.textContent = gameBtn.textContent?.trim() || '-';
-                isCapturing = false;
-                currentGameBtn = null;
-                currentKeyId = null;
-                currentCustomBtn = null;
-                state.listeningForKey = false;
+    const wireButtons = () => {
+        document.querySelectorAll('button.keybinds-btn[id]').forEach(gameBtn => {
+            const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
+            if (customBtn) {
+                customBtn.onclick = (e) => {
+                    // detail === 0 → keyboard-synthesized click (Space/Enter on
+                    // the focused button); suppressClickFor → the click event
+                    // trailing a mouse-button bind. Neither may re-arm recording.
+                    if (e && e.detail === 0) return;
+                    if (suppressClickFor === customBtn) {
+                        suppressClickFor = null;
+                        return;
+                    }
+                    if (capture) return; // a cancel via onMouseDown already ran
+                    startCapture(gameBtn, customBtn);
+                };
             }
-        }, 50);
-    }, true);
-
-    document.querySelectorAll('button.keybinds-btn[id]').forEach(gameBtn => {
-        const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
-        if (customBtn) {
-            customBtn.onclick = () => {
-                if (isCapturing) stopCapturing();
-                gameBtn.click();
-                startCapturing(gameBtn, customBtn);
-            };
-        }
-    });
+        });
+    };
+    syncHotkeysWithGame._rewire = wireButtons;
+    wireButtons();
 }
 function syncWithGameSettings() {
     try {
@@ -4649,6 +4605,153 @@ function findGameElement(id) {
     } catch (e) {}
     return null;
 }
+(function() {
+    "use strict";
+
+    let clockLine = null;
+    let sessionLine = null;
+    let clockInterval = null;
+    let sessionInterval = null;
+    let sessionStart = null;
+    const formatTime = (seconds) => {
+        const h = Math.floor(seconds / 3600)
+            .toString()
+            .padStart(2, "0");
+        const m = Math.floor((seconds % 3600) / 60)
+            .toString()
+            .padStart(2, "0");
+        const s = (seconds % 60)
+            .toString()
+            .padStart(2, "0");
+        return `${h}:${m}:${s}`;
+    };
+
+    function createClock() {
+        if (clockLine) {
+            return;
+        }
+        const extraPanel = document.getElementById("extra-panel");
+        if (!extraPanel) {
+            return;
+        }
+        clockLine = document.createElement("p");
+        clockLine.className = "Timer-line";
+        clockLine.style.display = "block";
+        clockLine.innerHTML = `Time: <span id="Clock">00:00:00</span>`;
+        if (sessionLine && sessionLine.parentNode) {
+            extraPanel.insertBefore(clockLine, sessionLine);
+        } else {
+            extraPanel.appendChild(clockLine);
+        }
+        const updateClock = () => {
+            const now = new Date();
+            const span = document.getElementById("Clock");
+            if (span) {
+                span.textContent = now.toTimeString()
+                    .slice(0, 8);
+            }
+        };
+        updateClock();
+        clockInterval = setInterval(updateClock, 1000);
+    }
+
+    function createSession() {
+        if (sessionLine) {
+            return;
+        }
+        const extraPanel = document.getElementById("extra-panel");
+        if (!extraPanel) {
+            return;
+        }
+        sessionLine = document.createElement("p");
+        sessionLine.className = "Timer-line";
+        sessionLine.style.display = "block";
+        sessionLine.innerHTML = `Session: <span id="Session">00:00:00</span>`;
+        if (clockLine && clockLine.parentNode) {
+            clockLine.parentNode.insertBefore(sessionLine, clockLine.nextSibling);
+        } else {
+            extraPanel.appendChild(sessionLine);
+        }
+        sessionStart = Date.now();
+        sessionInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+            const span = document.getElementById("Session");
+            if (span) {
+                span.textContent = formatTime(elapsed);
+            }
+        }, 1000);
+    }
+
+    function removeClock() {
+        if (clockLine && clockLine.parentNode) {
+            clockLine.parentNode.removeChild(clockLine);
+        }
+        if (clockInterval) {
+            clearInterval(clockInterval);
+        }
+        clockLine = null;
+        clockInterval = null;
+    }
+
+    function removeSession() {
+        if (sessionLine && sessionLine.parentNode) {
+            sessionLine.parentNode.removeChild(sessionLine);
+        }
+        if (sessionInterval) {
+            clearInterval(sessionInterval);
+        }
+        sessionLine = null;
+        sessionInterval = null;
+    }
+    const waitForCheckboxes = setInterval(() => {
+        const clockCheckbox = document.getElementById("Show-clock");
+        const sessionCheckbox = document.getElementById("Show-session");
+        if (!clockCheckbox || !sessionCheckbox) {
+            return;
+        }
+        clearInterval(waitForCheckboxes);
+        if (localStorage.getItem("Show-clock") === "false") {
+            clockCheckbox.checked = false;
+        }
+        if (localStorage.getItem("Show-session") === "false") {
+            sessionCheckbox.checked = false;
+        }
+        clockCheckbox.addEventListener("change", (e) => {
+            localStorage.setItem("Show-clock", e.target.checked);
+            if (e.target.checked) {
+                createClock();
+            } else {
+                removeClock();
+            }
+        });
+        sessionCheckbox.addEventListener("change", (e) => {
+            localStorage.setItem("Show-session", e.target.checked);
+            if (e.target.checked) {
+                createSession();
+            } else {
+                removeSession();
+            }
+        });
+        if (clockCheckbox.checked) {
+            createClock();
+        }
+        if (sessionCheckbox.checked) {
+            createSession();
+        }
+    }, 300);
+    setTimeout(() => {
+        if (document.getElementById("extra-panel")) {
+            const clockCB = document.getElementById("Show-clock");
+            const sessionCB = document.getElementById("Show-session");
+            if (clockCB?.checked) {
+                createClock();
+            }
+            if (sessionCB?.checked) {
+                createSession();
+            }
+        }
+    }, 5000);
+})();
 
 function performSync() {
     try {
@@ -5023,54 +5126,98 @@ function setupSearchFunctionality() {
         return;
     }
     const labelTexts = new Map();
-    searchInput.addEventListener("input", (e) => {
-        const query = e.target.value.toLowerCase()
-            .trim();
-        const allGroups = document.querySelectorAll(".setting-group");
-        const allRows = document.querySelectorAll(".setting-row");
-        if (!query) {
-            allGroups.forEach((g) => g.classList.remove("search-hidden"));
-            allRows.forEach((row) => {
+    const content = document.querySelector("#unified-settings-panel .settings-content");
+    let noResults = null;
+    const ensureNoResults = () => {
+        if (!noResults && content) {
+            noResults = document.createElement("div");
+            noResults.className = "search-no-results";
+            noResults.textContent = "No settings match your search";
+            content.appendChild(noResults);
+        }
+        return noResults;
+    };
+    const clearSearch = () => {
+        if (content) {
+            content.classList.remove("searching");
+        }
+        if (noResults) {
+            noResults.classList.remove("visible");
+        }
+        document.querySelectorAll(".setting-group")
+            .forEach((g) => g.classList.remove("search-hidden"));
+        document.querySelectorAll(".setting-row")
+            .forEach((row) => {
                 row.classList.remove("search-match", "search-hidden");
                 const label = row.querySelector(".setting-label");
                 if (label && labelTexts.has(label)) {
                     label.textContent = labelTexts.get(label);
                 }
             });
+    };
+    searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase()
+            .trim();
+        if (!query) {
+            clearSearch();
             return;
         }
-        allGroups.forEach((group) => {
-            let hasMatch = false;
-            const rows = group.querySelectorAll(".setting-row");
-            rows.forEach((row) => {
-                const label = row.querySelector(".setting-label");
-                if (!label) {
-                    return;
-                }
-                if (!labelTexts.has(label)) {
-                    labelTexts.set(label, label.textContent);
-                }
-                const originalText = labelTexts.get(label);
-                if (originalText.toLowerCase()
-                    .includes(query)) {
-                    row.classList.add("search-match");
-                    row.classList.remove("search-hidden");
-                    hasMatch = true;
-                    const regex = new RegExp(`(${query})`, "gi");
-                    label.innerHTML = originalText.replace(regex, "<mark>$1</mark>");
+        // Global search: reveal every tab-content (via .searching, see CSS) and
+        // match rows across all of them, including the injected Multibox tab.
+        if (content) {
+            content.classList.add("searching");
+        }
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        let anyMatch = false;
+        document.querySelectorAll("#unified-settings-panel .setting-group")
+            .forEach((group) => {
+                let hasMatch = false;
+                const rows = group.querySelectorAll(".setting-row");
+                rows.forEach((row) => {
+                    const label = row.querySelector(".setting-label");
+                    if (!label) {
+                        return;
+                    }
+                    if (!labelTexts.has(label)) {
+                        labelTexts.set(label, label.textContent);
+                    }
+                    const originalText = labelTexts.get(label);
+                    if (originalText.toLowerCase()
+                        .includes(query)) {
+                        row.classList.add("search-match");
+                        row.classList.remove("search-hidden");
+                        hasMatch = true;
+                        const regex = new RegExp(`(${escaped})`, "gi");
+                        label.innerHTML = originalText.replace(regex, "<mark>$1</mark>");
+                    } else {
+                        row.classList.remove("search-match");
+                        row.classList.add("search-hidden");
+                        label.textContent = originalText;
+                    }
+                });
+                if (hasMatch) {
+                    group.classList.remove("search-hidden");
+                    anyMatch = true;
                 } else {
-                    row.classList.remove("search-match");
-                    row.classList.add("search-hidden");
-                    label.textContent = originalText;
+                    group.classList.add("search-hidden");
                 }
             });
-            if (hasMatch) {
-                group.classList.remove("search-hidden");
-            } else {
-                group.classList.add("search-hidden");
+        const nr = ensureNoResults();
+        if (nr) {
+            nr.classList.toggle("visible", !anyMatch);
+        }
+    });
+    // Clicking a tab (including the late-injected Multibox one) exits search
+    // mode so the clicked tab actually becomes visible.
+    const tabs = document.querySelector("#unified-settings-panel .settings-tabs");
+    if (tabs) {
+        tabs.addEventListener("click", (e) => {
+            if (e.target.classList && e.target.classList.contains("settings-tab") && searchInput.value) {
+                searchInput.value = "";
+                clearSearch();
             }
         });
-    });
+    }
 }
 
 function setupThemeButtons() {
@@ -5289,66 +5436,57 @@ function setupTabInviteKey() {
     const saved = localStorage.getItem('tabInviteHotkey') || 'j';
     btn.textContent = saved.toUpperCase();
     window.__TAB_INVITE_HOTKEY = saved;
-    console.log('[TabInviteKey] button wired, current hotkey:', saved);
 
     btn.addEventListener('click', () => {
-        if (state.listeningForKey) {
-            console.log('[TabInviteKey] already recording, click ignored');
-            return;
-        }
+        if (state.listeningForKey) return;
         state.listeningForKey = true;
         btn.textContent = '...';
         btn.classList.add('listening');
-        console.log('[TabInviteKey] recording started - press a key (Escape = cancel)');
 
-        // Only blocks keyup/keypress; keydown is handled (and blocked) by
-        // `handler` below, which must be registered BEFORE anything else that
-        // calls stopImmediatePropagation() on window keydown capture, or the
-        // key press never reaches it and recording never stops.
         const blocker = (e) => {
-            console.log('[TabInviteKey] blocked', e.type, 'key:', e.key);
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
             return false;
         };
 
-        const cleanup = () => {
-            window.removeEventListener('keydown', handler, {
-                capture: true
-            });
+        const handler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            const key = e.key === ' ' ? 'space' : e.key.toLowerCase();
+            if (e.key !== 'Escape') {
+                localStorage.setItem('tabInviteHotkey', key);
+                window.__TAB_INVITE_HOTKEY = key;
+                btn.textContent = (e.key === ' ' ? 'Space' : e.key)
+                    .toUpperCase();
+            } else {
+                btn.textContent = (localStorage.getItem('tabInviteHotkey') || 'j')
+                    .toUpperCase();
+            }
+
+            btn.classList.remove('listening');
+            state.listeningForKey = false;
+
             window.removeEventListener('keyup', blocker, {
                 capture: true
             });
             window.removeEventListener('keypress', blocker, {
                 capture: true
             });
-            btn.classList.remove('listening');
-            state.listeningForKey = false;
-            console.log('[TabInviteKey] recording stopped, listeners removed. listeningForKey =', state.listeningForKey);
+            document.removeEventListener('keydown', blocker, {
+                capture: true
+            });
+            window.removeEventListener('keydown', handler, {
+                capture: true
+            });
         };
 
-        const handler = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            console.log('[TabInviteKey] keydown captured:', e.key);
-
-            if (e.key === 'Escape') {
-                const kept = localStorage.getItem('tabInviteHotkey') || 'j';
-                btn.textContent = kept.toUpperCase();
-                console.log('[TabInviteKey] cancelled, keeping hotkey:', kept);
-            } else {
-                const key = e.key === ' ' ? 'space' : e.key.toLowerCase();
-                localStorage.setItem('tabInviteHotkey', key);
-                window.__TAB_INVITE_HOTKEY = key;
-                btn.textContent = (e.key === ' ' ? 'Space' : e.key)
-                    .toUpperCase();
-                console.log('[TabInviteKey] new hotkey saved:', key);
-            }
-            cleanup();
-        };
-
+        // The handler MUST be the window's first capture-phase keydown listener:
+        // it blocks the event itself. Registering a plain blocker for keydown
+        // ahead of it (as this used to) stopImmediatePropagation'd the handler
+        // away, so recording never ended and the keyboard went dead.
         window.addEventListener('keydown', handler, {
             capture: true
         });
@@ -5356,6 +5494,9 @@ function setupTabInviteKey() {
             capture: true
         });
         window.addEventListener('keypress', blocker, {
+            capture: true
+        });
+        document.addEventListener('keydown', blocker, {
             capture: true
         });
     });
@@ -5462,46 +5603,6 @@ function setActivePreset(name) {
     try {
         localStorage.setItem(ACTIVE_PRESET_KEY, name);
     } catch {}
-}
-
-const PRESET_CELLPANEL_KEY = "presetIncludeCellPanel";
-
-// Cell Panel inputs are the sp*-prefixed ids (spSkinName, spEffect,
-// spNameFont, spNameColor, spChatColor, spCellColor, spLowerName)
-// plus cUseCellColor. sp[A-Z] so ids like sScorePanel never match.
-function isCellPanelSetting(id) {
-    return id === "cUseCellColor" || /^sp[A-Z]/.test(id);
-}
-
-function includeCellPanelInPresets() {
-    return localStorage.getItem(PRESET_CELLPANEL_KEY) !== "false";
-}
-
-function stripCellPanelSettings(data) {
-    const cleaned = {};
-    const removed = [];
-    Object.keys(data)
-        .forEach(id => {
-            if (id !== "__colors" && isCellPanelSetting(id)) {
-                removed.push(id);
-                return;
-            }
-            cleaned[id] = data[id];
-        });
-    if (cleaned.__colors) {
-        const colors = {};
-        Object.keys(cleaned.__colors)
-            .forEach(id => {
-                if (isCellPanelSetting(id)) {
-                    removed.push("__colors." + id);
-                    return;
-                }
-                colors[id] = cleaned.__colors[id];
-            });
-        cleaned.__colors = colors;
-    }
-    console.log("[Presets] cell panel settings excluded:", removed);
-    return cleaned;
 }
 
 function captureAllSettings() {
@@ -5676,15 +5777,6 @@ function getPresetsTabHTML() {
           </div>
         </div>
         <div class="setting-row" style="margin-top:8px">
-          <span class="setting-label">Include Cell Panel settings</span>
-          <div class="setting-control">
-            <input type="checkbox" id="preset-include-cellpanel">
-          </div>
-        </div>
-        <p style="color:rgba(255,255,255,0.35);font-size:11px;margin:4px 0 0;line-height:1.4">
-          Off = presets skip skin, ejected mass skin, name font, name/chat/cell colors and Lower Name — both when saving and when loading.
-        </p>
-        <div class="setting-row" style="margin-top:8px">
           <span class="setting-label">Bulk actions</span>
           <div class="setting-control" style="display:flex;gap:8px">
             <button id="preset-export-all-btn" class="x-small-btn" style="background:rgba(80,60,0,0.7);border-color:rgba(200,150,0,0.4);color:#ffd97a">Export all</button>
@@ -5739,12 +5831,7 @@ function renderPresetsList() {
                 const name = btn.dataset.name;
                 const presets = loadPresets();
                 if (!presets[name]) return;
-                let data = presets[name];
-                if (!includeCellPanelInPresets()) {
-                    data = stripCellPanelSettings(data);
-                }
-                console.log(`[Presets] loading "${name}" (cell panel: ${includeCellPanelInPresets() ? "included" : "excluded"})`);
-                applySettings(data);
+                applySettings(presets[name]);
                 setActivePreset(name);
                 renderPresetsList();
                 btn.textContent = "Loaded!";
@@ -5844,25 +5931,10 @@ function injectPresetsTab() {
 }
 
 function wirePresetsTab() {
-    const group = document.getElementById("presets-group");
-    // guard: this runs on every tab switch, so without it every button
-    // gets a duplicate click listener each time
-    if (!group || group.dataset.wired) return;
-    group.dataset.wired = "1";
-
     const saveBtn = document.getElementById("preset-save-btn");
     const exportAllBtn = document.getElementById("preset-export-all-btn");
     const importBtn = document.getElementById("preset-import-btn");
     const importFile = document.getElementById("preset-import-file");
-    const cellToggle = document.getElementById("preset-include-cellpanel");
-
-    if (cellToggle) {
-        cellToggle.checked = includeCellPanelInPresets();
-        cellToggle.addEventListener("change", () => {
-            localStorage.setItem(PRESET_CELLPANEL_KEY, cellToggle.checked);
-            console.log("[Presets] include cell panel in presets:", cellToggle.checked);
-        });
-    }
 
     saveBtn?.addEventListener("click", () => {
         const nameInput = document.getElementById("preset-name-input");
@@ -5873,12 +5945,7 @@ function wirePresetsTab() {
         }
         const presets = loadPresets();
         if (presets[name] && !confirm(`Overwrite preset "${name}"?`)) return;
-        let data = captureAllSettings();
-        if (!includeCellPanelInPresets()) {
-            data = stripCellPanelSettings(data);
-        }
-        console.log(`[Presets] saved "${name}" with ${Object.keys(data).length} settings (cell panel: ${includeCellPanelInPresets() ? "included" : "excluded"})`);
-        presets[name] = data;
+        presets[name] = captureAllSettings();
         presets[name].__savedAt = Date.now();
         savePresets(presets);
         setActivePreset(name);
@@ -6162,10 +6229,19 @@ if (!localStorage.getItem("changelogShown_3.61")) {
 }
 
 
-
-const SCRIPT_VERSION = "v4.01";
+const SCRIPT_VERSION =
+    (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ||
+    "v4dev";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
+
+function stripV(v) {
+    return String(v).replace(/^\s*v/i, "").trim();
+}
+
+function isOutdated(remote, local) {
+    return (parseFloat(stripV(remote)) || 0) > (parseFloat(stripV(local)) || 0);
+}
 
 function checkForUpdate() {
     GM_xmlhttpRequest({
@@ -6186,17 +6262,17 @@ function checkForUpdate() {
 
             console.log("Local:", SCRIPT_VERSION, "| Remote:", remoteVersion);
 
-            if (!remoteVersion || remoteVersion === SCRIPT_VERSION) {
+            if (!remoteVersion || !isOutdated(remoteVersion, SCRIPT_VERSION)) {
                 console.log("Already up to date!");
                 return;
             }
 
             if (
                 confirm(
-                    "Update available!\n\nCurrent: " +
-                    SCRIPT_VERSION +
-                    "\nLatest:  " +
-                    remoteVersion +
+                    "Update available!\n\nCurrent: v" +
+                    stripV(SCRIPT_VERSION) +
+                    "\nLatest:  v" +
+                    stripV(remoteVersion) +
                     "\n\nClick OK to open the script page.",
                 )
             ) {
