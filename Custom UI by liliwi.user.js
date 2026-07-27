@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      4.10
+// @version      4.11
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -11,6 +11,7 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @grant        GM_getValue
+// @grant        GM_setValue
 // @connect      raw.githubusercontent.com
 // @updateURL    https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
 // @downloadURL  https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js
@@ -3144,6 +3145,8 @@ panel.innerHTML = `
     setupRangeListeners();
     setupColorPickers();
     setupSavedPlayersFeature();
+    setupQuickAddPlayer();
+    setupClearAllButton();
     setupUpdateButton();
     setupThemeImportExport();
     setupAutoRandomOnDeath();
@@ -3911,6 +3914,94 @@ function renderSavedPlayersIfChanged() {
     renderSavedPlayers();
 }
 
+// Wires the "Input player" row (Save Name / Save Skin / Save Both). The panel
+
+function setupQuickAddPlayer() {
+    const wait = setInterval(() => {
+        const input = document.getElementById("quick-player-input");
+        const nameBtn = document.getElementById("save-name-btn");
+        const skinBtn = document.getElementById("save-skin-btn");
+        const bothBtn = document.getElementById("save-both-btn");
+        if (!input || !nameBtn || !skinBtn || !bothBtn) {
+            return;
+        }
+        clearInterval(wait);
+
+        const flash = (btn, text, ok) => {
+            if (btn.dataset.flashing === "1") {
+                return;
+            }
+            const oldText = btn.textContent;
+            btn.dataset.flashing = "1";
+            btn.textContent = text;
+            btn.style.background = ok ? "rgba(50,120,50,0.7)" : "rgba(120,50,50,0.7)";
+            btn.style.borderColor = ok ? "rgba(100,255,100,0.3)" : "rgba(255,100,100,0.3)";
+            btn.style.color = ok ? "#b3ffb3" : "#ffb3b3";
+            setTimeout(() => {
+                btn.textContent = oldText;
+                btn.style.background = "";
+                btn.style.borderColor = "";
+                btn.style.color = "";
+                delete btn.dataset.flashing;
+            }, 1500);
+        };
+
+        // mode: "name" | "skin" | "both"
+        const save = (btn, mode) => {
+            const raw = (input.value || "")
+                .trim();
+            if (!raw) {
+                flash(btn, "Empty!", false);
+                return;
+            }
+            const parsed = parseTitleText(raw);
+            const name = parsed.name === "[unknown]" ? "" : parsed.name;
+            const hasSkin = !!parsed.skin && parsed.skin !== "none";
+
+            if (mode !== "skin" && !name) {
+                flash(btn, "No name!", false);
+                return;
+            }
+            if (mode === "skin" && !hasSkin) {
+                flash(btn, "No [skin]!", false);
+                return;
+            }
+
+            const entry = {
+                name: mode === "skin" ? "" : name,
+                skin: mode === "name" || !hasSkin ? "none" : parsed.skin,
+            };
+            const list = loadSavedPlayers();
+            const dupe = list.some(
+                (p) =>
+                (p.name || "") === entry.name && (p.skin || "none") === entry.skin,
+            );
+            if (dupe) {
+                flash(btn, "Exists!", false);
+                return;
+            }
+            list.push(entry);
+            saveSavedPlayers(list);
+            input.value = "";
+            renderSavedPlayers();
+            flash(btn, "Saved!", true);
+        };
+
+        nameBtn.addEventListener("click", () => save(nameBtn, "name"));
+        skinBtn.addEventListener("click", () => save(skinBtn, "skin"));
+        bothBtn.addEventListener("click", () => save(bothBtn, "both"));
+
+        input.addEventListener("keydown", (e) => {
+            // The game listens for bare keystrokes on window; keep them out.
+            e.stopPropagation();
+            if (e.key === "Enter") {
+                e.preventDefault();
+                save(bothBtn, "both");
+            }
+        });
+    }, 200);
+}
+
 function setupRandomizer() {
     const btn = document.getElementById("random-player-btn");
     if (!btn) {
@@ -4329,11 +4420,21 @@ function syncHotkeysFromGame() {
     });
 }
 function syncHotkeysWithGame() {
+    // Called on every panel open. Only the button wiring may re-run; the
+    // document listeners / sync interval / pulse style must be installed once,
+    // or each open stacks another set of capture handlers and intervals.
     if (syncHotkeysWithGame._rewire) {
         syncHotkeysWithGame._rewire();
         return;
     }
-
+    // Self-contained capture, same pattern as the tab-invite key / multibox
+    // panel: while listening WE block every input and the game is NEVER armed.
+    // Once exactly one key or mouse button is taken, the game button is
+    // selected and the input replayed as a synthetic event on window — the
+    // game's bind handler (window.onkeydown / window.onmousedown) runs
+    // synchronously during dispatch, so the rebind is done and listen mode is
+    // already exited when the replay call returns. Nothing can leak into the
+    // game's listen mode in between, which is what used to bind stray MOUSE1s.
     let capture = null; // { gameBtn, customBtn, originalText }
     let suppressClickFor = null;
 
@@ -4351,7 +4452,7 @@ function syncHotkeysWithGame() {
         window.removeEventListener('mousedown', onMouseDown, true);
     };
 
-    // Must run BEFORE the replay dispatch, or lockers would eat the
+    // Must run BEFORE the replay dispatch, or our own blockers would eat the
     // synthetic event.
     const endCapture = () => {
         const c = capture;
@@ -4399,10 +4500,12 @@ function syncHotkeysWithGame() {
         if (!capture) return;
         block(e);
         if (e.key === 'Escape') {
+            // Cancel: binding untouched — the game was never armed.
             finishUI(endCapture(), null);
             return;
         }
         if (e.key === 'Delete' || e.key === 'Backspace') {
+            // Unbind: the game maps a received Escape (27) to "unbound".
             const c = endCapture();
             persistBind(c.gameBtn.id, -1);
             finishUI(c, replayIntoGame(c.gameBtn, keyEvent(27)));
@@ -6229,16 +6332,21 @@ if (!localStorage.getItem("changelogShown_3.61")) {
 }
 
 
+
+// Tampermonkey reports the @version header here; the Electron app and the
+// Chrome extension have no GM_info, so they fall back to the literal.
 const SCRIPT_VERSION =
     (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ||
     "v4dev";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
+// Versions are written both with and without a leading "v" ("v4.01" / "3.61").
 function stripV(v) {
     return String(v).replace(/^\s*v/i, "").trim();
 }
 
+// Numbering is decimal, not per-segment: 3.42 predates 3.5, and 4 predates 4.01.
 function isOutdated(remote, local) {
     return (parseFloat(stripV(remote)) || 0) > (parseFloat(stripV(local)) || 0);
 }
