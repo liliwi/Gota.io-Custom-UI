@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom UI by liliwi
 // @namespace    http://tampermonkey.net/
-// @version      4.11
+// @version      4.2
 // @description  just a ui
 // @author       liliwi
 // @discord      liliwi
@@ -167,7 +167,6 @@ if (window.location.hostname === "play.gota.io") {
     "use strict";
 
     GM_addStyle(`
-/* ===== MAIN PANELS & CONTAINERS ===== */
 .main-panel,
 #main-right,
 #mainPanel,
@@ -199,7 +198,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     min-height: unset !important;
     padding-bottom: 15px !important;
 }
-/* ===== FRIENDS PANEL STYLING ===== */
 #main-friends,
 .main-left.main-divider.main-panel {
     background: rgba(20, 20, 20, 0.95) !important;
@@ -211,7 +209,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
-/* Friends list items */
 #main-friends .friend-item,
 .main-left .friend-item {
     background: rgba(28, 28, 28, 0.7) !important;
@@ -231,7 +228,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
 
 
 
-/* Friends panel buttons */
 #main-friends button,
 .main-left button {
     background: rgba(28, 28, 28, 0.7) !important;
@@ -252,7 +248,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transform: scale(1.03) !important;
 }
 
-/* Friends panel scrollbar */
 #main-friends::-webkit-scrollbar,
 .main-left::-webkit-scrollbar {
     width: 6px !important;
@@ -275,7 +270,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
 .main-left::-webkit-scrollbar-thumb:hover {
     background: rgba(120,120,120,0.6) !important;
 }
-/* ===== POPUP PROFILE STYLING ===== */
 #popup-profile,
 .popup-panel {
     background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%) !important;
@@ -286,7 +280,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important;
 }
 
-/* Profile header */
 #popup-profile .popup-header,
 .popup-panel .popup-header {
     background: rgba(30,30,30,0.9) !important;
@@ -295,7 +288,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     border-radius: 12px 12px 0 0 !important;
 }
 
-/* Profile close button */
 #profile-close-btn,
 .popup-panel .close-btn {
     background: rgba(50,50,50,0.7) !important;
@@ -320,14 +312,12 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transform: scale(1.05) !important;
 }
 
-/* Profile content area */
 #popup-profile .popup-content,
 .popup-panel .popup-content {
     background: rgba(18,18,18,0.8) !important;
     padding: 20px !important;
 }
 
-/* Profile inputs */
 #popup-profile input,
 .popup-panel input {
     background: rgba(30,30,30,0.9) !important;
@@ -353,7 +343,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     box-shadow: 0 0 0 3px rgba(255,255,255,0.08) !important;
 }
 
-/* Profile buttons */
 #popup-profile button,
 .popup-panel button {
     background: rgba(28, 28, 28, 0.7) !important;
@@ -379,7 +368,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transform: scale(0.98) !important;
 }
 
-/* Profile stats/info rows */
 #popup-profile .profile-row,
 .popup-panel .profile-row {
     background: rgba(25,25,25,0.6) !important;
@@ -396,7 +384,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     border-color: rgba(255,255,255,0.12) !important;
 }
 
-/* Profile labels */
 #popup-profile label,
 .popup-panel label {
     color: #e0e0e0 !important;
@@ -404,7 +391,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     font-weight: 500 !important;
 }
 
-/* Profile scrollbar */
 #popup-profile::-webkit-scrollbar,
 .popup-panel::-webkit-scrollbar {
     width: 8px !important;
@@ -426,7 +412,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
 .popup-panel::-webkit-scrollbar-thumb:hover {
     background: rgba(120,120,120,0.6) !important;
 }
-/* ===== ACCOUNT USERNAME POPUP STYLING ===== */
 #popup-account-username,
 #popup-account-username.popup-panel {
     background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%) !important;
@@ -438,7 +423,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     padding: 0 !important;
 }
 
-/* Username popup header */
 #popup-account-username .popup-header {
     background: rgba(30,30,30,0.9) !important;
     border-bottom: 1px solid rgba(255,255,255,0.1) !important;
@@ -453,13 +437,11 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     margin: 0 !important;
 }
 
-/* Username popup content */
 #popup-account-username .popup-content {
     background: rgba(18,18,18,0.8) !important;
     padding: 24px !important;
 }
 
-/* Username input field */
 #popup-account-username input[type="text"],
 #popup-account-username input[type="password"] {
     background: rgba(30,30,30,0.9) !important;
@@ -489,7 +471,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     color: rgba(255,255,255,0.4) !important;
 }
 
-/* Username popup buttons */
 #popup-account-username button {
     background: rgba(28, 28, 28, 0.7) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
@@ -513,7 +494,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transform: scale(0.98) !important;
 }
 
-/* Primary button (submit/save) */
 #popup-account-username button[type="submit"],
 #popup-account-username .btn-primary {
     background: rgba(70,70,70,0.8) !important;
@@ -526,7 +506,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     border-color: rgba(255,255,255,0.3) !important;
 }
 
-/* Close button */
 #popup-account-username .close-btn,
 #popup-account-username-close {
     background: rgba(50,50,50,0.7) !important;
@@ -546,7 +525,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     top: 18px !important;
     right: 24px !important;
 }
-/* Clear All button styling */
 #clear-all-saved-players {
     width: 100% !important;
     max-width: 100% !important;
@@ -577,7 +555,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     transform: scale(1.05) !important;
 }
 
-/* Error/success messages */
 #popup-account-username .error-message {
     background: rgba(120,50,50,0.3) !important;
     border: 1px solid rgba(255,100,100,0.3) !important;
@@ -596,7 +573,6 @@ div#party-panel.ui-pane.interface-color.hud-panel {
     margin: 10px 0 !important;
 }
 
-/* Labels */
 #popup-account-username label {
     color: #e0e0e0 !important;
     font-size: 14px !important;
@@ -647,7 +623,7 @@ css#main-social {
     position: fixed !important;
     top: 6% !important;
     left: 50% !important;
-    transform: translateX(-65%) !important;  /* shift left from center */
+    transform: translateX(-65%) !important;
     width: fit-content !important;
     height: 470px !important;
     padding: 10px !important;
@@ -667,7 +643,7 @@ css#main-social {
     top: 6% !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    width: 696px !important;   /* 439 + 10 + 247 */
+    width: 696px !important;
     height: 410px !important;
     display: flex !important;
     flex-direction: row !important;
@@ -681,7 +657,6 @@ css#main-social {
     margin-top:
 }
 
-/* ===== FRIENDS PANEL (left) ===== */
 #main-friends {
     width: 439px !important;
     min-width: 439px !important;
@@ -701,7 +676,6 @@ css#main-social {
     flex-shrink: 0 !important;
 }
 
-/* back button */
 #social-back-button {
     position: absolute !important;
     top: 10px !important;
@@ -730,12 +704,10 @@ css#main-social {
     line-height: 1 !important;
 }
 
-/* hide "Friends" title */
 #main-friends .title-text.menu-title {
     display: none !important;
 }
 
-/* friend count row */
 #social-friends-info {
     padding: 10px 12px 8px 44px !important;
     display: flex !important;
@@ -757,7 +729,6 @@ css#main-social {
     font-weight: 600 !important;
 }
 
-/* scrollable list */
 #social-friends {
     flex: 1 !important;
     overflow-y: auto !important;
@@ -791,7 +762,6 @@ css#main-social {
 width: 380px !important;
 }
 
-/* friend row */
 #social-friends .user-embed {
     background: rgba(255,255,255,0.04) !important;
     border: 1px solid rgba(255,255,255,0.05) !important;
@@ -874,7 +844,6 @@ width: 380px !important;
     color: #ffaaaa !important;
 }
 
-/* footer */
 #social-actions {
     padding: 8px 10px !important;
     border-top: 1px solid rgba(255,255,255,0.05) !important;
@@ -916,7 +885,6 @@ margin: 0px !important;
     color: #fff !important;
 }
 
-/* ===== RIGHT COLUMN ===== */
 #main-social .main-content.main-divider {
     display: flex !important;
     flex-direction: column !important;
@@ -931,7 +899,6 @@ margin: 0px !important;
     overflow: visible !important;
 }
 
-/* ===== DISCORD PANEL ===== */
 #main-discord {
     background: rgba(20,20,20,0.95) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
@@ -1017,7 +984,6 @@ margin: 0px !important;
     color: #fff !important;
 }
 
-/* ===== TOKENS PANEL ===== */
 #main-tokens {
     background: rgba(20,20,20,0.95) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
@@ -1103,7 +1069,6 @@ div#server-content {
 }
 
 
-/* ===== INPUTS & BUTTONS ===== */
 #name-box {
     background: rgba(30,30,30) !important;
     color: white !important;
@@ -1184,7 +1149,6 @@ button#btn-updateSP.gota-btn {
     gap: 8px !important;
 }
 
-/* ===== SERVER & TABLE STYLES ===== */
 #main-right th {
     background: rgba(20, 20, 20) !important;
     color: #fff !important;
@@ -1227,7 +1191,6 @@ div#social-friends.menu-sub-bg {
     background: rgba(20,20,20) !important;
 }
 
-/* ===== SERVER TABS ===== */
 li#server-tab-eu.server-tab,
 li#server-tab-na.server-tab {
     background: rgba(40, 40, 43, 0.85) !important;
@@ -1342,7 +1305,6 @@ background-color: rgb(246, 115, 115, 0.7);
 background-color: #353535;
 }
 
-/* ===== CONTEXT MENU ===== */
 ul.context-list {
     background: rgba(22,22,22,0.8) !important;
     backdrop-filter: blur(10px) !important;
@@ -1369,7 +1331,6 @@ ul.context-list.active {
     background: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* ===== UTILITY BUTTONS ===== */
 .x-small-btn {
     width: auto !important;
     min-width: 65px !important;
@@ -1397,7 +1358,6 @@ ul.context-list.active {
     background: rgba(160,0,0,0.7) !important;
 }
 
-/* ===== CHAT & LEADERBOARD ===== */
 #leaderboard {
     font-size: 13px !important;
     color: #fff !important;
@@ -1409,7 +1369,6 @@ table.chat-table {
     background: transparent !important;
 }
 
-/* ===== MAP & MINIMAP ===== */
 #map {
     background: rgba(25,25,25,0.3) !important;
 }
@@ -1420,7 +1379,6 @@ table.chat-table {
     background-size: cover;
 }
 
-/* ===== HIDDEN ELEMENTS ===== */
 div.policyLinks.interface-color,
 div#main-rb.main-panel,
 .main-bottom-right,
@@ -1437,7 +1395,6 @@ div.title-text.menu-title {
     display: none !important;
 }
 
-/* ===== POPUP & PROFILE ===== */
 div#popup-profile.popup-panel,
 button#profile-close-btn.gota-btn {
     background: rgba(20,20,20) !important;
@@ -1455,7 +1412,6 @@ div.main-bottom-links {
     margin-top: 100px !important;
 }
 
-/* ===== GLOBAL FONT ===== */
 * {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
@@ -1586,7 +1542,6 @@ font-size: 14px;
 vertical-align: top;
 }
 
-/* ===== UNIFIED SETTINGS BUTTON ===== */
 #unified-settings-btn {
   position: absolute !important;
     top: 8px !important;
@@ -1624,7 +1579,6 @@ vertical-align: top;
 }
 
 
-/* ===== SETTINGS PANEL OVERLAY ===== */
 #unified-settings-overlay {
     position: fixed !important;
     top: 0 !important;
@@ -1659,7 +1613,6 @@ body > #clr-picker {
     position: fixed !important;
 }
 
-/* ===== SETTINGS PANEL ===== */
 #unified-settings-panel {
     background: linear-gradient(145deg, rgba(20,20,20,0.98) 0%, rgba(15,15,15,0.98) 100%) !important;
     border: 2px solid rgba(140,140,140,0.25) !important;
@@ -1686,7 +1639,6 @@ body > #clr-picker {
     transform: scale(1) translateY(0) !important;
 }
 
-/* ===== HEADER ===== */
 .settings-header {
     padding: 18px 24px !important;
     border-bottom: 1px solid rgba(255,255,255,0.1) !important;
@@ -1727,7 +1679,6 @@ body > #clr-picker {
 }
 
 
-/* ===== SEARCH INPUT ===== */
 #settings-search-input {
     background: rgba(40,40,40,0.8) !important;
     border: 2px solid rgba(100,100,100,0.3) !important;
@@ -1755,7 +1706,6 @@ body > #clr-picker {
     50% { background: rgba(140,140,140,0.25) !important; }
 }
 
-/* ===== TABS ===== */
 .settings-tabs {
     display: flex !important;
     flex-direction: column !important;
@@ -1822,7 +1772,6 @@ body > #clr-picker {
     user-select: none !important;
 }
 
-/* ===== CONTENT ===== */
 .settings-content {
     padding: 16px 20px !important;
     flex: 1 !important;
@@ -1869,7 +1818,6 @@ body > #clr-picker {
         transform: translateY(0);
     }
 }
-/* ===== SETTING GROUPS ===== */
 .setting-group {
     background: rgba(28,28,28,0.6) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
@@ -1902,7 +1850,6 @@ body > #clr-picker {
     border-bottom: 1px solid rgba(255,255,255,0.1) !important;
 }
 
-/* ===== SETTING ROWS ===== */
 .setting-row {
     display: flex !important;
     justify-content: space-between !important;
@@ -1921,7 +1868,6 @@ body > #clr-picker {
     font-weight: 500 !important;
 }
 
-/* ===== CHECKBOX (but toggled) ===== */
 .setting-control input[type="checkbox"] {
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -1962,7 +1908,6 @@ body > #clr-picker {
     border-color: rgba(140,140,140,0.5) !important;
 }
 
-/* ===== OTHER shitS ===== */
 .setting-control select,
 .setting-control input[type="text"] {
     background: rgba(40,40,40,0.8) !important;
@@ -2023,7 +1968,6 @@ display: none;
     border-color: rgba(160,160,160,0.6) !important;
 }
 
-/* ===== keybinds type shit ===== */
 .keybinds-btn {
     background: rgba(60,60,60,0.8) !important;
     border: 2px solid rgba(120,120,120,0.3) !important;
@@ -2058,7 +2002,6 @@ display: none;
     }
 }
 
-/* ===== colooor pickR ===== */
 .setting-control input[data-coloris],
 #unified-settings-panel input[data-coloris] {
     width: 80px !important;
@@ -2096,7 +2039,6 @@ display: none;
     border-color: rgba(160,160,160,0.7) !important;
 }
 
-/* ===== util you know ===== */
 .x-small-btn {
     width: auto !important;
     min-width: 65px !important;
@@ -2127,7 +2069,6 @@ display: none;
     border-color: rgba(140,90,90,0.6) !important;
 }
 
-/* ===== LARGE UPDATE BUTTON ===== */
 #btn-updateSP-custom {
     width: 100% !important;
     max-width: 350px !important;
@@ -2152,7 +2093,6 @@ display: none;
     transform: translateY(-2px) !important;
 }
 
-/* ===== FONT PREVIEW ===== */
 #fontPreview {
     padding: 16px !important;
     background: rgba(40,40,40,0.7) !important;
@@ -2162,7 +2102,6 @@ display: none;
     font-size: 18px !important;
 }
 
-/* ===== SAVED PLAYERS LIST ===== */
 #saved-players-list {
     margin-top: 12px !important;
 }
@@ -2173,7 +2112,6 @@ display: none;
     padding: 10px !important;
 }
 
-/* ===== SEARCH HIGHLIGHTING ===== */
 .setting-row.search-match {
     background: rgba(120,120,120,0.12) !important;
     border-left: 3px solid rgba(140,140,140,0.6) !important;
@@ -2187,9 +2125,6 @@ display: none;
     display: none !important;
 }
 
-/* While a search query is active, results come from EVERY tab: all tab-contents
-   are shown and anything that isn't a setting-group (tab-specific headers,
-   preset lists, etc.) is hidden so only matching rows remain. */
 .settings-content.searching .tab-content {
     display: block !important;
     animation: none !important;
@@ -2220,14 +2155,12 @@ display: none;
     font-weight: 700 !important;
 }
 
-/* ===== MISC ===== */
 #main-servers {
     display: block !important;
     visibility: visible !important;
 }
 
 
-/* ===== uhhh part 2? ===== */
   .main-top,
         div.main-top,
         div[class="main-top"] {
@@ -2498,6 +2431,804 @@ display: none;
         }
 `);
 })();
+
+
+const CUI_THEME_KEY = "cuiTheme";
+
+const CUI_THEME_DEFAULTS = {
+    enabled: false,
+    matchGame: true,
+    applyToGameUi: true,
+    base: "#141414",
+    surface: "#1e1e1e",
+    group: "#1c1c1c",
+    input: "#282828",
+    button: "#3c3c3c",
+    border: "#8c8c8c",
+    accent: "#b4b4b4",
+    text: "#ffffff",
+    dim: "#dddddd",
+    opacity: 0.97,
+    radius: 14,
+    blur: 10,
+};
+
+const CUI_COLOR_FIELDS = [
+    "base",
+    "surface",
+    "group",
+    "input",
+    "button",
+    "border",
+    "accent",
+    "text",
+    "dim",
+];
+
+const CUI_GAME_COLOR_IDS = [
+    "uiMenuBackgroundColor",
+    "uiMenuTitleBackgroundColor",
+    "uiMenuSubBackgroundColor",
+    "uiMenuSubBackground2Color",
+    "uiBackgroundColor",
+    "uiForegroundColor",
+    "uiBorderColor",
+    "uiButtonColor",
+    "uiLeaderboardHighlightSelf",
+];
+
+let cuiTheme = Object.assign({}, CUI_THEME_DEFAULTS);
+
+function loadCuiTheme() {
+    let raw = null;
+    try {
+        raw = GM_getValue(CUI_THEME_KEY, null);
+    } catch (e) {}
+    if (!raw) {
+        try {
+            raw = localStorage.getItem(CUI_THEME_KEY);
+        } catch (e) {}
+    }
+    if (raw) {
+        try {
+            cuiTheme = Object.assign({}, CUI_THEME_DEFAULTS, JSON.parse(raw));
+        } catch (e) {
+            cuiTheme = Object.assign({}, CUI_THEME_DEFAULTS);
+        }
+    }
+    return cuiTheme;
+}
+
+function saveCuiTheme() {
+    const json = JSON.stringify(cuiTheme);
+    try {
+        GM_setValue(CUI_THEME_KEY, json);
+    } catch (e) {}
+    try {
+        localStorage.setItem(CUI_THEME_KEY, json);
+    } catch (e) {}
+}
+
+
+function cuiParseColor(value) {
+    if (!value || typeof value !== "string") {
+        return null;
+    }
+    const v = value.trim();
+    let m = v.match(/^#([0-9a-f]{3,8})$/i);
+    if (m) {
+        let h = m[1];
+        if (h.length === 3 || h.length === 4) {
+            h = h.split("")
+                .map((ch) => ch + ch)
+                .join("");
+        }
+        if (h.length !== 6 && h.length !== 8) {
+            return null;
+        }
+        return {
+            r: parseInt(h.slice(0, 2), 16),
+            g: parseInt(h.slice(2, 4), 16),
+            b: parseInt(h.slice(4, 6), 16),
+            a: h.length === 8 ? parseInt(h.slice(6, 8), 16) / 255 : 1,
+        };
+    }
+    m = v.match(/^rgba?\(([^)]+)\)$/i);
+    if (m) {
+        const p = m[1]
+            .split(/[,\s/]+/)
+            .filter((s) => s !== "")
+            .map(parseFloat);
+        if (p.length < 3 || p.some(isNaN)) {
+            return null;
+        }
+        return {
+            r: p[0],
+            g: p[1],
+            b: p[2],
+            a: p.length > 3 ? p[3] : 1,
+        };
+    }
+    return null;
+}
+
+function cuiByte(n) {
+    return Math.round(Math.max(0, Math.min(255, n)))
+        .toString(16)
+        .padStart(2, "0");
+}
+
+function cuiHex(color) {
+    const c = cuiParseColor(color);
+    if (!c) {
+        return null;
+    }
+    return "#" + cuiByte(c.r) + cuiByte(c.g) + cuiByte(c.b);
+}
+
+function cuiRgba(color, alpha) {
+    const c = cuiParseColor(color) || cuiParseColor(CUI_THEME_DEFAULTS.base);
+    const a = alpha === undefined ? c.a : Math.max(0, Math.min(1, alpha * c.a));
+    return `rgba(${Math.round(c.r)}, ${Math.round(c.g)}, ${Math.round(c.b)}, ${
+        Math.round(a * 1000) / 1000
+    })`;
+}
+
+function cuiShade(color, amount) {
+    const c = cuiParseColor(color);
+    if (!c) {
+        return color;
+    }
+    const target = amount > 0 ? 255 : 0;
+    const p = Math.abs(amount);
+    return (
+        "#" +
+        cuiByte(c.r + (target - c.r) * p) +
+        cuiByte(c.g + (target - c.g) * p) +
+        cuiByte(c.b + (target - c.b) * p)
+    );
+}
+
+function cuiMix(a, b, t) {
+    const ca = cuiParseColor(a);
+    const cb = cuiParseColor(b);
+    if (!ca || !cb) {
+        return a;
+    }
+    return (
+        "#" +
+        cuiByte(ca.r + (cb.r - ca.r) * t) +
+        cuiByte(ca.g + (cb.g - ca.g) * t) +
+        cuiByte(ca.b + (cb.b - ca.b) * t)
+    );
+}
+
+function cuiLuminance(color) {
+    const c = cuiParseColor(color);
+    if (!c) {
+        return 0;
+    }
+    return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
+}
+
+function cuiContrastText(color) {
+    return cuiLuminance(color) > 0.6 ? "#101010" : "#ffffff";
+}
+
+function cuiGameColor(id) {
+    try {
+        const el =
+            document.getElementById(id) || document.querySelector(`[name="${id}"]`);
+        if (el && el.value && !el.closest("#unified-settings-panel")) {
+            return el.value;
+        }
+    } catch (e) {}
+    try {
+        const mirror = document.querySelector(
+            `#unified-settings-panel #${CSS.escape(id)}`,
+        );
+        if (mirror && mirror.value) {
+            return mirror.value;
+        }
+    } catch (e) {}
+    return null;
+}
+
+function cuiResolveColors() {
+    const c = {};
+    CUI_COLOR_FIELDS.forEach((k) => {
+        c[k] = cuiHex(cuiTheme[k]) || CUI_THEME_DEFAULTS[k];
+    });
+    if (!cuiTheme.matchGame) {
+        return c;
+    }
+    const g = (id) => cuiHex(cuiGameColor(id));
+    const base = g("uiMenuBackgroundColor") || g("uiBackgroundColor");
+    const surface = g("uiMenuTitleBackgroundColor");
+    const group = g("uiMenuSubBackgroundColor") || g("uiMenuSubBackground2Color");
+    const border = g("uiBorderColor");
+    const text = g("uiForegroundColor");
+    const button = g("uiButtonColor");
+    const accent = g("uiLeaderboardHighlightSelf") || button;
+    if (base) {
+        c.base = base;
+        c.surface = cuiShade(base, 0.06);
+    }
+    if (surface) {
+        c.surface = surface;
+    }
+    if (group) {
+        c.group = group;
+        c.input = group;
+    }
+    if (border) {
+        c.border = border;
+    }
+    if (button) {
+        c.button = button;
+    }
+    if (accent) {
+        c.accent = accent;
+    }
+    if (text) {
+        c.text = text;
+        c.dim = cuiMix(text, c.base, 0.35);
+    }
+    return c;
+}
+
+const CUI_VARS = [
+    "--cui-panel-bg",
+    "--cui-panel-solid",
+    "--cui-header-bg",
+    "--cui-sidebar-bg",
+    "--cui-content-bg",
+    "--cui-group-bg",
+    "--cui-group-hover",
+    "--cui-row-line",
+    "--cui-border",
+    "--cui-border-soft",
+    "--cui-border-strong",
+    "--cui-accent",
+    "--cui-accent-soft",
+    "--cui-tab-active",
+    "--cui-accent-text",
+    "--cui-text",
+    "--cui-text-dim",
+    "--cui-text-faint",
+    "--cui-btn-bg",
+    "--cui-btn-hover",
+    "--cui-btn-border",
+    "--cui-btn-text",
+    "--cui-input-bg",
+    "--cui-input-border",
+    "--cui-scroll-track",
+    "--cui-scroll-thumb",
+    "--cui-radius",
+    "--cui-radius-sm",
+    "--cui-blur",
+    "--cui-shadow",
+    "--cui-game-bg",
+    "--cui-game-border",
+];
+
+function applyCuiTheme() {
+    const root = document.documentElement;
+    if (!root) {
+        return;
+    }
+    const on = !!cuiTheme.enabled;
+    root.classList.toggle("cui-theme", on);
+    root.classList.toggle("cui-theme-game", on && !!cuiTheme.applyToGameUi);
+    if (!on) {
+        CUI_VARS.forEach((v) => root.style.removeProperty(v));
+        return;
+    }
+
+    const c = cuiResolveColors();
+    const a = Math.max(0.2, Math.min(1, parseFloat(cuiTheme.opacity) || 1));
+    const radius = Math.max(0, Math.min(28, parseFloat(cuiTheme.radius) || 0));
+    const blur = Math.max(0, Math.min(30, parseFloat(cuiTheme.blur) || 0));
+    const s = root.style;
+
+    s.setProperty(
+        "--cui-panel-bg",
+        `linear-gradient(145deg, ${cuiRgba(c.base, a)} 0%, ${cuiRgba(
+            cuiShade(c.base, -0.25),
+            a,
+        )} 100%)`,
+    );
+    s.setProperty("--cui-panel-solid", cuiRgba(c.base, a));
+    s.setProperty("--cui-header-bg", cuiRgba(c.surface, a * 0.82));
+    s.setProperty("--cui-sidebar-bg", cuiRgba(cuiShade(c.base, -0.12), a * 0.82));
+    s.setProperty(
+        "--cui-content-bg",
+        cuiRgba(cuiShade(c.base, -0.25), a * 0.52),
+    );
+    s.setProperty("--cui-group-bg", cuiRgba(c.group, 0.6));
+    s.setProperty("--cui-group-hover", cuiRgba(cuiShade(c.group, 0.08), 0.72));
+    s.setProperty("--cui-row-line", cuiRgba(c.border, 0.12));
+    s.setProperty("--cui-border", cuiRgba(c.border, 0.32));
+    s.setProperty("--cui-border-soft", cuiRgba(c.border, 0.18));
+    s.setProperty("--cui-border-strong", cuiRgba(c.border, 0.6));
+    s.setProperty("--cui-accent", cuiRgba(c.accent, 1));
+    s.setProperty("--cui-accent-soft", cuiRgba(c.accent, 0.25));
+    s.setProperty("--cui-tab-active", cuiRgba(cuiMix(c.accent, c.base, 0.55), 0.25));
+    s.setProperty("--cui-accent-text", cuiContrastText(c.accent));
+    s.setProperty("--cui-text", cuiRgba(c.text, 1));
+    s.setProperty("--cui-text-dim", cuiRgba(c.dim, 1));
+    s.setProperty("--cui-text-faint", cuiRgba(c.dim, 0.45));
+    s.setProperty("--cui-btn-bg", cuiRgba(c.button, 0.78));
+    s.setProperty("--cui-btn-hover", cuiRgba(cuiShade(c.button, 0.14), 0.92));
+    s.setProperty("--cui-btn-border", cuiRgba(c.border, 0.3));
+    s.setProperty("--cui-btn-text", cuiContrastText(c.button));
+    s.setProperty("--cui-input-bg", cuiRgba(c.input, 0.82));
+    s.setProperty("--cui-input-border", cuiRgba(c.border, 0.3));
+    s.setProperty("--cui-scroll-track", cuiRgba(cuiShade(c.base, -0.2), 0.6));
+    s.setProperty("--cui-scroll-thumb", cuiRgba(c.border, 0.45));
+    s.setProperty("--cui-radius", radius + "px");
+    s.setProperty("--cui-radius-sm", Math.round(radius * 0.6) + "px");
+    s.setProperty("--cui-blur", blur + "px");
+    s.setProperty(
+        "--cui-shadow",
+        `0 20px 60px ${cuiRgba(cuiShade(c.base, -0.6), 0.7)}`,
+    );
+    s.setProperty("--cui-game-bg", cuiRgba(c.base, Math.min(1, a * 0.97)));
+    s.setProperty("--cui-game-border", cuiRgba(c.border, 0.28));
+}
+
+function watchGameThemeColors() {
+    let attempts = 0;
+    const reapply = () => {
+        clearTimeout(watchGameThemeColors._t);
+        watchGameThemeColors._t = setTimeout(() => {
+            applyCuiTheme();
+            updateCuiSwatches();
+        }, 60);
+    };
+    const timer = setInterval(() => {
+        attempts++;
+        let found = 0;
+        CUI_GAME_COLOR_IDS.forEach((id) => {
+            let el = null;
+            try {
+                el = document.getElementById(id);
+            } catch (e) {}
+            if (!el || el.closest("#unified-settings-panel") || el.dataset.cuiWatched) {
+                return;
+            }
+            el.dataset.cuiWatched = "1";
+            found++;
+            ["input", "change"].forEach((ev) => el.addEventListener(ev, reapply));
+        });
+        if (found) {
+            reapply();
+        }
+        if (attempts > 40) {
+            clearInterval(timer);
+        }
+    }, 500);
+}
+
+
+function cuiColorRow(label, key, hint) {
+    return `
+                <div class="setting-row cui-manual-row">
+                    <span class="setting-label">${label}${
+        hint ? ` <span class="cui-hint">${hint}</span>` : ""
+    }</span>
+                    <div class="setting-control"><input type="text" id="cui_${key}" data-cui data-cui-key="${key}" data-coloris></div>
+                </div>`;
+}
+
+function cuiRangeRow(label, key, min, max, step, value) {
+    return `
+                <div class="setting-row">
+                    <span class="setting-label">${label}</span>
+                    <div class="setting-control">
+                        <input type="range" id="cui_${key}" data-cui data-cui-key="${key}" min="${min}" max="${max}" step="${step}" value="${value}">
+                        <input type="number" class="range-value" data-cui data-range="cui_${key}" min="${min}" max="${max}" step="${step}" value="${value}">
+                    </div>
+                </div>`;
+}
+
+function getCustomUiThemeHTML() {
+    return `
+            <div class="setting-group" id="cui-theme-group">
+                <h3>Interface Theme (Menus &amp; HUD)</h3>
+                <div class="setting-row">
+                    <span class="setting-label">Enable Interface Theme</span>
+                    <div class="setting-control"><input type="checkbox" id="cui_enabled" data-cui data-cui-key="enabled"></div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Match Game Theme <span class="cui-hint">use the colours above</span></span>
+                    <div class="setting-control"><input type="checkbox" id="cui_matchGame" data-cui data-cui-key="matchGame"></div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Theme The Game UI Too <span class="cui-hint">panels, chat, leaderboard</span></span>
+                    <div class="setting-control"><input type="checkbox" id="cui_applyToGameUi" data-cui data-cui-key="applyToGameUi"></div>
+                </div>
+${cuiColorRow("Panel Background", "base")}
+${cuiColorRow("Header / Sidebar", "surface")}
+${cuiColorRow("Section Background", "group")}
+${cuiColorRow("Input Background", "input")}
+${cuiColorRow("Button Color", "button")}
+${cuiColorRow("Border Color", "border")}
+${cuiColorRow("Accent / Highlight", "accent")}
+${cuiColorRow("Text Color", "text")}
+${cuiColorRow("Secondary Text", "dim")}
+${cuiRangeRow("Panel Opacity", "opacity", 0.2, 1, 0.01, 0.97)}
+${cuiRangeRow("Corner Radius", "radius", 0, 28, 1, 14)}
+${cuiRangeRow("Background Blur", "blur", 0, 30, 1, 10)}
+                <div class="setting-row">
+                    <span class="setting-label">Reset Interface Theme</span>
+                    <div class="setting-control">
+                        <button id="cui-theme-reset" class="x-small-btn">Reset to defaults</button>
+                    </div>
+                </div>
+            </div>`;
+}
+
+function updateCuiSwatches() {
+    const group = document.getElementById("cui-theme-group");
+    if (!group) {
+        return;
+    }
+    const resolved = cuiResolveColors();
+    group.querySelectorAll("input[data-coloris][data-cui-key]")
+        .forEach((el) => {
+            const key = el.dataset.cuiKey;
+            const color =
+                cuiHex(resolved[key]) ||
+                cuiHex(cuiTheme[key]) ||
+                CUI_THEME_DEFAULTS[key];
+            el.setAttribute(
+                "style",
+                `background: ${color} !important;` +
+                `background-color: ${color} !important;` +
+                "width: 80px !important; height: 40px !important;" +
+                "border-radius: 8px !important;" +
+                "border: 2px solid var(--cui-border-strong, rgba(120,120,120,0.4)) !important;" +
+                "cursor: pointer !important; padding: 0 !important; margin: 0 !important;" +
+                "font-size: 0 !important; text-indent: -9999px !important; color: transparent !important;",
+            );
+        });
+    const locked = !!cuiTheme.matchGame;
+    group.querySelectorAll(".cui-manual-row")
+        .forEach((row) => {
+            row.style.opacity = locked ? "0.45" : "";
+            row.style.pointerEvents = locked ? "none" : "";
+        });
+}
+
+function refreshCuiThemeInputs() {
+    const group = document.getElementById("cui-theme-group");
+    if (!group) {
+        return;
+    }
+    group.querySelectorAll("[data-cui-key]")
+        .forEach((el) => {
+            const key = el.dataset.cuiKey;
+            if (!(key in cuiTheme)) {
+                return;
+            }
+            if (el.type === "checkbox") {
+                el.checked = !!cuiTheme[key];
+            } else {
+                el.value = cuiTheme[key];
+            }
+            if (el.type === "range") {
+                const box = group.querySelector(`input[data-range="${el.id}"]`);
+                if (box) {
+                    box.value = cuiTheme[key];
+                }
+            }
+        });
+    updateCuiSwatches();
+}
+
+function onCuiControlChange(e) {
+    const el = e.target;
+    if (!el || !el.dataset) {
+        return;
+    }
+    let key = el.dataset.cuiKey;
+    if (!key && el.dataset.range) {
+        const range = document.getElementById(el.dataset.range);
+        if (range && range.dataset) {
+            key = range.dataset.cuiKey;
+            if (key) {
+                range.value = el.value;
+            }
+        }
+    }
+    if (!key || !(key in CUI_THEME_DEFAULTS)) {
+        return;
+    }
+    if (el.type === "checkbox") {
+        cuiTheme[key] = el.checked;
+    } else if (el.type === "range" || el.type === "number") {
+        const num = parseFloat(el.value);
+        if (isNaN(num)) {
+            return;
+        }
+        cuiTheme[key] = num;
+    } else {
+        const hex = cuiHex(el.value);
+        if (!hex) {
+            return;
+        }
+        cuiTheme[key] = hex;
+    }
+    saveCuiTheme();
+    applyCuiTheme();
+    updateCuiSwatches();
+}
+
+function setupCuiThemeControls() {
+    const group = document.getElementById("cui-theme-group");
+    if (!group || group.dataset.cuiWired) {
+        return;
+    }
+    group.dataset.cuiWired = "1";
+    group.addEventListener("input", onCuiControlChange);
+    group.addEventListener("change", onCuiControlChange);
+    const reset = document.getElementById("cui-theme-reset");
+    if (reset) {
+        reset.addEventListener("click", () => {
+            cuiTheme = Object.assign({}, CUI_THEME_DEFAULTS, { matchGame: false });
+            saveCuiTheme();
+            refreshCuiThemeInputs();
+            applyCuiTheme();
+            reset.textContent = "Reset!";
+            setTimeout(() => {
+                reset.textContent = "Reset to defaults";
+            }, 1500);
+        });
+    }
+    refreshCuiThemeInputs();
+}
+
+loadCuiTheme();
+applyCuiTheme();
+watchGameThemeColors();
+
+GM_addStyle(`
+html.cui-theme #unified-settings-panel {
+    background: var(--cui-panel-bg) !important;
+    border: 2px solid var(--cui-border) !important;
+    border-radius: var(--cui-radius) !important;
+    box-shadow: var(--cui-shadow) !important;
+}
+
+html.cui-theme .settings-header {
+    background: var(--cui-header-bg) !important;
+    border-bottom: 1px solid var(--cui-border-soft) !important;
+}
+
+html.cui-theme .settings-header h2 { color: var(--cui-text) !important; }
+
+html.cui-theme .settings-close-btn {
+    background: var(--cui-btn-bg) !important;
+    border: 2px solid var(--cui-btn-border) !important;
+    color: var(--cui-btn-text) !important;
+    border-radius: var(--cui-radius-sm) !important;
+}
+html.cui-theme .settings-close-btn:hover {
+    background: var(--cui-btn-hover) !important;
+    border-color: var(--cui-border-strong) !important;
+}
+
+html.cui-theme #settings-search-input {
+    background: var(--cui-input-bg) !important;
+    border: 2px solid var(--cui-input-border) !important;
+    color: var(--cui-text) !important;
+    border-radius: var(--cui-radius-sm) !important;
+}
+html.cui-theme #settings-search-input:focus {
+    border-color: var(--cui-accent) !important;
+    box-shadow: 0 0 0 3px var(--cui-accent-soft) !important;
+}
+html.cui-theme #settings-search-input::placeholder { color: var(--cui-text-faint) !important; }
+
+html.cui-theme .settings-tabs {
+    background: var(--cui-sidebar-bg) !important;
+    border-right: 1px solid var(--cui-border-soft) !important;
+}
+html.cui-theme .settings-tabs::-webkit-scrollbar-track { background: var(--cui-scroll-track) !important; }
+html.cui-theme .settings-tabs::-webkit-scrollbar-thumb { background: var(--cui-scroll-thumb) !important; }
+
+html.cui-theme .settings-tab { color: var(--cui-text-dim) !important; }
+html.cui-theme .settings-tab:hover {
+    background: var(--cui-tab-active) !important;
+    color: var(--cui-text) !important;
+}
+html.cui-theme .settings-tab.active {
+    background: var(--cui-tab-active) !important;
+    border-left-color: var(--cui-accent) !important;
+    color: var(--cui-text) !important;
+}
+html.cui-theme .settings-tab-section-label { color: var(--cui-text-faint) !important; }
+
+html.cui-theme .settings-content { background: var(--cui-content-bg) !important; }
+html.cui-theme .settings-content::-webkit-scrollbar-track { background: var(--cui-scroll-track) !important; }
+html.cui-theme .settings-content::-webkit-scrollbar-thumb { background: var(--cui-scroll-thumb) !important; }
+html.cui-theme .settings-content::-webkit-scrollbar-thumb:hover { background: var(--cui-accent) !important; }
+
+html.cui-theme .setting-group {
+    background: var(--cui-group-bg) !important;
+    border: 1px solid var(--cui-border-soft) !important;
+    border-radius: var(--cui-radius-sm) !important;
+}
+html.cui-theme .setting-group:hover { border-color: var(--cui-border) !important; }
+html.cui-theme .setting-group h3 {
+    border-bottom: 1px solid var(--cui-row-line) !important;
+}
+html.cui-theme .setting-row { border-bottom: 1px solid var(--cui-row-line) !important; }
+
+.cui-hint {
+    color: rgba(255,255,255,0.45) !important;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+}
+
+html.cui-theme .setting-control input[type="checkbox"] {
+    background: var(--cui-input-bg) !important;
+    border: 2px solid var(--cui-input-border) !important;
+}
+html.cui-theme .setting-control input[type="checkbox"]::before { background: var(--cui-text-faint) !important; }
+html.cui-theme .setting-control input[type="checkbox"]:checked {
+    background: var(--cui-accent) !important;
+    border-color: var(--cui-accent) !important;
+}
+html.cui-theme .setting-control input[type="checkbox"]:checked::before { background: var(--cui-accent-text) !important; }
+html.cui-theme .setting-control input[type="checkbox"]:hover { border-color: var(--cui-border-strong) !important; }
+
+html.cui-theme .setting-control select,
+html.cui-theme .setting-control input[type="text"] {
+    background: var(--cui-input-bg) !important;
+    border: 2px solid var(--cui-input-border) !important;
+    color: var(--cui-text) !important;
+    border-radius: var(--cui-radius-sm) !important;
+}
+html.cui-theme .setting-control select:hover,
+html.cui-theme .setting-control input[type="text"]:hover { border-color: var(--cui-border-strong) !important; }
+html.cui-theme .setting-control select:focus,
+html.cui-theme .setting-control input[type="text"]:focus { border-color: var(--cui-accent) !important; }
+html.cui-theme .setting-control select option {
+    background: var(--cui-panel-solid) !important;
+    color: var(--cui-text) !important;
+}
+html.cui-theme .setting-control input[type="range"] { accent-color: var(--cui-accent) !important; }
+
+html.cui-theme .range-value {
+    background: var(--cui-input-bg) !important;
+    border: 2px solid var(--cui-input-border) !important;
+    color: var(--cui-text) !important;
+}
+html.cui-theme .range-value:hover { border-color: var(--cui-border-strong) !important; }
+html.cui-theme .range-value:focus { border-color: var(--cui-accent) !important; }
+
+html.cui-theme .keybinds-btn {
+    background: var(--cui-btn-bg) !important;
+    border: 2px solid var(--cui-btn-border) !important;
+    color: var(--cui-btn-text) !important;
+    border-radius: var(--cui-radius-sm) !important;
+}
+html.cui-theme .keybinds-btn:hover {
+    background: var(--cui-btn-hover) !important;
+    border-color: var(--cui-border-strong) !important;
+}
+html.cui-theme .keybinds-btn.listening {
+    background: var(--cui-accent) !important;
+    border-color: var(--cui-accent) !important;
+    color: var(--cui-accent-text) !important;
+}
+
+html.cui-theme #unified-settings-panel .x-small-btn:not([style*="background"]) {
+    background: var(--cui-btn-bg) !important;
+    border: 2px solid var(--cui-btn-border) !important;
+    color: var(--cui-btn-text) !important;
+    border-radius: var(--cui-radius-sm) !important;
+}
+html.cui-theme #unified-settings-panel .x-small-btn:not([style*="background"]):hover {
+    background: var(--cui-btn-hover) !important;
+    border-color: var(--cui-border-strong) !important;
+}
+
+html.cui-theme #unified-settings-btn {
+    background: var(--cui-panel-solid) !important;
+    border: 1px solid var(--cui-border) !important;
+    color: var(--cui-text-dim) !important;
+    backdrop-filter: blur(var(--cui-blur)) !important;
+}
+html.cui-theme #unified-settings-btn:hover {
+    background: var(--cui-btn-hover) !important;
+    border-color: var(--cui-accent) !important;
+    color: var(--cui-text) !important;
+}
+
+html.cui-theme-game .main-panel,
+html.cui-theme-game #main-right,
+html.cui-theme-game #mainPanel,
+html.cui-theme-game #leaderboard,
+html.cui-theme-game #chat,
+html.cui-theme-game #map,
+html.cui-theme-game div#main-panel-wrapper,
+html.cui-theme-game div#party-panel.ui-pane.interface-color.hud-panel,
+html.cui-theme-game #chat-panel,
+html.cui-theme-game #leaderboard-panel,
+html.cui-theme-game #minimap-panel,
+html.cui-theme-game div#main-right.main-divider.main-panel,
+html.cui-theme-game div#main-scrimmage.main-panel.interface-color,
+html.cui-theme-game #main-friends,
+html.cui-theme-game .main-left.main-divider.main-panel {
+    background: var(--cui-game-bg) !important;
+    border: 1px solid var(--cui-game-border) !important;
+    backdrop-filter: blur(var(--cui-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--cui-blur)) !important;
+}
+
+html.cui-theme-game #main-friends,
+html.cui-theme-game .main-left.main-divider.main-panel {
+    border-radius: var(--cui-radius-sm) !important;
+}
+
+html.cui-theme-game #main-friends .friend-item,
+html.cui-theme-game .main-left .friend-item {
+    background: var(--cui-group-bg) !important;
+    border: 1px solid var(--cui-border-soft) !important;
+}
+
+html.cui-theme-game #name-box,
+html.cui-theme-game .main-input-btns input[type="text"] {
+    background: var(--cui-input-bg) !important;
+    border: 2px solid var(--cui-input-border) !important;
+    color: var(--cui-text) !important;
+}
+
+html.cui-theme-game .main-input-btns button,
+html.cui-theme-game .main-input-btns .gota-btn,
+html.cui-theme-game .main-input-btns .gota-menu-btn,
+html.cui-theme-game #btn-servers,
+html.cui-theme-game #main-account button,
+html.cui-theme-game #main-account .gota-btn {
+    background: var(--cui-btn-bg) !important;
+    border: 1px solid var(--cui-btn-border) !important;
+    color: var(--cui-btn-text) !important;
+}
+
+html.cui-theme-game .main-input-btns button:hover,
+html.cui-theme-game .main-input-btns .gota-btn:hover,
+html.cui-theme-game #btn-servers:hover,
+html.cui-theme-game #main-account button:hover,
+html.cui-theme-game #main-account .gota-btn:hover {
+    background: var(--cui-btn-hover) !important;
+    border-color: var(--cui-accent) !important;
+}
+
+html.cui-theme-game .server-row {
+    background: var(--cui-group-bg) !important;
+    border-color: var(--cui-border-soft) !important;
+}
+html.cui-theme-game .server-row:hover:not(.server-selected) {
+    background: var(--cui-group-hover) !important;
+    border-color: var(--cui-accent) !important;
+}
+html.cui-theme-game .server-row.server-selected {
+    background: var(--cui-accent-soft) !important;
+    border-color: var(--cui-accent) !important;
+}
+
+html.cui-theme-game #main-account #account-username,
+html.cui-theme-game #main-account #account-level,
+html.cui-theme-game #main-account span,
+html.cui-theme-game #main-account p,
+html.cui-theme-game #main-account div { color: var(--cui-text) !important; }
+
+html.cui-theme-game #main-account #account-avatar { border-color: var(--cui-border) !important; }
+`);
+
 const extraBtns = [
     "#btn-servers",
     "#btn-options",
@@ -2674,8 +3405,13 @@ function scheduleAcceptScan() {
 }
 
 function sendInviteAndAccept(id) {
+    if (!id) {
+        return;
+    }
     const chat = document.querySelector("input#chat-input");
-    if (!chat) {}
+    if (!chat) {
+        return;
+    }
     document.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "Escape",
@@ -2938,7 +3674,7 @@ function saveColorSettings() {
     const colors = {};
     document
         .querySelectorAll(
-            '#unified-settings-panel input[type="color"], #unified-settings-panel input[data-coloris]',
+            '#unified-settings-panel input[type="color"]:not([data-cui]), #unified-settings-panel input[data-coloris]:not([data-cui])',
         )
         .forEach((inp) => {
             if (inp.id) {
@@ -2970,7 +3706,7 @@ function loadSavedColors() {
                     const input = document.querySelector(
                         `#unified-settings-panel #${CSS.escape(id)}`,
                     );
-                    if (input) {
+                    if (input && input.dataset.cui === undefined) {
                         input.value = colors[id];
                         input.setAttribute(
                             "style",
@@ -3074,10 +3810,10 @@ panel.innerHTML = `
     <div class="settings-tab" data-tab="hotkeys">Hotkeys</div>
     <div class="settings-tab" data-tab="themes">Themes</div>
     <div class="settings-tab" data-tab="cellpanel">Cell panel</div>
-    <div class="settings-tab-section-label">Custom</div>
+    <div class="settings-tab-section-label">More</div>
     <div class="settings-tab" data-tab="customfeatures">Features</div>
     <div class="settings-tab" data-tab="presets">Presets</div>
-    <div class="settings-tab-section-label">More</div>
+    <div class="settings-tab" data-tab="players">Players</div>
 </div>
         <div class="settings-content">
             <div class="tab-content active" id="tab-options">${getOptionsHTML()}</div>
@@ -3086,6 +3822,7 @@ panel.innerHTML = `
             <div class="tab-content" id="tab-cellpanel">${getCellPanelHTML()}</div>
             <div class="tab-content" id="tab-customfeatures">${getCustomFeaturesHTML()}</div>
             <div class="tab-content" id="tab-presets">${getPresetsTabHTML()}</div>
+            <div class="tab-content" id="tab-players">${getPlayersHTML()}</div>
         </div>
     </div>
 `;
@@ -3116,7 +3853,7 @@ panel.innerHTML = `
                 const node = panel.querySelector(id);
                 if (node) node.classList.add("active");
 
-                if (tab.dataset.tab === "customfeatures") renderSavedPlayers();
+                if (tab.dataset.tab === "players") renderSavedPlayers();
                 if (tab.dataset.tab === "presets") renderPresetsList();
                 renderPresetsList();
                 wirePresetsTab();
@@ -3149,7 +3886,11 @@ panel.innerHTML = `
     setupClearAllButton();
     setupUpdateButton();
     setupThemeImportExport();
+    setupGameAssetButtons();
+    setupCuiThemeControls();
+    applyCuiTheme();
     setupAutoRandomOnDeath();
+    setupLockedSkinRotation();
 }
 
 function setupUpdateButton() {
@@ -3318,6 +4059,7 @@ function getOptionsHTML() {
                 <div class="setting-row"><span class="setting-label">Show Coordinates</span><div class="setting-control"><input type="checkbox" id="cShowCoordinates"></div></div>
                 <div class="setting-row"><span class="setting-label">Hide Leaderboard Header</span><div class="setting-control"><input type="checkbox" id="cHideLeaderboardHeader"></div></div>
                 <div class="setting-row"><span class="setting-label">Hide Party Header</span><div class="setting-control"><input type="checkbox" id="cHidePartyHeader"></div></div>
+                <div class="setting-row"><span class="setting-label">Hide Status Panel <span class="cui-hint">hotkey still works while this is off</span></span><div class="setting-control"><input type="checkbox" id="cHideStatusPanel"></div></div>
                 <div class="setting-row">
                     <span class="setting-label">UI Scale</span>
                     <div class="setting-control">
@@ -3332,6 +4074,7 @@ function getOptionsHTML() {
                 <div class="setting-row"><span class="setting-label">Hide Chat</span><div class="setting-control"><input type="checkbox" id="cHideChat"></div></div>
                 <div class="setting-row"><span class="setting-label">Resizable Chat</span><div class="setting-control"><input type="checkbox" id="cResizableChat"></div></div>
                 <div class="setting-row"><span class="setting-label">Show Chat IDs</span><div class="setting-control"><input type="checkbox" id="cShowChatIds"></div></div>
+                <div class="setting-row" id="row-cColoredChatIds"><span class="setting-label">Colored Chat IDs</span><div class="setting-control"><input type="checkbox" id="cColoredChatIds"></div></div>
                 <div class="setting-row"><span class="setting-label">Chat Notifications</span><div class="setting-control"><input type="checkbox" id="cChatNotify"></div></div>
             </div>
 
@@ -3416,9 +4159,10 @@ function getHotkeysHTML() {
 
 function getThemesHTML() {
     return `
+${getCustomUiThemeHTML()}
+
             <div class="setting-group">
-                <h3>Theme Toggle</h3>
-                <div class="setting-row"><span class="setting-label">Enable Custom Theme</span><div class="setting-control"><input type="checkbox" id="cThemeEnabled"></div></div>
+                <h3>Event Themes</h3>
                 <div class="setting-row"><span class="setting-label">Disable Event Theme</span><div class="setting-control"><input type="checkbox" id="cDisableEventSkins"></div></div>
             </div>
 
@@ -3453,6 +4197,15 @@ function getThemesHTML() {
                 <div class="setting-row"><span class="setting-label">Menu Sub Background</span><div class="setting-control"><input type="text" id="uiMenuSubBackgroundColor" data-coloris></div></div>
                 <div class="setting-row"><span class="setting-label">Menu Sub Background 2</span><div class="setting-control"><input type="text" id="uiMenuSubBackground2Color" data-coloris></div></div>
                 <div class="setting-row"><span class="setting-label">Button Color</span><div class="setting-control"><input type="text" id="uiButtonColor" data-coloris></div></div>
+            </div>
+
+            <div class="setting-group">
+                <h3>Notification Colors</h3>
+                <div class="setting-row"><span class="setting-label">Info Border</span><div class="setting-control"><input type="text" id="uiNotifyInfoBdr" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">System Border</span><div class="setting-control"><input type="text" id="uiNotifySystemBdr" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Party Border</span><div class="setting-control"><input type="text" id="uiNotifyPartyBdr" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Whisper Border</span><div class="setting-control"><input type="text" id="uiNotifyWhisperBdr" data-coloris></div></div>
+                <div class="setting-row"><span class="setting-label">Error Border</span><div class="setting-control"><input type="text" id="uiNotifyErrorBdr" data-coloris></div></div>
             </div>
 
             <div class="setting-group">
@@ -3492,6 +4245,19 @@ function getThemesHTML() {
                 <div class="setting-row"><span class="setting-label">Warning Color</span><div class="setting-control"><input type="text" id="uiGameColorWarning" data-coloris></div></div>
                 <div class="setting-row"><span class="setting-label">Error Color</span><div class="setting-control"><input type="text" id="uiGameColorError" data-coloris></div></div>
             </div>
+
+            <div class="setting-group">
+                <h3>Game Assets</h3>
+                <div class="setting-row">
+                    <span class="setting-label">Food Colors <span class="cui-hint">opens the game's picker</span></span>
+                    <div class="setting-control"><button id="btn-food-colors-custom" class="x-small-btn">Edit food colors</button></div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Custom Background / Spike / Mother</span>
+                    <div class="setting-control"><span class="cui-hint" id="custom-asset-status">import a theme file to set these</span></div>
+                </div>
+            </div>
+
       <div class="setting-group">
     <h3>Import / Export Theme</h3>
     <div class="setting-row">
@@ -3635,6 +4401,55 @@ function getCellPanelHTML() {
                 </div>
             </div>
         </div>
+
+        <div class="setting-group">
+            <h3>Locked Name Rotation</h3>
+            <p style="color: #bbb; font-size: 13px; margin-bottom: 12px;">
+                Cycles the locked name's skin and can roll a random bright name colour
+                alongside it. Skin and colour share one 20s cooldown and go out together,
+                so running both costs no extra updates.
+            </p>
+
+            <div class="setting-row">
+                <span class="setting-label">Rotate Skins</span>
+                <div class="setting-control">
+                    <input type="checkbox" id="lsr-enabled">
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <span class="setting-label">Add Skin</span>
+                <div class="setting-control" style="gap:10px;">
+                    <input type="text" id="lsr-skin-input" placeholder="Skin name..." style="width:200px;">
+                    <button id="lsr-add-skin" class="x-small-btn" style="min-width:90px;">Add</button>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <span class="setting-label"></span>
+                <div class="setting-control" style="gap:10px;">
+                    <button id="lsr-import-saved" class="x-small-btn">Import From Saved Players</button>
+                    <button id="lsr-clear" class="x-small-btn x-small-del">Clear Skins</button>
+                </div>
+            </div>
+
+            <div id="lsr-list" style="margin-top: 8px;"></div>
+
+            <div class="setting-row" style="margin-top: 20px;">
+                <span class="setting-label">Random Name Colour</span>
+                <div class="setting-control">
+                    <span style="color: white; margin-left: 8px;">Bright random colour on name + cell (needs Use Cell Color)</span>
+                    <input type="checkbox" id="lcr-enabled">
+                </div>
+            </div>
+
+            <div class="setting-row" style="margin-top: 20px;">
+                <span class="setting-label"></span>
+                <div class="setting-control">
+                    <button id="lsr-swap-now" class="x-small-btn">Swap Now</button>
+                </div>
+            </div>
+        </div>
     `;
 }
 
@@ -3673,8 +4488,11 @@ function getCustomFeaturesHTML() {
                 </div>
             </div>
         </div>
+    `;
+}
 
-
+function getPlayersHTML() {
+    return `
         <!-- PLAYER MANAGEMENT GROUP -->
         <div class="setting-group">
             <h3>Player Management</h3>
@@ -3914,8 +4732,6 @@ function renderSavedPlayersIfChanged() {
     renderSavedPlayers();
 }
 
-// Wires the "Input player" row (Save Name / Save Skin / Save Both). The panel
-
 function setupQuickAddPlayer() {
     const wait = setInterval(() => {
         const input = document.getElementById("quick-player-input");
@@ -3946,7 +4762,6 @@ function setupQuickAddPlayer() {
             }, 1500);
         };
 
-        // mode: "name" | "skin" | "both"
         const save = (btn, mode) => {
             const raw = (input.value || "")
                 .trim();
@@ -3992,7 +4807,6 @@ function setupQuickAddPlayer() {
         bothBtn.addEventListener("click", () => save(bothBtn, "both"));
 
         input.addEventListener("keydown", (e) => {
-            // The game listens for bare keystrokes on window; keep them out.
             e.stopPropagation();
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -4002,10 +4816,11 @@ function setupQuickAddPlayer() {
     }, 200);
 }
 
-function setupRandomizer() {
+function setupRandomizer(tries = 0) {
     const btn = document.getElementById("random-player-btn");
     if (!btn) {
-        return setTimeout(setupRandomizer, 500);
+        if (tries < 20) setTimeout(() => setupRandomizer(tries + 1), 500);
+        return;
     }
     btn.onclick = () => {
         const saved = loadSavedPlayers();
@@ -4112,6 +4927,307 @@ function randomizePlayerName() {
     console.log(`🎲 Auto-random on death: ${finalName.trim()}`);
 }
 
+const LSR_KEY = "lockedSkinRotation";
+const LSR_INTERVAL_MS = 20000;
+const LSR_DEFAULTS = {
+    skinsEnabled: false,
+    skins: [],
+    skinCursor: 0,
+    colorsEnabled: false,
+    lastChange: 0,
+};
+
+function loadLsr() {
+    try {
+        return Object.assign({}, LSR_DEFAULTS, JSON.parse(localStorage.getItem(LSR_KEY) || "{}"));
+    } catch {
+        return Object.assign({}, LSR_DEFAULTS);
+    }
+}
+
+function saveLsr(cfg) {
+    localStorage.setItem(LSR_KEY, JSON.stringify(cfg));
+}
+
+const LSR_MIN_MEAN = 100;
+
+function hslToRgb(h, s, l) {
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    const t = h < 60 ? [c, x, 0] :
+        h < 120 ? [x, c, 0] :
+        h < 180 ? [0, c, x] :
+        h < 240 ? [0, x, c] :
+        h < 300 ? [x, 0, c] : [c, 0, x];
+    return t.map((v) => Math.round((v + m) * 255));
+}
+
+function randomLockedColor() {
+    const h = Math.random() * 360;
+    const s = 0.6 + Math.random() * 0.4;
+    let l = 0.55 + Math.random() * 0.17;
+    let rgb = hslToRgb(h, s, l);
+    while ((rgb[0] + rgb[1] + rgb[2]) / 3 < LSR_MIN_MEAN && l < 0.9) {
+        l += 0.05;
+        rgb = hslToRgb(h, s, l);
+    }
+    return (
+        "#" +
+        rgb
+        .map((v) => v.toString(16)
+            .padStart(2, "0"))
+        .join("")
+        .toUpperCase()
+    );
+}
+
+function lsrFormReady() {
+    const lockedName = document.getElementById("spLockedName");
+    const text = (lockedName ? lockedName.textContent || "" : "")
+        .trim();
+    return !!text && text !== "None" && !/loading/i.test(text);
+}
+
+function applyNextLocked(manual) {
+    const cfg = loadLsr();
+    const doSkin = (manual || cfg.skinsEnabled) && cfg.skins.length > 0;
+    const doColor = manual || cfg.colorsEnabled;
+    if (!doSkin && !doColor) {
+        return false;
+    }
+    const updateBtn = document.getElementById("btn-updateSP");
+    if (!updateBtn) {
+        return false;
+    }
+    const applied = [];
+    if (doSkin) {
+        const skinInput = document.getElementById("spSkinName");
+        if (skinInput) {
+            const skin = cfg.skins[cfg.skinCursor % cfg.skins.length];
+            setInputValue(skinInput, skin);
+            cfg.skinCursor = (cfg.skinCursor + 1) % cfg.skins.length;
+            applied.push(skin);
+        }
+    }
+    if (doColor) {
+        const nameColorInput = document.getElementById("spNameColor");
+        if (nameColorInput) {
+            const color = randomLockedColor();
+            setInputValue(nameColorInput, color);
+            const cellColorInput = document.getElementById("spCellColor");
+            if (cellColorInput) {
+                setInputValue(cellColorInput, color);
+            }
+            applied.push(color);
+        }
+    }
+    if (!applied.length) {
+        return false;
+    }
+    updateBtn.click();
+    cfg.lastChange = Date.now();
+    saveLsr(cfg);
+    renderLsrList();
+    console.log(`🎨 Locked name → ${applied.join(" ")}${manual ? " (manual)" : ""}`);
+    return true;
+}
+
+function lsrTick() {
+    const cfg = loadLsr();
+    const wantSkins = cfg.skinsEnabled && cfg.skins.length > 0;
+    if (!wantSkins && !cfg.colorsEnabled) {
+        return;
+    }
+    if (Date.now() - cfg.lastChange < LSR_INTERVAL_MS) {
+        return;
+    }
+    if (!lsrFormReady()) {
+        return;
+    }
+    applyNextLocked(false);
+}
+
+function renderLsrList() {
+    const container = document.getElementById("lsr-list");
+    if (!container) {
+        return;
+    }
+    container.innerHTML = "";
+    const cfg = loadLsr();
+    const items = cfg.skins;
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.gap = "6px";
+    if (!items.length) {
+        const empty = document.createElement("div");
+        empty.textContent = "No skins in rotation yet.";
+        empty.style.color = "#aaa";
+        empty.style.textAlign = "center";
+        wrapper.appendChild(empty);
+        container.appendChild(wrapper);
+        return;
+    }
+    items.forEach((value, i) => {
+        const row = document.createElement("div");
+        row.style.display = "grid";
+        row.style.gridTemplateColumns = "auto 1fr auto";
+        row.style.alignItems = "center";
+        row.style.padding = "6px 10px";
+        row.style.borderRadius = "8px";
+        row.style.background = "rgba(255,255,255,0.05)";
+        row.style.gap = "10px";
+        const marker = document.createElement("div");
+        const isNext = i === cfg.skinCursor % items.length;
+        marker.textContent = isNext ? "▶" : "";
+        marker.style.color = "#5af";
+        marker.style.width = "14px";
+        marker.title = isNext ? "Next in rotation" : "";
+        const label = document.createElement("div");
+        label.textContent = value;
+        label.style.color = "#fff";
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "x-small-btn x-small-del";
+        delBtn.onclick = () => {
+            const cur = loadLsr();
+            cur.skins.splice(i, 1);
+            if (!cur.skins.length) {
+                cur.skinCursor = 0;
+            } else if (i < cur.skinCursor) {
+                cur.skinCursor =
+                    (cur.skinCursor - 1 + cur.skins.length) % cur.skins.length;
+            } else {
+                cur.skinCursor = cur.skinCursor % cur.skins.length;
+            }
+            saveLsr(cur);
+            renderLsrList();
+        };
+        row.appendChild(marker);
+        row.appendChild(label);
+        row.appendChild(delBtn);
+        wrapper.appendChild(row);
+    });
+    container.appendChild(wrapper);
+}
+
+function flashBtn(btn, text) {
+    const old = btn.textContent;
+    btn.textContent = text;
+    setTimeout(() => {
+        btn.textContent = old;
+    }, 2000);
+}
+
+function setupLockedSkinRotation(tries = 0) {
+    const els = {
+        skinsEnabled: document.getElementById("lsr-enabled"),
+        skinInput: document.getElementById("lsr-skin-input"),
+        addSkin: document.getElementById("lsr-add-skin"),
+        importSaved: document.getElementById("lsr-import-saved"),
+        clearSkins: document.getElementById("lsr-clear"),
+        colorsEnabled: document.getElementById("lcr-enabled"),
+        swapNow: document.getElementById("lsr-swap-now"),
+    };
+    if (Object.values(els)
+        .some((el) => !el)) {
+        if (tries < 40) {
+            setTimeout(() => setupLockedSkinRotation(tries + 1), 300);
+        }
+        return;
+    }
+
+    const cfg = loadLsr();
+    els.skinsEnabled.checked = cfg.skinsEnabled;
+    els.colorsEnabled.checked = cfg.colorsEnabled;
+
+    els.skinsEnabled.addEventListener("change", () => {
+        const cur = loadLsr();
+        cur.skinsEnabled = els.skinsEnabled.checked;
+        saveLsr(cur);
+    });
+    els.colorsEnabled.addEventListener("change", () => {
+        const cur = loadLsr();
+        cur.colorsEnabled = els.colorsEnabled.checked;
+        saveLsr(cur);
+    });
+
+    const addSkin = () => {
+        const val = (els.skinInput.value || "")
+            .replace(/[\[\]]/g, "")
+            .trim()
+            .toLowerCase();
+        if (!val) {
+            return;
+        }
+        if (!/^[\x20-\x7e]+$/.test(val)) {
+            flashBtn(els.addSkin, "ASCII only!");
+            return;
+        }
+        const cur = loadLsr();
+        if (!cur.skins.includes(val)) {
+            cur.skins.push(val);
+            saveLsr(cur);
+        }
+        els.skinInput.value = "";
+        renderLsrList();
+    };
+    els.addSkin.addEventListener("click", addSkin);
+    els.skinInput.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addSkin();
+        }
+    });
+
+    els.importSaved.addEventListener("click", () => {
+        const cur = loadLsr();
+        let added = 0;
+        loadSavedPlayers()
+            .forEach((p) => {
+                const skin = (p.skin || "")
+                    .replace(/[\[\]]/g, "")
+                    .trim()
+                    .toLowerCase();
+                if (skin && skin !== "none" && !cur.skins.includes(skin)) {
+                    cur.skins.push(skin);
+                    added++;
+                }
+            });
+        saveLsr(cur);
+        renderLsrList();
+        flashBtn(els.importSaved, added ? `Added ${added}!` : "Nothing new");
+    });
+
+    els.clearSkins.addEventListener("click", () => {
+        if (!confirm("Clear the skin rotation list?")) {
+            return;
+        }
+        const cur = loadLsr();
+        cur.skins = [];
+        cur.skinCursor = 0;
+        saveLsr(cur);
+        renderLsrList();
+    });
+    els.swapNow.addEventListener("click", () => {
+        const waitMs = LSR_INTERVAL_MS - (Date.now() - loadLsr()
+            .lastChange);
+        if (waitMs > 0) {
+            flashBtn(els.swapNow, `${Math.ceil(waitMs / 1000)}s left`);
+            return;
+        }
+        if (!applyNextLocked(true)) {
+            flashBtn(els.swapNow, "Nothing to do!");
+        }
+    });
+
+    renderLsrList();
+    lsrTick();
+    setInterval(lsrTick, 5000);
+}
+
 function setupSavedPlayersFeature() {
     const waitForContextMenu = setInterval(() => {
         const contextMenu = document.querySelector("#context-menu");
@@ -4142,7 +5258,7 @@ function setupSavedPlayersFeature() {
                         });
                         saveSavedPlayers(list);
                         const customTab = document.querySelector(
-                            '.settings-tab[data-tab="customfeatures"]',
+                            '.settings-tab[data-tab="players"]',
                         );
                         if (customTab && customTab.classList.contains("active")) {
                             renderSavedPlayers();
@@ -4262,6 +5378,149 @@ function setupColorPickers() {
     }, 500);
 }
 
+const GOTA_THEME_VERSION = 2;
+
+const GOTA_THEME_KEYS = [
+    "uiForegroundColor",
+    "uiBackgroundColor",
+    "uiBorderColor",
+    "uiButtonColor",
+    "uiMenuBackgroundColor",
+    "uiMenuTitleBackgroundColor",
+    "uiMenuSubBackgroundColor",
+    "uiMenuSubBackground2Color",
+    "uiGameBackgroundColor",
+    "uiGameBorderColor",
+    "uiLeaderboardHighlightSelf",
+    "uiLeaderboardHighlightParty",
+    "uiPartyLeaderColor",
+    "uiTracerColor",
+    "uiGameColorSuccess",
+    "uiGameColorWarning",
+    "uiGameColorError",
+    "uiNotifyInfoBdr",
+    "uiNotifyErrorBdr",
+    "uiNotifySystemBdr",
+    "uiNotifyPartyBdr",
+    "uiNotifyWhisperBdr",
+    "rBackgroundOpacity",
+    "iMapBackground",
+];
+
+const GOTA_THEME_CLOSURE_KEYS = [
+    "_FoodColors",
+    "aCustomBackground",
+    "aCustomSpike",
+    "aCustomMother",
+];
+
+function isGotaNativeTheme(raw) {
+    return !!raw && typeof raw === "object" && raw.version === GOTA_THEME_VERSION;
+}
+
+function themeNeedsNativeImport(raw) {
+    if (!isGotaNativeTheme(raw)) {
+        return false;
+    }
+    return GOTA_THEME_CLOSURE_KEYS.some((k) => {
+        const v = raw[k];
+        if (v === undefined || v === null) {
+            return false;
+        }
+        return Array.isArray(v) ? v.length > 0 : String(v)
+            .length > 0;
+    });
+}
+
+function forwardToGameThemeImport(file) {
+    const gameInput = document.getElementById("theme-import");
+    if (!gameInput || typeof DataTransfer === "undefined") {
+        return false;
+    }
+    try {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        gameInput.files = dt.files;
+        gameInput.dispatchEvent(
+            new Event("change", {
+                bubbles: true,
+            }),
+        );
+        return true;
+    } catch (e) {
+        console.error("Native theme import failed:", e);
+        return false;
+    }
+}
+
+function normalizeThemeFile(raw) {
+    const out = {
+        __colors: {},
+    };
+    if (!raw || typeof raw !== "object") {
+        return out;
+    }
+    if (raw.__colors && typeof raw.__colors === "object") {
+        Object.assign(out.__colors, raw.__colors);
+    }
+    if (raw.__cui && typeof raw.__cui === "object") {
+        out.__cui = raw.__cui;
+    }
+    Object.keys(raw)
+        .forEach((id) => {
+            if (id.indexOf("__") === 0) {
+                return;
+            }
+            if (id === "version" || GOTA_THEME_CLOSURE_KEYS.indexOf(id) !== -1) {
+                return;
+            }
+            const value = raw[id];
+            if (value === null || typeof value === "object") {
+                return;
+            }
+            if (typeof value === "string" && /^\s*(#|rgba?\()/i.test(value)) {
+                out.__colors[id] = value;
+            } else {
+                out[id] = value;
+            }
+        });
+    return out;
+}
+
+function setupGameAssetButtons() {
+    const btn = document.getElementById("btn-food-colors-custom");
+    if (!btn || btn.dataset.wired) {
+        return;
+    }
+    btn.dataset.wired = "1";
+    btn.addEventListener("click", () => {
+        const gameBtn = document.getElementById("btn-food-colors");
+        if (!gameBtn) {
+            btn.textContent = "Not available";
+            setTimeout(() => {
+                btn.textContent = "Edit food colors";
+            }, 2000);
+            return;
+        }
+        close();
+        setTimeout(() => gameBtn.click(), 320);
+    });
+}
+
+function syncPanelRangeBoxes() {
+    const panel = document.getElementById("unified-settings-panel");
+    if (!panel) {
+        return;
+    }
+    panel.querySelectorAll('input[type="range"]')
+        .forEach((range) => {
+            const box = panel.querySelector(`input[data-range="${range.id}"]`);
+            if (box) {
+                box.value = range.value;
+            }
+        });
+}
+
 function setupThemeImportExport() {
     const exportBtn = document.getElementById("export-theme-btn");
     const importBtn = document.getElementById("import-theme-btn");
@@ -4271,25 +5530,34 @@ function setupThemeImportExport() {
         return;
     }
     exportBtn.addEventListener("click", () => {
-        const themeData = {};
+        const themeData = {
+            version: GOTA_THEME_VERSION,
+            __savedAt: new Date()
+                .toISOString(),
+            __cui: Object.assign({}, cuiTheme),
+        };
         document
-            .querySelectorAll("#tab-themes input, #tab-themes select")
+            .querySelectorAll(
+                "#tab-themes input:not([data-cui]), #tab-themes select:not([data-cui])",
+            )
             .forEach((el) => {
-                if (el.id) {
-                    if (el.type === "checkbox") {
-                        themeData[el.id] = el.checked;
-                    } else {
-                        themeData[el.id] = el.value;
-                    }
+                if (!el.id || el.type === "file" || el.type === "button") {
+                    return;
                 }
-            });
-        document
-            .querySelectorAll('#tab-themes input[type="range"]')
-            .forEach((range) => {
-                if (range.id) {
-                    themeData[range.id] = range.value;
+                if (el.dataset.range) {
+                    return;
                 }
+                themeData[el.id] = el.type === "checkbox" ? el.checked : el.value;
             });
+        GOTA_THEME_KEYS.forEach((id) => {
+            if (themeData[id] !== undefined) {
+                return;
+            }
+            const el = document.getElementById(id);
+            if (el && !el.closest("#unified-settings-panel")) {
+                themeData[id] = el.value;
+            }
+        });
         const json = JSON.stringify(themeData, null, 2);
         const blob = new Blob([json], {
             type: "application/json",
@@ -4314,59 +5582,69 @@ function setupThemeImportExport() {
     fileInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) {
-            filenameSpan.textContent = "No file selected";
+            if (filenameSpan) {
+                filenameSpan.textContent = "No file selected";
+            }
             return;
         }
-        filenameSpan.textContent = file.name;
+        if (filenameSpan) {
+            filenameSpan.textContent = file.name;
+        }
         const reader = new FileReader();
         reader.onload = (ev) => {
             try {
-                const themeData = JSON.parse(ev.target.result);
-                Object.keys(themeData)
-                    .forEach((id) => {
-                        const el = document.querySelector(`#tab-themes #${CSS.escape(id)}`);
-                        if (!el) {
-                            return;
-                        }
-                        if (el.type === "checkbox") {
-                            el.checked = themeData[id];
-                        } else {
-                            el.value = themeData[id];
-                        }
-                        el.dispatchEvent(
-                            new Event("change", {
-                                bubbles: true,
-                            }),
-                        );
-                        el.dispatchEvent(
-                            new Event("input", {
-                                bubbles: true,
-                            }),
-                        );
-                    });
-                document
-                    .querySelectorAll('#tab-themes input[type="range"]')
-                    .forEach((range) => {
-                        const valInput = document.querySelector(
-                            `#tab-themes input[data-range="${range.id}"]`,
-                        );
-                        if (valInput) {
-                            valInput.value = range.value;
-                        }
-                    });
-                importBtn.textContent = "Imported!";
+                const raw = JSON.parse(ev.target.result);
+                const data = normalizeThemeFile(raw);
+
+                let native = false;
+                if (themeNeedsNativeImport(raw)) {
+                    native = forwardToGameThemeImport(file);
+                }
+
+                if (!native) {
+                    let existing = {};
+                    try {
+                        existing = JSON.parse(GM_getValue("savedColors", "{}") || "{}");
+                    } catch (err2) {
+                        try {
+                            existing = JSON.parse(
+                                localStorage.getItem("savedColors") || "{}",
+                            );
+                        } catch (err3) {}
+                    }
+                    data.__colors = Object.assign({}, existing, data.__colors);
+
+                    applySettings(data);
+                } else if (data.__cui && typeof data.__cui === "object") {
+                    cuiTheme = Object.assign({}, CUI_THEME_DEFAULTS, data.__cui);
+                    saveCuiTheme();
+                    refreshCuiThemeInputs();
+                }
+
+                setTimeout(() => {
+                    if (native) {
+                        performSync();
+                        setupColorPickers();
+                    }
+                    syncPanelRangeBoxes();
+                    applyCuiTheme();
+                    updateCuiSwatches();
+                    saveColorSettings();
+                }, native ? 400 : 120);
+
+                importBtn.textContent = native ? "Imported (full)!" : "Imported!";
                 importBtn.style.background = "rgba(0,200,0,0.8)";
                 setTimeout(() => {
                     importBtn.textContent = "Choose File & Import";
                     importBtn.style.background = "rgba(0,150,0,0.7)";
                 }, 2000);
-                saveColorSettings();
             } catch (err) {
                 alert(
                     "Invalid theme file! Make sure it's a valid JSON exported from this script.",
                 );
                 console.error("Import error:", err);
             }
+            fileInput.value = "";
         };
         reader.readAsText(file);
     });
@@ -4420,22 +5698,11 @@ function syncHotkeysFromGame() {
     });
 }
 function syncHotkeysWithGame() {
-    // Called on every panel open. Only the button wiring may re-run; the
-    // document listeners / sync interval / pulse style must be installed once,
-    // or each open stacks another set of capture handlers and intervals.
     if (syncHotkeysWithGame._rewire) {
         syncHotkeysWithGame._rewire();
         return;
     }
-    // Self-contained capture, same pattern as the tab-invite key / multibox
-    // panel: while listening WE block every input and the game is NEVER armed.
-    // Once exactly one key or mouse button is taken, the game button is
-    // selected and the input replayed as a synthetic event on window — the
-    // game's bind handler (window.onkeydown / window.onmousedown) runs
-    // synchronously during dispatch, so the rebind is done and listen mode is
-    // already exited when the replay call returns. Nothing can leak into the
-    // game's listen mode in between, which is what used to bind stray MOUSE1s.
-    let capture = null; // { gameBtn, customBtn, originalText }
+    let capture = null;
     let suppressClickFor = null;
 
     const block = (e) => {
@@ -4452,8 +5719,6 @@ function syncHotkeysWithGame() {
         window.removeEventListener('mousedown', onMouseDown, true);
     };
 
-    // Must run BEFORE the replay dispatch, or our own blockers would eat the
-    // synthetic event.
     const endCapture = () => {
         const c = capture;
         capture = null;
@@ -4464,8 +5729,6 @@ function syncHotkeysWithGame() {
     const finishUI = (c, finalText) => {
         c.customBtn.classList.remove('listening');
         c.customBtn.textContent = finalText != null ? finalText : c.originalText;
-        // Cleared a tick later so the panel's own Escape-close handler can't
-        // also react to the key that ended the capture.
         setTimeout(() => { state.listeningForKey = false; }, 0);
     };
 
@@ -4478,16 +5741,11 @@ function syncHotkeysWithGame() {
     const mouseEvent = (button) => new MouseEvent('mousedown', { bubbles: true, cancelable: true, button });
 
     const replayIntoGame = (gameBtn, ev) => {
-        gameBtn.click(); // game: select + enter listen mode
-        window.dispatchEvent(ev); // game: bind + exit listen mode, synchronously
+        gameBtn.click();
+        window.dispatchEvent(ev);
         return (gameBtn.textContent || '').trim() || '-';
     };
 
-    // The game only writes its keybinds to localStorage in its pagehide
-    // handler, which doesn't reliably run when the app window closes — so a
-    // rebind used to survive only until restart. Persist each bind ourselves,
-    // in the exact shape the game's boot loader reads back (id -> keycode,
-    // mouse buttons are 1-3, unbound is -1).
     const persistBind = (id, code) => {
         try {
             const keybinds = JSON.parse(localStorage.getItem('keybinds') || '{}');
@@ -4500,19 +5758,17 @@ function syncHotkeysWithGame() {
         if (!capture) return;
         block(e);
         if (e.key === 'Escape') {
-            // Cancel: binding untouched — the game was never armed.
             finishUI(endCapture(), null);
             return;
         }
         if (e.key === 'Delete' || e.key === 'Backspace') {
-            // Unbind: the game maps a received Escape (27) to "unbound".
             const c = endCapture();
             persistBind(c.gameBtn.id, -1);
             finishUI(c, replayIntoGame(c.gameBtn, keyEvent(27)));
             return;
         }
         const code = e.which || e.keyCode;
-        if (!code || code <= 5) return; // codes the game ignores; keep listening
+        if (!code || code <= 5) return;
         const c = endCapture();
         persistBind(c.gameBtn.id, code);
         finishUI(c, replayIntoGame(c.gameBtn, keyEvent(code)));
@@ -4521,16 +5777,13 @@ function syncHotkeysWithGame() {
     const onMouseDown = (e) => {
         if (!capture) return;
         if (e.target === capture.customBtn) {
-            // Clicking the armed row again = bind that mouse button.
             block(e);
             const c = endCapture();
-            suppressClickFor = c.customBtn; // the trailing click must not re-arm
-            persistBind(c.gameBtn.id, e.button + 1); // game stores button+1
+            suppressClickFor = c.customBtn;
+            persistBind(c.gameBtn.id, e.button + 1);
             finishUI(c, replayIntoGame(c.gameBtn, mouseEvent(e.button)));
             return;
         }
-        // Any other click cancels; it is NOT blocked, so it then does its
-        // normal job (close the panel, switch tab, arm another row, …).
         finishUI(endCapture(), null);
     };
 
@@ -4538,8 +5791,6 @@ function syncHotkeysWithGame() {
         capture = { gameBtn, customBtn, originalText: customBtn.textContent };
         customBtn.textContent = '...';
         customBtn.classList.add('listening');
-        // Drop focus so binding Space/Enter can't synthesize a click on the
-        // focused button.
         customBtn.blur();
         state.listeningForKey = true;
         window.addEventListener('keydown', onKeyDown, true);
@@ -4576,15 +5827,12 @@ setInterval(() => {
             const customBtn = document.querySelector(`#tab-hotkeys button[data-key="${gameBtn.id}"]`);
             if (customBtn) {
                 customBtn.onclick = (e) => {
-                    // detail === 0 → keyboard-synthesized click (Space/Enter on
-                    // the focused button); suppressClickFor → the click event
-                    // trailing a mouse-button bind. Neither may re-arm recording.
                     if (e && e.detail === 0) return;
                     if (suppressClickFor === customBtn) {
                         suppressClickFor = null;
                         return;
                     }
-                    if (capture) return; // a cancel via onMouseDown already ran
+                    if (capture) return;
                     startCapture(gameBtn, customBtn);
                 };
             }
@@ -4634,6 +5882,9 @@ function findPotentialGamePanel() {
 
 function findGameElement(id) {
     if (!id) {
+        return null;
+    }
+    if (id.indexOf("cui_") === 0) {
         return null;
     }
     try {
@@ -4856,6 +6107,65 @@ function findGameElement(id) {
     }, 5000);
 })();
 
+const HIDE_STATUS_PANEL_KEY = "cHideStatusPanel";
+
+GM_addStyle(`
+html.cui-hide-status #status-panel { display: none !important; }
+`);
+
+function hideStatusPanelEnabled() {
+    return localStorage.getItem(HIDE_STATUS_PANEL_KEY) === "true";
+}
+
+function applyHideStatusPanel(on) {
+    document.documentElement.classList.toggle("cui-hide-status", !!on);
+}
+
+function syncColoredChatIdsRow() {
+    try {
+        const panel = document.getElementById("unified-settings-panel");
+        if (!panel) {
+            return;
+        }
+        const row = panel.querySelector("#row-cColoredChatIds");
+        if (!row) {
+            return;
+        }
+        const gameToggle = findGameElement("cShowChatIds");
+        row.style.display = gameToggle && gameToggle.checked ? "" : "none";
+    } catch (e) {}
+}
+
+document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (!el || !el.id) {
+        return;
+    }
+    if (el.id === "cShowChatIds") {
+        syncColoredChatIdsRow();
+        return;
+    }
+    if (el.id === HIDE_STATUS_PANEL_KEY && el.closest("#unified-settings-panel")) {
+        localStorage.setItem(HIDE_STATUS_PANEL_KEY, el.checked);
+        applyHideStatusPanel(el.checked);
+    }
+});
+
+(function initHideStatusPanel() {
+    applyHideStatusPanel(hideStatusPanelEnabled());
+    const timer = setInterval(() => {
+        const panel = document.getElementById("unified-settings-panel");
+        const box = panel && panel.querySelector("#" + HIDE_STATUS_PANEL_KEY);
+        if (!box) {
+            return;
+        }
+        clearInterval(timer);
+        box.checked = hideStatusPanelEnabled();
+        applyHideStatusPanel(box.checked);
+        syncColoredChatIdsRow();
+    }, 500);
+})();
+
 function performSync() {
     try {
         let syncedCount = 0;
@@ -5009,6 +6319,11 @@ function performSync() {
                     }
                 } catch (e) {}
             });
+        syncColoredChatIdsRow();
+        const hideStatus = panel.querySelector("#" + HIDE_STATUS_PANEL_KEY);
+        if (hideStatus) {
+            hideStatus.checked = hideStatusPanelEnabled();
+        }
     } catch (e) {
         console.error("performSync error", e);
     }
@@ -5025,6 +6340,12 @@ function open() {
         syncHotkeysWithGame();
         setupColorPickers();
         loadSavedColors();
+        setupCuiThemeControls();
+        refreshCuiThemeInputs();
+        setTimeout(() => {
+            applyCuiTheme();
+            updateCuiSwatches();
+        }, 800);
     }
 }
 
@@ -5265,8 +6586,6 @@ function setupSearchFunctionality() {
             clearSearch();
             return;
         }
-        // Global search: reveal every tab-content (via .searching, see CSS) and
-        // match rows across all of them, including the injected Multibox tab.
         if (content) {
             content.classList.add("searching");
         }
@@ -5310,8 +6629,6 @@ function setupSearchFunctionality() {
             nr.classList.toggle("visible", !anyMatch);
         }
     });
-    // Clicking a tab (including the late-injected Multibox one) exits search
-    // mode so the clicked tab actually becomes visible.
     const tabs = document.querySelector("#unified-settings-panel .settings-tabs");
     if (tabs) {
         tabs.addEventListener("click", (e) => {
@@ -5321,63 +6638,6 @@ function setupSearchFunctionality() {
             }
         });
     }
-}
-
-function setupThemeButtons() {
-    const checkButtons = setInterval(() => {
-        const customBgBtn = document.getElementById("aCustomBackground");
-        const customSpikeBtn = document.getElementById("aCustomSpike");
-        const customMotherBtn = document.getElementById("aCustomMother");
-        const foodColorsBtn = document.getElementById("btn-food-colors");
-        const importBtn = document.getElementById("btn-theme-import");
-        const exportBtn = document.getElementById("btn-theme-export");
-        if (
-            customBgBtn &&
-            customSpikeBtn &&
-            customMotherBtn &&
-            foodColorsBtn &&
-            importBtn &&
-            exportBtn
-        ) {
-            clearInterval(checkButtons);
-            customBgBtn.onclick = () => {
-                const gameBtn = document.getElementById("aCustomBackground");
-                if (gameBtn) {
-                    gameBtn.click();
-                }
-            };
-            customSpikeBtn.onclick = () => {
-                const gameBtn = document.getElementById("aCustomSpike");
-                if (gameBtn) {
-                    gameBtn.click();
-                }
-            };
-            customMotherBtn.onclick = () => {
-                const gameBtn = document.getElementById("aCustomMother");
-                if (gameBtn) {
-                    gameBtn.click();
-                }
-            };
-            foodColorsBtn.onclick = () => {
-                const gameBtn = document.getElementById("btn-food-colors");
-                if (gameBtn) {
-                    gameBtn.click();
-                }
-            };
-            importBtn.onclick = () => {
-                const gameBtn = document.getElementById("btn-theme-import");
-                if (gameBtn) {
-                    gameBtn.click();
-                }
-            };
-            exportBtn.onclick = () => {
-                const gameBtn = document.getElementById("btn-theme-export");
-                if (gameBtn) {
-                    gameBtn.click();
-                }
-            };
-        }
-    }, 100);
 }
 
 (function addCustomBottomText() {
@@ -5586,10 +6846,6 @@ function setupTabInviteKey() {
             });
         };
 
-        // The handler MUST be the window's first capture-phase keydown listener:
-        // it blocks the event itself. Registering a plain blocker for keydown
-        // ahead of it (as this used to) stopImmediatePropagation'd the handler
-        // away, so recording never ended and the keyboard went dead.
         window.addEventListener('keydown', handler, {
             capture: true
         });
@@ -5713,23 +6969,23 @@ function captureAllSettings() {
     const panel = document.getElementById("unified-settings-panel");
     if (!panel) return data;
 
-    panel.querySelectorAll('input[type="checkbox"]')
+    panel.querySelectorAll('input[type="checkbox"]:not([data-cui])')
         .forEach(el => {
             if (el.id) data[el.id] = el.checked;
         });
-    panel.querySelectorAll('input[type="range"]')
+    panel.querySelectorAll('input[type="range"]:not([data-cui])')
         .forEach(el => {
             if (el.id) data[el.id] = el.value;
         });
-    panel.querySelectorAll('input[type="text"], input[type="number"]')
+    panel.querySelectorAll('input[type="text"]:not([data-cui]), input[type="number"]:not([data-cui])')
         .forEach(el => {
             if (el.id && !el.dataset.range) data[el.id] = el.value;
         });
-    panel.querySelectorAll('input[data-coloris]')
+    panel.querySelectorAll('input[data-coloris]:not([data-cui])')
         .forEach(el => {
             if (el.id) data[el.id] = el.value;
         });
-    panel.querySelectorAll("select")
+    panel.querySelectorAll("select:not([data-cui])")
         .forEach(el => {
             if (el.id) data[el.id] = el.value;
         });
@@ -5739,6 +6995,7 @@ function captureAllSettings() {
             __colors: colors
         });
     } catch {}
+    data.__cui = Object.assign({}, cuiTheme);
 
     return data;
 }
@@ -5749,7 +7006,7 @@ function applySettings(data) {
 
     Object.keys(data)
         .forEach(id => {
-            if (id === "__colors" || id === "__savedAt") return;
+            if (id.indexOf("__") === 0) return;
 
             const gameEl = typeof findGameElement === "function" ? findGameElement(id) : null;
 
@@ -5858,6 +7115,13 @@ function applySettings(data) {
         }, 500);
     }
 
+
+    if (data.__cui && typeof data.__cui === "object") {
+        cuiTheme = Object.assign({}, CUI_THEME_DEFAULTS, data.__cui);
+        saveCuiTheme();
+        refreshCuiThemeInputs();
+    }
+    applyCuiTheme();
 
     if (panel) {
         panel.querySelectorAll('input[type="range"]')
@@ -6121,7 +7385,7 @@ const waitForPanel = setInterval(() => {
 
 
 
-if (!localStorage.getItem("changelogShown_3.61")) {
+if (!localStorage.getItem("changelogShown_v4.2")) {
     const overlay = document.createElement("div");
     overlay.id = "changelogOverlay";
     document.body.appendChild(overlay);
@@ -6130,28 +7394,36 @@ if (!localStorage.getItem("changelogShown_3.61")) {
     modal.id = "changelogModal";
     modal.innerHTML = `
 <div id="changelog-header">
-      <span id="changelog-version">v3.61</span>
+      <span id="changelog-version">v4.2</span>
       <span id="changelog-title">Changelog</span>
       <button id="closeChangelog">×</button>
     </div>
     <div id="changelog-body">
       <div class="changelog-item">
         <span class="changelog-tag new">New</span>
-        <span class="changelog-text">Presets system — save, load, rename, duplicate and export your settings!</span>
+        <span class="changelog-text">Interface Theme — reskin the settings menu and the game HUD. Match your game theme or set your own panel, border, accent and text colours, plus opacity, corner radius and background blur.</span>
       </div>
       <div class="changelog-item">
         <span class="changelog-tag new">New</span>
-        <span class="changelog-text">Tab switching in settings menu now animates height in both directions</span>
+        <span class="changelog-text">Locked Name Rotation — cycles skins on your locked name, with an optional random bright name colour. Both share one 20s cooldown and go out together.</span>
       </div>
-           <div class="changelog-item">
+      <div class="changelog-item">
+        <span class="changelog-tag new">New</span>
+        <span class="changelog-text">Settings menu redesign — the player list lives in its own Players tab now instead of being buried in with everything else.</span>
+      </div>
+      <div class="changelog-item">
+        <span class="changelog-tag new">New</span>
+        <span class="changelog-text">Hide Status Panel option in UI Options — the game only ever had a hotkey for this, never a menu row</span>
+      </div>
+      <div class="changelog-item">
+        <span class="changelog-tag new">New</span>
+        <span class="changelog-text">Colored Chat IDs option in Chat Options — shows up once Show Chat IDs is on, same as the game does it</span>
+      </div>
+      <div class="changelog-item">
         <span class="changelog-tag info">Info</span>
         <span class="changelog-text">You need camlan to use this script!</span>
       </div>
     </div>
-     <div class="changelog-item">
-        <span class="changelog-tag fix">fix</span>
-        <span class="changelog-text">uhm you know i fucked up so i fixed it</span>
-      </div>
     <div id="changelog-footer">
       <span id="changelog-credit">Made with ❤️ by liliwi</span>
       <button id="closeChangelogBtn">Got it</button>
@@ -6244,10 +7516,23 @@ if (!localStorage.getItem("changelogShown_3.61")) {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    #changelog-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    #changelog-body::-webkit-scrollbar-track {
+      background: rgba(20,20,20,0.5);
+      border-radius: 3px;
+    }
+    #changelog-body::-webkit-scrollbar-thumb {
+      background: rgba(100,100,100,0.5);
+      border-radius: 3px;
     }
     .changelog-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
       background: rgba(28,28,28,0.6);
       border: 1px solid rgba(255,255,255,0.07);
@@ -6322,7 +7607,7 @@ if (!localStorage.getItem("changelogShown_3.61")) {
         setTimeout(() => {
             modal.remove();
             overlay.remove();
-            localStorage.setItem("changelogShown_3.61", "true");
+            localStorage.setItem("changelogShown_v4.2", "true");
         }, 300);
     };
     document.getElementById("closeChangelog")
@@ -6333,22 +7618,33 @@ if (!localStorage.getItem("changelogShown_3.61")) {
 
 
 
-// Tampermonkey reports the @version header here; the Electron app and the
-// Chrome extension have no GM_info, so they fall back to the literal.
 const SCRIPT_VERSION =
     (typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version) ||
-    "v4dev";
+    "v4.2";
 const UPDATE_URL =
     "https://raw.githubusercontent.com/liliwi/Gota.io-Custom-UI/main/Custom%20UI%20by%20liliwi.user.js";
 
-// Versions are written both with and without a leading "v" ("v4.01" / "3.61").
 function stripV(v) {
     return String(v).replace(/^\s*v/i, "").trim();
 }
 
-// Numbering is decimal, not per-segment: 3.42 predates 3.5, and 4 predates 4.01.
+function versionParts(v) {
+    return stripV(v)
+        .split(".")
+        .map((n) => parseInt(n, 10) || 0);
+}
+
 function isOutdated(remote, local) {
-    return (parseFloat(stripV(remote)) || 0) > (parseFloat(stripV(local)) || 0);
+    const r = versionParts(remote);
+    const l = versionParts(local);
+    for (let i = 0; i < Math.max(r.length, l.length); i++) {
+        const a = r[i] || 0;
+        const b = l[i] || 0;
+        if (a !== b) {
+            return a > b;
+        }
+    }
+    return false;
 }
 
 function checkForUpdate() {
@@ -6419,8 +7715,9 @@ function init() {
                 setupSearchFunctionality();
                 setupRangeListeners();
                 setupColorPickers();
-                setupThemeButtons();
                 setupTabInviteKey();
+                setupCuiThemeControls();
+                applyCuiTheme();
             } else {
                 createPanel();
                 state.initialized = true;
